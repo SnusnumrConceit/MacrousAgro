@@ -1,0 +1,39 @@
+{
+    "categories": {
+        "table": {
+            "header": "Категории"
+        },
+        "form": {
+            "header": "Категория"
+        },
+        "btn": {
+            "add": "Добавить",
+            "save": "Сохранить",
+            "cancel": "Отмена"
+        }
+    },
+
+    "users": {
+        "btn": {
+            "add": "Add"
+        }
+    },
+
+    "nav": {
+        "subtitle": "Administration dashboard"
+    },
+
+    "v-data-table": {
+        "no-data-text":     "No data available",
+        "no-results-text":  "No matching records found",
+        "loading-text":      "Loading items...",
+        "per-page":         "Rows per page:"
+    },
+
+    "swal": {
+        "title": {
+            "success": "Success!",
+            "error": "Error!"
+        }
+    }
+}

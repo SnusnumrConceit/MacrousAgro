@@ -1,0 +1,9 @@
+{
+    "category_msg_success_create": "The category is successfully created!",
+    "category_msg_success_update": "The category is successfully updated!",
+    "category_msg_success_delete": "The category is successfully deleted!",
+
+    "news_msg_success_create": "The article is successfully created!",
+    "news_msg_success_delete": "The article is successfully deleted!",
+    "news_msg_success_update": "The article is successfully updated!"
+}

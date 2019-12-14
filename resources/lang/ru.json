@@ -1,0 +1,9 @@
+{
+    "category_msg_success_create": "Категория успешно создана!",
+    "category_msg_success_delete": "Категория успешно удалена!",
+    "category_msg_success_update": "Сведения о категории успешно обновлены!",
+
+    "news_msg_success_create": "Новость успешно создана!",
+    "news_msg_success_delete": "Новость успешно удалена!",
+    "news_msg_success_update": "Сведения о новости успешно обновлены!"
+}
