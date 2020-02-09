@@ -3,19 +3,48 @@ declare(strict_types=1);
 
 namespace App\Services;
 
-use App\Models\News;
+use App\Models\Article;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
-class NewsService
+class ArticleService
 {
+    public function index(Request $request)
+    {
+        try {
+            $articles = (! isset($request->keyword) && ! isset($request->puplication_date))
+                ? Article::paginate(10)
+                : Article::where('title', 'LIKE', $request->keyword . '%')
+                    ->where('publication_date', $request->publication_date)
+                    ->paginate(10);
+            return response()->json([
+                'articles' => $articles
+            ], 200);
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => $error->getMessage()
+            ]);
+        }
+    }
     public function create(Request $request) : JsonResponse
+    {
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function store(Request $request) : JsonResponse
     {
         try {
             /** Validate Request Params */
 
-            $news = News::create([
+            $articles = Article::create([
                 'title'             => $request->title,
                 'description'       => $request->description,
                 'image'             => $request->image ?? '',
@@ -36,43 +65,18 @@ class NewsService
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function store(Request $request) : JsonResponse
-    {
-        try {
-            $news = (! isset($request->keyword) && ! isset($request->puplication_date))
-                ? News::paginate(10)
-                : News::where('title', 'LIKE', $request->keyword . '%')
-                    ->where('publication_date', $request->publication_date)
-                    ->paginate(10);
-            return response()->json([
-                'news' => $news
-            ], 200);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
-     * @param  \App\Models\News  $news
+     * @param  \App\Models\Article  $articles
      * @return \Illuminate\Http\JsonResponse
      */
     public function info(int $id) : JsonResponse
     {
         try {
-            $news = News::findOrFail($id);
+            $article = Article::findOrFail($id);
 
             return response()->json([
-                'news' => $news
+                'article' => $article
             ], 200);
         } catch (\Exception $error) {
             return response()->json([
@@ -86,7 +90,7 @@ class NewsService
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\News  $news
+     * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function update(Request $request, int $id) : JsonResponse
@@ -94,7 +98,7 @@ class NewsService
         try {
             /** Validate Request Params */
 
-            $news = News::findOrFail($id)->update([
+            $article = Article::findOrFail($id)->update([
                 'title'             => $request->title,
                 'description'       => $request->description,
                 'image'             => $request->image ?? '',
@@ -117,14 +121,14 @@ class NewsService
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\News  $news
+     * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function destroy(int $id) : JsonResponse
     {
         try {
-            $news = News::findOrFail($id);
-            $news->delete();
+            $article = Article::findOrFail($id);
+            $article->delete();
 
             return response()->json([
                 'status' => 'success',

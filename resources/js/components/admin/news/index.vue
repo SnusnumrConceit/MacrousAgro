@@ -2,7 +2,7 @@
     <div>
         <v-card>
             <v-data-table :headers="table.headers"
-                          :items="news"
+                          :items="articles"
                           :items-per-page="15"
                           class="elevation-1"
                           :page="pagination.page"
@@ -19,7 +19,7 @@
                  <template v-slot:top>
                      <v-toolbar>
                          <v-toolbar-title>
-                             {{ $t('news.table.header') }}
+                             {{ $t('articles.table.header') }}
                          </v-toolbar-title>
 
                          <v-divider class="mx-4" vertical inset></v-divider>
@@ -33,20 +33,20 @@
                          <v-dialog v-model="modal" max-width="1000px">
                              <template v-slot:activator="{on}">
                                  <v-btn color="success" outlined v-on="on">
-                                     <i class="pe-7s-plus"></i> {{ $t('news.btn.add') }}
+                                     <i class="pe-7s-plus"></i> {{ $t('articles.btn.add') }}
                                  </v-btn>
                              </template>
 
                              <v-card>
                                  <v-form v-model="form.valid" ref="form">
                                      <v-card-title>
-                                         {{ $t('news.form.header')}}
+                                         {{ $t('articles.form.header')}}
                                      </v-card-title>
                                      <v-card-text>
                                          <v-row>
                                              <v-col cols="6">
                                                  <v-text-field v-model="article.title"
-                                                               :label="$t('news.form.labels.title')"
+                                                               :label="$t('articles.form.labels.title')"
                                                                required
                                                                counter
                                                                clearable
@@ -59,7 +59,7 @@
                                                  <v-text-field
                                                      @click="menu = true"
                                                      v-model="article.publication_date"
-                                                     :label="$t('news.form.labels.publication_date')"
+                                                     :label="$t('articles.form.labels.publication_date')"
                                                      prepend-icon="event"
                                                      readonly
                                                  ></v-text-field>
@@ -73,7 +73,7 @@
                                                                 :locale="$i18n.locale">
                                                      <v-spacer></v-spacer>
                                                      <v-btn flat color="blue darken-1" @click="menu = false" text>
-                                                         {{ $t('news.btn.cancel') }}
+                                                         {{ $t('articles.btn.cancel') }}
                                                      </v-btn>
                                                      <v-btn flat color="primary" outline @click="menu = false">OK</v-btn>
                                                  </v-date-picker>
@@ -94,7 +94,7 @@
 <!--                                                 </v-menu>-->
 
 <!--                                                 <v-text-field v-model="article.publication_date"-->
-<!--                                                               :label="$t('news.form.labels.publication_date')"-->
+<!--                                                               :label="$t('articles.form.labels.publication_date')"-->
 <!--                                                               readonly-->
 <!--                                                               :rules="form.publication_date.rules">-->
 <!--                                                 </v-text-field>-->
@@ -102,7 +102,7 @@
 <!--                                                 <v-date-picker v-model="article.publication_date" scrollable>-->
 <!--                                                     <v-spacer></v-spacer>-->
 <!--                                                     <v-btn flat color="primary" @click="calendar_modal = false">-->
-<!--                                                         {{ $t('news.btn.cancel') }}-->
+<!--                                                         {{ $t('articles.btn.cancel') }}-->
 <!--                                                     </v-btn>-->
 <!--                                                     <v-btn flat color="primary" @click="">OK</v-btn>-->
 <!--                                                 </v-date-picker>-->
@@ -112,7 +112,7 @@
                                          <v-row>
                                              <v-col>
                                                  <v-textarea v-model="article.description"
-                                                             :label="$t('news.form.labels.description')"
+                                                             :label="$t('articles.form.labels.description')"
                                                              required
                                                              counter
                                                              maxlength="2000"
@@ -121,7 +121,7 @@
                                                  </v-textarea>
 
                                                  <v-checkbox v-model="article.is_publicated"
-                                                             :label="$t('news.form.labels.is_publicated')">
+                                                             :label="$t('articles.form.labels.is_publicated')">
                                                  </v-checkbox>
                                              </v-col>
                                          </v-row>
@@ -141,12 +141,12 @@
                                                 :disabled="! form.valid"
                                                 outlined
                                                 @click="save()">
-                                             {{ $t('news.btn.save') }}
+                                             {{ $t('articles.btn.save') }}
                                          </v-btn>
                                          <v-btn color="blue darken-1"
                                                 text
                                                 @click="cancel()">
-                                             {{ $t('news.btn.cancel') }}
+                                             {{ $t('articles.btn.cancel') }}
                                          </v-btn>
                                      </v-card-actions>
 
@@ -176,7 +176,7 @@
 
     data() {
       return {
-        news: [],
+        articles: [],
 
         is_search: false,
 
@@ -199,22 +199,22 @@
           valid: false,
           title: {
             rules: [
-              v => v.length > 0 || this.$t('news.form.rules.title.required'),
-              v => v.length <= 255 || this.$t('news.form.rules.title.length', {length: 255})
+              v => v.length > 0 || this.$t('articles.form.rules.title.required'),
+              v => v.length <= 255 || this.$t('articles.form.rules.title.length', {length: 255})
             ],
           },
 
           description: {
             rules: [
-              v => v.length > 0 || this.$t('news.form.rules.description.required'),
-              v => v.length <= 2000 || this.$t('news.form.rules.title.length', {length: 2000})
+              v => v.length > 0 || this.$t('articles.form.rules.description.required'),
+              v => v.length <= 2000 || this.$t('articles.form.rules.title.length', {length: 2000})
             ]
           },
 
           publication_date: {
             rules: [
-              v => v.length > 0 || this.$t('news.form.rules.publication_date.required'),
-              v => v > Date.now || this.$t('news.form.rules.publication_date.length'),
+              v => v.length > 0 || this.$t('articles.form.rules.publication_date.required'),
+              v => v > Date.now || this.$t('articles.form.rules.publication_date.length'),
             ]
           },
 
@@ -224,7 +224,7 @@
             maxFilesize: 0.5,
             headers: { "X-CSRF-TOKEN": $('meta').attr('content') },
 
-            "dictDefaultMessage": this.$t('dropzone.dictDefaultMessage.news'),
+            "dictDefaultMessage": this.$t('dropzone.dictDefaultMessage.articles'),
 
             "dictFallbackMessage":          this.$t('dropzone.dictFallbackMessage'),
             "dictResponseError":            this.$t('dropzone.dictResponseError'),
@@ -259,19 +259,21 @@
 
     methods: {
       async loadData() {
-        const response = await axios.post('/admin/news');
+        const response = await axios.get('/admin/articles');
 
         if (response.data.status === 'error') {
           this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
           return false;
         }
 
-        this.news = response.data.news.data;
-        this.pagination.last_page = response.data.news.last_page;
+        this.$nextTick(() => {
+          this.articles = response.data.articles.data;
+          this.pagination.last_page = response.data.articles.last_page;
+        });
       },
 
       async remove(id) {
-        const response = await axios.post(`/admin/news/delete/${id}`);
+        const response = await axios.delete(`/admin/articles/${id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -286,7 +288,7 @@
 
       async searchData() {
         this.switchPage(1);
-        const response = await axios.get('/admin/news/search', {
+        const response = await axios.get('/admin/articles/search', {
           params: {
             page: this.pagination.page,
             keyword: this.search.keyword,
@@ -300,12 +302,14 @@
           return false;
         }
 
-        this.news = response.data.news.data;
-        this.pagination.last_page = response.data.news.last_page;
+        this.$nextTick(() => {
+          this.articles = response.data.articles.data;
+          this.pagination.last_page = response.data.articles.last_page;
+        });
       },
 
       async save() {
-        const response = await axios.post('/admin/news/create', {
+        const response = await axios.post('/admin/articles', {
           ...this.article
         });
 

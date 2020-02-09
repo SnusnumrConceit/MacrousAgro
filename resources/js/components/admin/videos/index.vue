@@ -9,7 +9,9 @@
                 <v-divider class="mx-4" vertical inset></v-divider>
                 <v-spacer></v-spacer>
 
-                <v-text-field v-model="search.keyword" append-icon="search"
+                <v-text-field v-model="search.keyword"
+                              @keyup.enter="onSearch"
+                              append-icon="search"
                               label="Поиск"
                               single-line>
                 </v-text-field>
@@ -36,13 +38,19 @@
 
                                 </v-text-field>
 
-                                <vue-dropzone ref="dropzone" id="dropzone" :options="dropzone_options"></vue-dropzone>
+                                <vue-dropzone ref="video_dropzone"
+                                              id="dropzone"
+                                              :options="dropzone_options"
+                                              @vdropzone-success="onDropzoneSuccess"
+                                              @vdropzone-error="onDropzoneError"
+                                              @vdropzone-removed-file="onDropzoneRemoved">
+                                </vue-dropzone>
                             </v-card-text>
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
 
-                                <v-btn color="success" outlined :disabled="!form.valid" @click="save()">
+                                <v-btn color="success" outlined :disabled="!form.valid || ! video.path" @click="save()">
                                     {{ $t('videos.btn.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1" @click="cancel()" text>
@@ -63,13 +71,13 @@
                                 {{ video.title }}
                             </v-card-title>
                             <v-card-text>
-                                <video :src="video.url"></video>
+                                <video :src="video.path" controls></video>
                             </v-card-text>
                             <v-card-actions>
-                                <v-btn color="danger" outlined @click="remove(id)">
+                                <v-btn color="error" outlined @click="remove(video.id)">
                                     {{ $t('videos.btn.delete' )}}
                                 </v-btn>
-                                <v-btn color="warning" outlined>
+                                <v-btn color="warning" outlined @click="$router.push('/admin/videos/' + video.id)">
                                     {{ $t('videos.btn.edit' )}}
                                 </v-btn>
                             </v-card-actions>
@@ -91,12 +99,14 @@
   import vue2Dropzone from 'vue2-dropzone';
   import 'vue2-dropzone/dist/vue2Dropzone.min.css';
   import dropzone_mixin from '../../../mixins/dropzone_options';
-  // dropzone_mixin.dictDefaultMessage = "Переместите видео в область загрузки";
+
+  import infinite_scroll_mixin from '../../../mixins/infinite_scroll';
+  import debounce from '../../../debounce';
 
   export default {
     name: "index",
 
-    mixins: [dropzone_mixin],
+    mixins: [dropzone_mixin, infinite_scroll_mixin],
     components: {
       vueDropzone: vue2Dropzone
     },
@@ -109,7 +119,7 @@
 
         video: {
           title: '',
-          url: ''
+          path: ''
         },
 
         form: {
@@ -137,7 +147,7 @@
 
     methods: {
       async loadData() {
-        const response = await axios.post('/admin/videos', {
+        const response = await axios.get('/admin/videos', {
           params: {
             page: this.page
           }
@@ -148,12 +158,15 @@
           return false;
         }
 
-        this.videos = response.data.videos.data;
+        this.videos = (this.pagination.page === 1)
+            ? response.data.videos.data
+            : this.videos[response.data.videos.data];
+
         this.pagination.last_page = response.data.videos.last_page;
       },
 
       async remove(id) {
-        const response = await axios.post(`/admin/news/delete/${id}`);
+        const response = await axios.delete(`/admin/videos/${id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -166,38 +179,114 @@
         }
       },
 
-      async searchData() {
-        const response = await axios.get('/admin/news/search', {
-          params: {
-            page: this.pagination.page,
-            keyword: this.search.keyword
-          }
-        });
-
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal,title.error'), response.data.msg, 'error');
-          return false;
+      onSearch() {
+        if (this.search.keyword.length < 3) {
+          return ;
         }
 
-        this.videos = response.data.videos.data;
-        this.pagination.last_page = response.data.videos.last_page;
-
+        this.searchData(this);
       },
 
-      save() {
+      searchData: debounce((vm) => {
+        axios.get('/admin/videos', {
+          params: {
+            page: vm.pagination.page,
+            keyword: vm.search.keyword
+          }
+        })
+        .then(response => {
+          vm.videos = response.data.videos.data;
+          vm.pagination.last_page = response.data.videos.last_page;
+        })
+        .catch(error => {
+          vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
+        })
+        ;
+      }, 300),
+
+      async save() {
         this.modal = false;
+
+        const response = await axios.post('/admin/videos', this.video);
+
+        switch (response.status) {
+          case 200:
+            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+            this.loadData();
+            break;
+
+          case 500:
+            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+            break;
+        }
+
+
         this.$refs.form.reset();
       },
 
       cancel() {
         this.modal = false;
         this.$refs.form.reset();
+      },
+
+      initializeDropzone() {
+        this.dropzone_options.url = '/admin/videos/upload';
+        this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.videos');
+        this.dropzone_options.acceptedFiles = '.mp4,.mpg,mpeg';
+      },
+
+      onDropzoneSuccess(file, response) {
+        this.video.path = response.tmp_path;
+        this.$refs.video_dropzone.disable();
+      },
+
+      onDropzoneError(file, response, xhr) {
+        console.log(response.data);
+      },
+
+      async onDropzoneRemoved(file, error, xhr) {
+        console.log(file, error, xhr);
+        if (error) {
+          console.error(error);
+          return;
+        }
+
+        const response = await axios.post('/admin/videos/remove_tmp_video', {path: this.video.path});
+
+        this.$refs.video_dropzone.enable();
+
+        switch (response.status) {
+          case 200:
+            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+            break;
+
+          case 500:
+            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+            break;
+        }
+      }
+    },
+
+    watch: {
+      'search.keyword': function (after, before) {
+        if (after.length > 3) {
+          this.onSearch();
+        }
       }
     },
 
     created() {
       this.loadData();
-      this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.videos');
+
+      this.initializeDropzone(
+          '/admin/videos/upload',
+          this.$t('dropzone.dictDefaultMessage.videos'),
+          '.mp4,.mpg,.mpeg'
+      );
+    },
+
+    mounted() {
+      document.addEventListener('scroll', this.onScroll);
     }
   }
 </script>

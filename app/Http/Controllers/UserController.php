@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\Services\UserService;
+use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
@@ -19,9 +22,9 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return $this->user->index($request);
     }
 
     /**
@@ -40,9 +43,9 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserStoreRequest $request)
     {
-        //
+       return $this->user->store($request);
     }
 
     /**
@@ -51,9 +54,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(User $user)
     {
-        //
+        return $this->show($user);
     }
 
     /**
@@ -62,9 +65,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(User $user)
     {
-        //
+        return $this->user->edit($user);
     }
 
     /**
@@ -74,9 +77,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserUpdateRequest $request, User $user)
     {
-        //
+        return $this->user->update($request, $user);
     }
 
     /**
@@ -85,9 +88,9 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(User $user)
     {
-        //
+        return $this->user->destroy($user);
     }
 
     public function export(Request $request)

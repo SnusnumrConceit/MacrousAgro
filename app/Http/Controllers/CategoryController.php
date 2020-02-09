@@ -3,6 +3,7 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Category\CategoryStoreRequest;
 use App\Models\Category;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
@@ -21,9 +22,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        //
+        return $this->category->index($request);
     }
 
     /**
@@ -31,9 +32,9 @@ class CategoryController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request)
+    public function create()
     {
-        return $this->category->create($request);
+        return $this->category->create();
     }
 
     /**
@@ -42,7 +43,7 @@ class CategoryController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(CategoryStoreRequest $request)
     {
         return $this->category->store($request);
     }
@@ -53,9 +54,9 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(int $id)
+    public function show(Category $category)
     {
-        return $this->category->info($id);
+        return $this->category->show($category);
     }
 
     /**
@@ -64,9 +65,9 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function edit(int $id)
+    public function edit(Category $category)
     {
-        return $this->category->info($id);
+        return $this->category->edit($category);
     }
 
     /**
@@ -76,9 +77,9 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id)
+    public function update(CategoryStoreRequest $request, Category $category)
     {
-        return $this->category->update($request, $id);
+        return $this->category->update($request, $category);
     }
 
     /**
@@ -87,8 +88,8 @@ class CategoryController extends Controller
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id)
+    public function destroy(Category $category)
     {
-        return $this->category->destroy($id);
+        return $this->category->destroy($category);
     }
 }

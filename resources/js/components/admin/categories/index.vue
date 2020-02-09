@@ -28,6 +28,7 @@
                         <v-spacer></v-spacer>
 
                         <v-text-field v-model="search.keyword"
+                                      @keyup.enter="onSearch"
                                       append-icon="search"
                                       label="Поиск"
                                       single-line>
@@ -174,7 +175,7 @@
     methods: {
       async loadData() {
         this.loading = true;
-        const response = await axios.post('/admin/categories', {
+        const response = await axios.get('/admin/categories', {
           params: {
             page: this.pagination.page
           }
@@ -186,7 +187,7 @@
             this.loading = false;
             break;
           case 'success':
-            this.categories = [...response.data.categories.data];
+            this.categories = response.data.categories.data;
             this.pagination.last_page = response.data.categories.last_page;
             this.loading = false;
             break;
@@ -194,7 +195,7 @@
       },
 
       async save() {
-        const response = await axios.post('/admin/categories/create', {
+        const response = await axios.post('/admin/categories', {
           ...this.category
         });
 
@@ -212,7 +213,7 @@
       },
 
       async remove(id) {
-        const response = await axios.post(`/admin/categories/delete/${id}`);
+        const response = await axios.delete(`/admin/categories/${id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -225,29 +226,29 @@
         }
       },
 
-      async searchData() {
-        this.switchPage(1);
-        this.loading = true;
-        const response = await axios.get('/admin/categories/search', {
-          params: {
-            page: this.pagination.page,
-            keyword: this.search.keyword,
-            order_by: this.search.order_by
-          }
-        });
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            this.loading = false;
-            break;
-          case 'success':
-            this.categories = [...response.data.categories.data];
-            this.pagination.last_page = response.data.categories.last_page;
-            this.loading = false;
-            break;
+      onSearch() {
+        if (this.search.keyword.length < 3) {
+          return ;
         }
+
+        this.searchData(this);
       },
+
+      searchData: debounce((vm) => {
+        axios.get('/admin/categories', {
+          params: {
+            page: vm.pagination.page,
+            keyword: vm.search.keyword
+          }
+        })
+        .then(response => {
+          vm.videos = response.data.videos.data;
+          vm.pagination.last_page = response.data.videos.last_page;
+        })
+        .catch(error => {
+          vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
+        });
+      }, 300),
 
       close() {
         this.$refs.form.reset();
@@ -272,9 +273,11 @@
     },
 
     watch: {
-      'search.keyword': debounce(function (newVal) {
-        this.searchData();
-      }, 300)
+      'search.keyword': function (after, before) {
+        if (after.length) {
+          this.onSearch();
+        }
+      }
     },
 
     mounted() {

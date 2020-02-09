@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Макроус Агро</title>
+        <title>Мокроус Агро</title>
 
         <!-- Fonts -->
         <link rel="stylesheet" href="{{ asset('/fonts/pe-icon-7-stroke.css') }}">

@@ -4,6 +4,8 @@ declare(strict_types=1);
 namespace App\Services;
 
 
+use App\Http\Requests\Category\CategoryStoreRequest;
+use App\Http\Resources\Category\CategoryCollection;
 use App\Models\Category;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -16,7 +18,7 @@ class CategoryService
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request) : JsonResponse
+    public function store(Request $request) : JsonResponse
     {
         try {
             /** Validate Input */
@@ -42,16 +44,19 @@ class CategoryService
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request) : JsonResponse
+    public function index(Request $request) : JsonResponse
     {
         try {
+            $categories = Category::query();
 
-            $categories = (! isset($request->keyword))
-                ? Category::paginate(15)
-                : Category::where('name', 'LIKE', $request->keyword . '%')->paginate(15);
+            $categories->when(! empty($request->keyword), function ($q) use ($request) {
+                return $q->where('name', 'LIKE', $request->keyword . '%');
+            });
+
+            $categories = $categories->paginate(15);
 
             return response()->json([
-                'categories' => $categories,
+                'categories' => new CategoryCollection($categories),
                 'status' => 'success'
             ], 200);
         } catch (\Exception $error) {
@@ -68,11 +73,9 @@ class CategoryService
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function info(int $id) : JsonResponse
+    public function show(Category $category) : JsonResponse
     {
         try {
-            $category = Category::findOrFail($id);
-
             return response()->json([
                 'category' => $category
             ], 200);
@@ -85,18 +88,28 @@ class CategoryService
     }
 
     /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Category $category)
+    {
+        return response()->json([
+            'category' => $category
+        ], 200);
+    }
+
+    /**
      * Update the specified resource in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id) : JsonResponse
+    public function update(CategoryStoreRequest $request, Category $category) : JsonResponse
     {
         try {
-            /** Validate Input */
-            $category = Category::findOrFail($id);
-
             $category->update([
                 'name' => $request->name
             ]);
@@ -119,11 +132,9 @@ class CategoryService
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id) : JsonResponse
+    public function destroy(Category $category) : JsonResponse
     {
         try {
-            $category = Category::findOrFail($id);
-
             $category->delete();
 
             return response()->json([

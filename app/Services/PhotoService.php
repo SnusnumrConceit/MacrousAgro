@@ -4,21 +4,39 @@
 namespace App\Services;
 
 
+use App\Http\Requests\Photo\PhotoStoreRequest;
+use App\Http\Requests\Photo\PhotoUpdateRequest;
+use App\Http\Resources\Photo\PhotoCollection;
 use App\Models\Photo;
+use App\Http\Resources\Photo\Photo as PhotoResource;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 
 class PhotoService
 {
-    public function store(Request $request) : JsonResponse
+    private $media;
+
+    public function __construct(MediaService $media)
+    {
+        $this->media = $media;
+    }
+
+    public function index(Request $request) : JsonResponse
     {
         try {
-            $photos = Photo::paginate(15);
+            $photos = Photo::query();
+
+            $photos->when(isset($request->keyword), function ($q) use ($request) {
+                return $q->where('title', 'LIKE', '%' . $request->keyword . '%');
+            });
+
+            $photos = $photos->paginate(6);
 
             return response()->json([
-                'photos' => $photos
+                'photos' => new PhotoCollection($photos)
             ], 200);
+
         } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
@@ -27,30 +45,56 @@ class PhotoService
         }
     }
 
-    public function validateImage(Request $request) : JsonResponse
+    public function store(PhotoStoreRequest $request)
     {
-        try {
-            $photo = $request->file('file');
+        $fileName = substr($request->path, strrpos($request->path, '/'));
+        $destination = Photo::MEDIA_PATH . $fileName;
 
-            $errors = [];
-            if (! $photo) {
-                throw new \Exception('You did not upload a photo!');
-            }
+        $this->media->move($request->path, $destination);
 
-            $extensions = [
-                'jpg', 'png', 'gif', 'jpeg'
-            ];
+        $photo = Photo::create([
+            'title' => $request->title,
+            'path' => $fileName
+        ]);
 
-            if (! in_array(mb_strtolower($photo->getClientOriginalExtension()), $extensions)) {
-                throw new \Exception('Wrong file exception!');
-            }
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('photo_msg_success_create')
+        ], 200);
+    }
 
-            Storage::put($photo);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
+    public function create()
+    {
+
+    }
+
+    public function edit(Photo $photo)
+    {
+        return response()->json([
+            'photo' => new PhotoResource($photo)
+        ], 200);
+    }
+
+    public function update(PhotoUpdateRequest $request, Photo $photo)
+    {
+        $data = $request->validated();
+
+        $photo->update($data);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('photo_msg_success_update')
+        ], 200);
+    }
+
+    public function destroy(Photo $photo)
+    {
+        $this->media->delete(Photo::MEDIA_PATH . '/' . $photo->path);
+        $photo->delete();
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('photo_msg_success_delete')
+        ], 200);
     }
 }

@@ -2,17 +2,23 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Requests\Photo\PhotoStoreRequest;
+use App\Http\Requests\Photo\PhotoUpdateRequest;
+use App\Http\Requests\Photo\PhotoUploadRequest;
 use App\Models\Photo;
+use App\Services\MediaService;
 use App\Services\PhotoService;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
 class PhotoController extends Controller
 {
-    private $photo;
+    private $photo, $media;
 
-    public function __construct(PhotoService $photo)
+    public function __construct(PhotoService $photo, MediaService $media)
     {
         $this->photo = $photo;
+        $this->media = $media;
     }
 
     /**
@@ -20,9 +26,9 @@ class PhotoController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request) : JsonResponse
     {
-        //
+        return $this->photo->index($request);
     }
 
     /**
@@ -41,7 +47,7 @@ class PhotoController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(PhotoStoreRequest $request)
     {
         return $this->photo->store($request);
     }
@@ -54,7 +60,7 @@ class PhotoController extends Controller
      */
     public function show(Photo $photo)
     {
-        //
+        return $this->photo->show($photo);
     }
 
     /**
@@ -65,7 +71,7 @@ class PhotoController extends Controller
      */
     public function edit(Photo $photo)
     {
-        //
+        return $this->photo->edit($photo);
     }
 
     /**
@@ -75,9 +81,9 @@ class PhotoController extends Controller
      * @param  \App\Models\Photo  $photo
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Photo $photo)
+    public function update(PhotoUpdateRequest $request, Photo $photo)
     {
-        //
+        return $this->photo->update($request, $photo);
     }
 
     /**
@@ -88,6 +94,27 @@ class PhotoController extends Controller
      */
     public function destroy(Photo $photo)
     {
-        //
+        return $this->photo->destroy($photo);
+    }
+
+    public function upload(PhotoUploadRequest $request)
+    {
+        $photo = $request->file('file');
+
+        $tmp_path = $this->media->upload(Photo::TMP_MEDIA_PATH, $photo);
+
+        return response()->json([
+            'tmp_path' => $tmp_path
+        ], 200);
+    }
+
+    public function removeContent(Request $request)
+    {
+        $this->media->delete($request->path);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => 'Фотография успешно удалена из временного хранилища'
+        ], 200);
     }
 }

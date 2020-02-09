@@ -6,28 +6,76 @@ namespace App\Services;
 
 
 use App\Exports\UsersExport;
+use App\Http\Requests\User\UserStoreRequest;
+use App\Http\Requests\User\UserUpdateRequest;
 use App\User;
+use App\Http\Resources\User\User as UserResource;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Maatwebsite\Excel\Facades\Excel;
 
 class UserService
 {
+    public function index(Request $request)
+    {
+        try {
+            $users = User::query();
+
+            $users->when(! empty($request->keyword), function ($q) use ($request) {
+               return $q->where('last_name', 'LIKE', '%' . $request->keyword . '%')
+                   ->orWhere('first_name', 'LIKE', '%' . $request->keyword . '%');
+            });
+
+            $users->when(! empty($request->birthday), function ($q) use ($request) {
+                return $q->whereBirthday($request->birthday);
+            });
+
+            $users = $users->paginate(15);
+
+            return response()->json([
+                'users' => $users
+            ], 200);
+
+        } catch (\Exception $error) {
+            return response()->json([
+                'status' => 'error',
+                'msg' => $error->getMessage()
+            ], 500);
+        }
+    }
     /**
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function create(Request $request) : Response
+    public function create()
+    {
+
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(UserStoreRequest $request)
     {
         try {
+
+            $data = $request->validated();
+
+            $data['password'] = bcrypt($data['password']);
+
+            $user = User::create($data);
             /** Validate */
-            $user = User::create([
-                'password' => $request->password,
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'birthday' => $request->birthday
-            ]);
+//            $user = User::create([
+//                'password' => bcrypt($request->password),
+//                'email' => $request->email,
+//                'first_name' => $request->first_name,
+//                'last_name' => $request->last_name,
+//                'birthday' => $request->birthday
+//            ]);
 
             return response()->json([
                 'status' => 'success',
@@ -43,26 +91,16 @@ class UserService
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Show the form for editing the specified resource.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function edit(User $user)
     {
-        try {
-            $users = User::paginate(15);
-
-            return response()->json([
-                'users' => $users
-            ], 200);
-
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'user' => new UserResource($user)
+        ], 200);
     }
 
     /**
@@ -71,22 +109,11 @@ class UserService
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function info(int $id)
+    public function show(User $user)
     {
-        try {
-            /** Validate */
-            $user = User::findOrFail($id);
-
-            return response()->json([
-                'user' => $user
-            ], 200);
-
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'user' => new UserResource($user)
+        ], 200);
     }
 
     /**
@@ -96,23 +123,23 @@ class UserService
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, int $id)
+    public function update(UserUpdateRequest $request, User $user)
     {
         try {
-            /** Validate */
-            $user = User::findOrFail($id);
+            $data = $request->validated();
 
-            $user->update([
-                'password' => $request->password,
-                'first_name' => $request->first_name,
-                'last_name' => $request->last_name,
-                'birthday' => $request->birthday
-            ]);
+            $user->update($data);
+//            $user->update([
+//                'email' => $request->email,
+//                'first_name' => $request->first_name,
+//                'last_name' => $request->last_name,
+//                'birthday' => $request->birthday
+//            ]);
 
             return response()->json([
                 'status' => 'success',
                 'msg' => __('users_form_msg_success_update')
-            ]);
+            ], 200);
 
         } catch (\Exception $error) {
             return response()->json([
@@ -128,25 +155,14 @@ class UserService
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy(int $id)
+    public function destroy(User $user)
     {
-        try {
-            /** Validate */
-            $user = User::findOrFail($id);
+        $user->delete();
 
-            $user->delete();
-
-            return response()->json([
-                'status' => 'success',
-                'msg' => __('users_form_msg_success_delete')
-            ]);
-
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ], 500);
-        }
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('user_msg_success_delete')
+        ], 200);
     }
 
 

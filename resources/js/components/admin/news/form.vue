@@ -8,7 +8,7 @@
 
     data() {
       return {
-        news: {
+        article: {
           title: '',
           description: '',
           image: '',
@@ -27,7 +27,7 @@
     methods: {
       async save() {
         if (this.id !== undefined) {
-          const response = await axios.post(`/admin/news/update/${this.id}`, {...news});
+          const response = await axios.post(`/admin/articles/update/${this.id}`, {...this.article});
 
           switch (response.data.status) {
             case 'error':
@@ -40,7 +40,7 @@
               break;
           }
         } else {
-          const response = await axios.post(`/admin/news/create`, {...news});
+          const response = await axios.post(`/admin/articles/create`, {...this.article});
 
           switch (response.data.status) {
             case 'error':

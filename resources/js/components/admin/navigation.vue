@@ -6,7 +6,7 @@
         <v-list-item>
             <v-list-item-content>
                 <v-list-item-title>
-                    Макроус Агро
+                    Мокроус Агро
                 </v-list-item-title>
                 <v-list-item-subtitle>
                     {{ $t('nav.subtitle') }}
@@ -49,7 +49,7 @@
             icon: 'pe-7s-network'
           },
           {
-            title: this.$t('nav.links.news'),
+            title: this.$t('nav.links.articles'),
             href: '/admin/news',
             icon: 'pe-7s-news-paper'
           },
