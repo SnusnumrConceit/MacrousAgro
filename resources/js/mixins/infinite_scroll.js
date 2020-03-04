@@ -2,15 +2,12 @@ import debounce from '../debounce';
 
 export default {
   methods: {
-    onScroll: function() {
-      this.paginationScroll(this);
-    },
-
-    paginationScroll: debounce(vm => {
+    paginationScroll: debounce((vm, element) => {
       let atTheBottom = false;
-      let scrollTop = document.documentElement.scrollTop;
-      let viewportHeight = window.innerHeight;
-      let totalHeight = $(document).height();
+      let isDocument = element === document;
+      let scrollTop =  isDocument ? document.documentElement.scrollTop : element.scrollTop;
+      let viewportHeight = isDocument ? window.innerHeight : element.offsetHeight;
+      let totalHeight = isDocument ? $(element).height() : element.scrollHeight;
 
       atTheBottom = scrollTop + viewportHeight === totalHeight;
 

@@ -9,12 +9,52 @@
                 <v-divider class="mx-4" vertical inset></v-divider>
                 <v-spacer></v-spacer>
 
-                <v-text-field v-model="search.keyword"
-                              @keyup.enter="onSearch"
-                              append-icon="search"
-                              label="Поиск"
-                              single-line>
+                <v-text-field
+                        v-model="search.keyword"
+                        @keyup.enter="onSearch"
+                        append-icon="search"
+                        label="Поиск"
+                        single-line>
                 </v-text-field>
+
+                <v-spacer></v-spacer>
+
+                <!-- TODO необходимо что-то сделать с z-index у календаря -->
+                <!--<v-text-field-->
+                        <!--@click="calendar = true"-->
+                        <!--v-model="search.created_at"-->
+                        <!--label="Дата создания"-->
+                        <!--prepend-icon="event"-->
+                        <!--dense-->
+                        <!--readonly-->
+                        <!--hide-details-->
+
+                <!--&gt;</v-text-field>-->
+
+                <!--<v-date-picker-->
+                        <!--:locale="$i18n.locale"-->
+                        <!--width="550"-->
+                        <!--:style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"-->
+                        <!--no-title-->
+                        <!--scrollable-->
+                        <!--first-day-of-week="1"-->
+                        <!--color="primary"-->
+                        <!--v-if="calendar"-->
+                        <!--v-model="search.created_at">-->
+
+                    <!--<v-spacer></v-spacer>-->
+
+                    <!--<v-btn color="blue darken-1" @click="calendar = false" text>-->
+                        <!--{{ $t('users.btn.cancel') }}-->
+                    <!--</v-btn>-->
+
+                    <!--<v-btn color="primary" outlined @click="calendar = false">-->
+                        <!--OK-->
+                    <!--</v-btn>-->
+                <!--</v-date-picker>-->
+
+                <!--<v-spacer></v-spacer>-->
+
 
                 <v-dialog v-model="modal" max-width="500px">
                     <template v-slot:activator="{on}">
@@ -24,7 +64,7 @@
                         </v-btn>
                     </template>
                     <v-card>
-                        <v-form v-model="form.valid">
+                        <v-form v-model="form.valid" ref="form">
                             <v-card-title>
                                 Видео
                             </v-card-title>
@@ -50,7 +90,10 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
 
-                                <v-btn color="success" outlined :disabled="!form.valid || ! video.path" @click="save()">
+                                <v-btn color="success"
+                                       outlined
+                                       :disabled="!form.valid || ! video.path.length"
+                                       @click="save()">
                                     {{ $t('videos.btn.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1" @click="cancel()" text>
@@ -64,7 +107,7 @@
             </v-toolbar>
 
             <v-card-text>
-                <v-row>
+                <v-row v-show="! loading">
                     <v-col col="6" v-for="(video, index) in videos" :key="video.id">
                         <v-card>
                             <v-card-title>
@@ -88,6 +131,8 @@
                                   :total-visible="7"
                                   circle></v-pagination>
                 </v-row>
+
+                <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
             </v-card-text>
 
 
@@ -115,7 +160,7 @@
       return {
         videos: [],
 
-        is_search: false,
+        searching: false,
 
         video: {
           title: '',
@@ -126,8 +171,8 @@
           valid: false,
           title: {
             rules: [
-                v => v.length > 0 || this.$t('videos.form.rules.title.required'),
-                v => v.length <= 255 || this.$t('videos.form.rules.title.length', { length: 255})
+                v => v !== '' || this.$t('videos.form.rules.title.required'),
+                v => (v !== undefined && v !== null && v.length <= 255) || this.$t('videos.form.rules.title.length', { length: 255})
             ]
           },
         },
@@ -141,13 +186,18 @@
           page: 1
         },
 
-        modal: false
+        modal: false,
+        calendar: false,
+
+        isDestroying: false,
+        loading: false,
       }
     },
 
     methods: {
       async loadData() {
-        const response = await axios.get('/admin/videos', {
+        this.loading = true;
+        const response = await axios.get(`${this.$attrs.apiRoute}/videos`, {
           params: {
             page: this.page
           }
@@ -155,6 +205,7 @@
 
         if (response.data.status === 'error') {
           this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+          this.loading = false;
           return false;
         }
 
@@ -163,10 +214,12 @@
             : this.videos[response.data.videos.data];
 
         this.pagination.last_page = response.data.videos.last_page;
+
+        this.loading = false;
       },
 
       async remove(id) {
-        const response = await axios.delete(`/admin/videos/${id}`);
+        const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -188,18 +241,21 @@
       },
 
       searchData: debounce((vm) => {
-        axios.get('/admin/videos', {
+        vm.loading = true;
+        axios.get(`${vm.$attrs.apiRoute}/videos`, {
           params: {
             page: vm.pagination.page,
-            keyword: vm.search.keyword
+            ...vm.search,
           }
         })
         .then(response => {
           vm.videos = response.data.videos.data;
           vm.pagination.last_page = response.data.videos.last_page;
+          vm.loading = false;
         })
         .catch(error => {
           vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
+          vm.loading = false;
         })
         ;
       }, 300),
@@ -207,7 +263,7 @@
       async save() {
         this.modal = false;
 
-        const response = await axios.post('/admin/videos', this.video);
+        const response = await axios.post(`${this.$attrs.apiRoute}/videos`, this.video);
 
         switch (response.status) {
           case 200:
@@ -220,17 +276,25 @@
             break;
         }
 
-
-        this.$refs.form.reset();
+        this.resetForm();
       },
 
       cancel() {
         this.modal = false;
+
+        this.resetForm();
+      },
+
+      async resetForm() {
         this.$refs.form.reset();
+        this.isDestroying = true;
+        await this.$refs.video_dropzone.removeAllFiles();
+        this.$refs.video_dropzone.enable();
+        this.isDestroying = false;
       },
 
       initializeDropzone() {
-        this.dropzone_options.url = '/admin/videos/upload';
+        this.dropzone_options.url = `${this.$attrs.apiRoute}/videos/upload`;
         this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.videos');
         this.dropzone_options.acceptedFiles = '.mp4,.mpg,mpeg';
       },
@@ -245,13 +309,17 @@
       },
 
       async onDropzoneRemoved(file, error, xhr) {
+        if  (this.isDestroying) {
+          return ;
+        }
+
         console.log(file, error, xhr);
         if (error) {
           console.error(error);
           return;
         }
 
-        const response = await axios.post('/admin/videos/remove_tmp_video', {path: this.video.path});
+        const response = await axios.post(`${this.$attrs.apiRoute}/videos/remove_tmp_video`, {path: this.video.path});
 
         this.$refs.video_dropzone.enable();
 
@@ -264,10 +332,32 @@
             this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
             break;
         }
+      },
+
+      async initData() {
+        await this.loadData();
       }
     },
 
     watch: {
+      'search': {
+        handler: function(after, before) {
+          if (after.category || after.created_at || after.keyword.length > 3) {
+            this.pagination.page = 1;
+            this.searching = true;
+
+            this.searchData(this);
+          } else if (! after.category && ! after.created_at && ! after.keyword.length) {
+            this.pagination.page = 1;
+            this.searching = false;
+
+            this.loadData();
+          }
+        },
+
+        deep: true
+      },
+
       'search.keyword': function (after, before) {
         if (after.length > 3) {
           this.onSearch();
@@ -276,17 +366,21 @@
     },
 
     created() {
-      this.loadData();
-
       this.initializeDropzone(
-          '/admin/videos/upload',
+          `${this.$attrs.apiRoute}/videos/upload`,
           this.$t('dropzone.dictDefaultMessage.videos'),
           '.mp4,.mpg,.mpeg'
       );
+
+      this.initData();
     },
 
     mounted() {
       document.addEventListener('scroll', this.onScroll);
+    },
+
+    beforeDestroy() {
+      this.isDestroying = true;
     }
   }
 </script>

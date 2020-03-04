@@ -11,6 +11,24 @@ class RoleTableSeeder extends Seeder
      */
     public function run()
     {
-        $roles = factory(\Kodeine\Acl\Models\Eloquent\Role::class, 3)->create();
+        \Kodeine\Acl\Models\Eloquent\Role::updateOrCreate(['name' => 'administrator'], [
+            'name'        => 'administrator',
+            'description' => 'администратор',
+            'slug'        => 'admin'
+        ]);
+
+        \Kodeine\Acl\Models\Eloquent\Role::updateOrCreate(['name' => 'customer'], [
+            'name'        => 'customer',
+            'description' => 'покупатель',
+            'slug'        => 'customer'
+        ]);
+
+        \Kodeine\Acl\Models\Eloquent\Role::updateOrCreate(['name' => 'manager'], [
+            'name'        => 'manager',
+            'description' => 'менеджер',
+            'slug'        => 'manager'
+        ]);
+
+//        $roles = factory(\Kodeine\Acl\Models\Eloquent\Role::class, 3)->create();
     }
 }

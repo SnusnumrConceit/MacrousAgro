@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card>
+        <v-card v-show="! loading">
             <v-form v-model="form.valid">
                 <v-card-text>
                     <v-text-field v-model="category.name"
@@ -21,6 +21,8 @@
                 </v-card-actions>
             </v-form>
         </v-card>
+
+        <v-skeleton-loader type="table-row-divider@2" v-show="loading"></v-skeleton-loader>
     </div>
 </template>
 
@@ -39,11 +41,13 @@
 
           name: {
             rules: [
-              v => v.length <= 25 || 'Длина не может превышать 25 символов',
-              v => v.length > 0 || 'Поле обязательное к заполнению'
+              v => v !== '' || 'Поле обязательное к заполнению',
+              v => (v !== undefined && v !== null && v.length <= 25) || 'Длина не может превышать 25 символов'
             ]
           }
-        }
+        },
+
+        loading: false
       }
     },
 
@@ -55,7 +59,7 @@
 
     methods: {
       async loadData() {
-        const response = await axios.get(`/admin/categories/${this.id}/edit`);
+        const response = await axios.get(`${this.$attrs.apiRoute}/categories/${this.id}/edit`);
 
         if (response.data.status === 'error') {
           this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
@@ -67,16 +71,16 @@
 
       async save() {
         if (this.id !== undefined) {
-          const response = await axios.put(`/admin/categories/${this.id}`, { ...this.category});
+          const response = await axios.put(`${this.$attrs.apiRoute}/categories/${this.id}`, { ...this.category});
 
           switch (response.status) {
             case 200:
-              this.$swal(this.$t('swal.title.success', response.data.msg, 'success'));
+              this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
               this.goBack();
               break;
 
             case 500:
-              this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
+              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
               return;
           }
         } else {
@@ -99,12 +103,20 @@
 
       goBack() {
         this.$router.go(-1);
+      },
+
+      async initData() {
+        this.loading = true;
+
+        await this.loadData();
+
+        this.loading = false;
       }
     },
 
     created() {
       if (this.id) {
-        this.loadData();
+        this.initData();
       }
     }
   }

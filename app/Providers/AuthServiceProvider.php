@@ -14,6 +14,13 @@ class AuthServiceProvider extends ServiceProvider
      */
     protected $policies = [
         // 'App\Model' => 'App\Policies\ModelPolicy',
+        'App\Models\Article'  => 'App\Policies\ArticlePolicy',
+        'App\Models\Category' => 'App\Policies\CategoryPolicy',
+        'App\Models\Order'    => 'App\Policies\OrderPolicy',
+        'App\Models\Product'  => 'App\Policies\ProductPolicy',
+        'App\Models\Photo'    => 'App\Policies\PhotoPolicy',
+        'App\Models\Video'    => 'App\Policies\VideoPolicy',
+        'App\User'            => 'App\Policies\UserPolicy'
     ];
 
     /**
@@ -25,6 +32,6 @@ class AuthServiceProvider extends ServiceProvider
     {
         $this->registerPolicies();
 
-        //
+
     }
 }

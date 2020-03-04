@@ -24,7 +24,8 @@ import Vue from 'vue';
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-import Admin from './components/admin/admin';
+// import Admin from './components/admin/admin';
+import Dashboard from './components/dashboard/dashboard';
 
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
@@ -39,8 +40,8 @@ Vue.use(Vuetify);
 
 import i18n from "./i18n";
 
-import { routes } from './router.js';
-let router = new VueRouter({routes});
+import { routes } from './routes/public_router.js';
+let router = new VueRouter({routes, mode: 'history'});
 
 import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
@@ -59,11 +60,11 @@ let vuetify = new Vuetify({
  */
 
 const app = new Vue({
-    el: '#app',
-    router,
-    i18n,
-    vuetify,
-    components: {
-        admin: Admin
-    }
+  el: '#app',
+  router,
+  i18n,
+  vuetify,
+  components: {
+    dashboard: Dashboard
+  }
 });

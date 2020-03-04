@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Category\CategoryStoreRequest;
 use App\Models\Category;
+use App\Repositories\CategoryRepo;
 use App\Services\CategoryService;
 use Illuminate\Http\Request;
 
@@ -12,9 +13,10 @@ class CategoryController extends Controller
 {
     private $category;
 
-    public function __construct(CategoryService $category)
+    public function __construct(CategoryRepo $category)
     {
         $this->category = $category;
+//        $this->authorizeResource(Category::class, 'category');
     }
 
     /**
@@ -91,5 +93,13 @@ class CategoryController extends Controller
     public function destroy(Category $category)
     {
         return $this->category->destroy($category);
+    }
+
+    public function products(Category $category, Request $request)
+    {
+        return response()->json([
+            'products' => $category->products()->paginate(15),
+            'category_name' => $category->name
+        ],200);
     }
 }

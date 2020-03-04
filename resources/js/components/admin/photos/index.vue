@@ -7,6 +7,7 @@
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
+
                 <v-spacer></v-spacer>
 
                 <v-text-field v-model="search.keyword"
@@ -14,6 +15,44 @@
                               append-icon="search"
                               label="Поиск"
                               single-line></v-text-field>
+
+                <v-spacer></v-spacer>
+
+                <!-- TODO необходимо что-то сделать с z-index у календаря -->
+                <!--<v-text-field-->
+                <!--@click="calendar = true"-->
+                <!--v-model="search.created_at"-->
+                <!--label="Дата создания"-->
+                <!--prepend-icon="event"-->
+                <!--dense-->
+                <!--readonly-->
+                <!--hide-details-->
+
+                <!--&gt;</v-text-field>-->
+
+                <!--<v-date-picker-->
+                <!--:locale="$i18n.locale"-->
+                <!--width="550"-->
+                <!--:style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"-->
+                <!--no-title-->
+                <!--scrollable-->
+                <!--first-day-of-week="1"-->
+                <!--color="primary"-->
+                <!--v-if="calendar"-->
+                <!--v-model="search.created_at">-->
+
+                <!--<v-spacer></v-spacer>-->
+
+                <!--<v-btn color="blue darken-1" @click="calendar = false" text>-->
+                <!--{{ $t('users.btn.cancel') }}-->
+                <!--</v-btn>-->
+
+                <!--<v-btn color="primary" outlined @click="calendar = false">-->
+                <!--OK-->
+                <!--</v-btn>-->
+                <!--</v-date-picker>-->
+
+                <!--<v-spacer></v-spacer>-->
 
                 <v-dialog v-model="modal" max-width="500px">
                     <template v-slot:activator="{on}">
@@ -24,6 +63,7 @@
                     </template>
 
                     <v-card>
+                        <v-form  ref="form" v-model="form.valid">
                         <v-card-title>
                             {{ $t('photos.form.header')}}
                         </v-card-title>
@@ -31,6 +71,7 @@
                             <v-text-field v-model="photo.title"
                                           :label="$t('photos.form.labels.title')"
                                           clearable
+                                          :rules="form.title.rules"
                                           counter
                                           maxlength="100">
 
@@ -47,28 +88,30 @@
                         <v-card-actions>
                             <v-spacer></v-spacer>
 
-                            <v-btn color="success" :disabled="! photo.path.length" @click="save()">
+                            <v-btn color="success" :disabled="! form.valid || ! photo.path.length" @click="save()">
                                 {{ $t('photos.btn.save')}}
                             </v-btn>
                             <v-btn color="blue darken-1" text @click="cancel()">
                                 {{ $t('photos.btn.cancel')}}
                             </v-btn>
                         </v-card-actions>
+                        </v-form>
                     </v-card>
                 </v-dialog>
             </v-toolbar>
 
             <v-card-text>
-                <v-row>
+                <v-row v-show="! loading">
                     <v-col cols="4" v-for="(photo, index) in photos" :key="photo.id">
                         <v-card>
                             <v-card-title>
                                 {{ photo.title }}
                             </v-card-title>
-                            <v-card-text>
-                                <v-img :src="photo.path" alt=""></v-img>
+                            <v-card-text class="m-b-md">
+                                <v-img :src="photo.path" alt="" class="m-b-md"></v-img>
                             </v-card-text>
-                            <v-card-actions>
+
+                            <v-card-actions class="mt-auto">
                                 <v-btn color="error" outlined @click="remove(photo.id)">
                                     {{ $t('photos.btn.delete')}}
                                 </v-btn>
@@ -78,11 +121,9 @@
                             </v-card-actions>
                         </v-card>
                     </v-col>
-                    <!--<v-pagination :length="pagination.last_page"-->
-                                  <!--circle-->
-                                  <!--v-model="pagination.page"-->
-                                  <!--:total-visible="7"></v-pagination>-->
                 </v-row>
+
+                <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
             </v-card-text>
         </v-card>
     </div>
@@ -109,10 +150,13 @@
       return {
         photos: [],
 
-        is_search: false,
+        searching: false,
+
+        loading: false,
 
         search: {
-          keyword: ''
+          keyword: '',
+          created_at: null
         },
 
         photo: {
@@ -120,18 +164,32 @@
           path: ''
         },
 
+        form: {
+          valid: false,
+          title: {
+            rules: [
+              v => v !== '' || this.$t('photos.form.rules.title.required'),
+              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('photos.form.rules.title.length', { length: 255})
+            ]
+          },
+        },
+
         pagination: {
           page: 1,
           last_page: 1
         },
 
-        modal: false
+        modal: false,
+        calendar: false,
+
+        isDestroying: false
       }
     },
 
     methods: {
       async loadData() {
-        const response = await axios.get('/admin/photos', {
+        this.loading = true;
+        const response = await axios.get(`${this.$attrs.apiRoute}/photos`, {
           params: {
             page: this.pagination.page
           }
@@ -139,6 +197,7 @@
 
         if (response.data.status === 'error') {
           this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+          this.loading = false;
           return false;
         }
 
@@ -147,6 +206,7 @@
             : this.photos.concat(response.data.photos.data);
 
         this.pagination.last_page = response.data.photos.last_page;
+        this.loading = false;
       },
 
       onSearch() {
@@ -158,17 +218,23 @@
       },
 
       searchData: debounce((vm) => {
-        axios.get('/admin/photos', {
+        vm.loading = true;
+        axios.get(`${this.$attrs.apiRoute}/photos`, {
           params: {
             page: vm.pagination.page,
-            keyword: vm.search.keyword
+            ...vm.search,
           }
         })
             .then(response => {
-              vm.photos = response.data.photos.data;
+              vm.photos = (vm.pagination.page === 1)
+                  ? response.data.photos.data
+                  : vm.photos.concat(response.data.photos.data);
+
               vm.pagination.last_page = response.data.photos.last_page;
+              vm.loading = false;
             })
             .catch(error => {
+              vm.loading = false;
               console.log(error);
               vm.$swal(vm.$t('swal.title.error'), error.data.msg, 'error');
             })
@@ -176,7 +242,7 @@
       }, 300),
 
       async remove(id) {
-        const response = await axios.delete(`/admin/photos/${id}`);
+        const response = await axios.delete(`${this.$attrs.apiRoute}/admin/photos/${id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -192,7 +258,7 @@
       async save() {
         this.modal = false;
 
-        const response = await axios.post('/admin/photos', this.photo);
+        const response = await axios.post(`${this.$attrs.apiRoute}/photos`, this.photo);
 
         switch (response.status) {
           case 200:
@@ -206,17 +272,26 @@
         }
 
 
-        this.$refs.form.reset();
+        this.resetForm();
       },
 
       cancel() {
         this.modal = false;
+
+        this.resetForm();
+      },
+
+      async resetForm() {
         this.$refs.form.reset();
+        this.isDestroying = true;
+        await this.$refs.photo_dropzone.removeAllFiles();
+        this.$refs.photo_dropzone.enable();
+        this.isDestroying = false;
       },
 
       initializeDropzone() {
-        this.dropzone_options.url = '/admin/photos/upload';
-        this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.videos');
+        this.dropzone_options.url = `${this.$attrs.apiRoute}/photos/upload`;
+        this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.images');
         this.dropzone_options.acceptedFiles = '.jpeg,.jpg,.png';
       },
 
@@ -230,13 +305,17 @@
       },
 
       async onDropzoneRemoved(file, error, xhr) {
+        if  (this.isDestroying) {
+          return ;
+        }
+
         console.log(file, error, xhr);
         if (error) {
           console.error(error);
           return;
         }
 
-        const response = await axios.post('/admin/photos/remove_tmp_photo', {path: this.photo.path});
+        const response = await axios.post(`${this.$attrs.apiRoute}/photos/remove_tmp_photo`, {path: this.photo.path});
 
         this.$refs.photo_dropzone.enable();
 
@@ -249,29 +328,59 @@
             this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
             break;
         }
+      },
+
+      onScroll: function() {
+        this.paginationScroll(this, document);
+      },
+
+      async initData() {
+        await this.loadData();
       }
     },
 
     watch: {
+      'search': {
+        handler: function(after, before) {
+          if (after.category || after.created_at || after.keyword.length > 3) {
+            this.pagination.page = 1;
+            this.searching = true;
+
+            this.searchData(this);
+          } else if (! after.category && ! after.created_at && ! after.keyword.length) {
+            this.pagination.page = 1;
+            this.searching = false;
+
+            this.loadData();
+          }
+        },
+
+        deep: true
+      },
+
       'search.keyword': function (after, before) {
         if (after.length > 3) {
           this.onSearch();
         }
-      }
+      },
     },
 
     created() {
-      this.loadData();
-
       this.initializeDropzone(
           '/admin/photos/upload',
-          this.$t('dropzone.dictDefaultMessage.photos'),
+          this.$t('dropzone.dictDefaultMessage.images'),
           '.jpg,.jpeg,.png'
       );
+
+      this.initData();
     },
 
     mounted() {
       document.addEventListener('scroll', this.onScroll);
+    },
+
+    beforeDestroy() {
+      this.isDestroying = true;
     }
   }
 </script>

@@ -20,6 +20,7 @@ class VideoController extends Controller
     {
         $this->video = $video;
         $this->media = $media;
+//        $this->authorizeResource(Video::class, 'video');
     }
 
     /**

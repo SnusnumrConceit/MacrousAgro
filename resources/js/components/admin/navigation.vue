@@ -18,7 +18,7 @@
 
         <v-list nav rounded shaped flat>
             <v-list-item-group color="primary">
-                <v-list-item v-for="link in links" :key="link.title">
+                <v-list-item v-for="link in links" :key="link.title" class="text-left">
                     <v-list-item-content>
                         <v-list-item-title>
                             <router-link :to="link.href">
@@ -43,6 +43,16 @@
     data() {
       return {
         links: [
+          {
+            title: this.$t('nav.links.products'),
+            href: '/admin/products',
+            icon: 'pe-7s-box1'
+          },
+          {
+            title: this.$t('nav.links.orders'),
+            href: '/admin/orders',
+            icon: 'pe-7s-cash'
+          },
           {
             title: this.$t('nav.links.categories'),
             href: '/admin/categories',

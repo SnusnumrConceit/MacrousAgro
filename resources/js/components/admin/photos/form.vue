@@ -1,6 +1,7 @@
 <template>
     <div>
-        <v-card>
+        <v-card v-show="! loading">
+            <v-form v-model="form.valid">
             <v-card-title>
                 {{ photo.title }}
             </v-card-title>
@@ -14,9 +15,10 @@
                                       :label="$t('photos.form.labels.title')"
                                       clearable
                                       counter
+                                      :rules="form.title.rules"
                                       maxlength="100">
                         </v-text-field>
-                        <v-btn color="success" outlined @click="save">
+                        <v-btn color="success" :disabled="! form.valid" outlined @click="save">
                                 Изменить
                         </v-btn>
                     </v-col>
@@ -30,7 +32,10 @@
                     {{ $t('photos.btn.back')}}
                 </v-btn>
             </v-card-actions>
+            </v-form>
         </v-card>
+
+        <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
     </div>
 </template>
 
@@ -43,7 +48,19 @@
         photo: {
           title: '',
           path: ''
-        }
+        },
+
+        form: {
+          valid: false,
+          title: {
+            rules: [
+              v => v !== '' || 'Поле обязательное к заполнению',
+              v => (v !== undefined && v !== null && v.length <= 25) || 'Длина не может превышать 25 символов'
+            ]
+          }
+        },
+
+        loading: false
       }
     },
 
@@ -55,7 +72,7 @@
 
     methods: {
       async loadData() {
-        const response = await axios.get(`/admin/photos/${this.id}/edit`);
+        const response = await axios.get(`${this.$attrs.apiRoute}/photos/${this.id}/edit`);
 
         if (response.data.status === 'error' || response.status !== 200) {
           this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
@@ -66,7 +83,7 @@
       },
 
       async remove() {
-        const response = await axios.delete(`/admin/photos/${this.id}`);
+        const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${this.id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -82,7 +99,7 @@
       async save() {
         this.modal = false;
 
-        const response = await axios.put(`/admin/photos/${this.id}`, this.photo);
+        const response = await axios.put(`${this.$attrs.apiRoute}/photos/${this.id}`, this.photo);
 
         switch (response.status) {
           case 200:
@@ -98,12 +115,20 @@
 
       goBack() {
         this.$router.go(-1);
+      },
+
+      async initData() {
+        this.loading = true;
+
+        await this.loadData();
+
+        this.loading = false;
       }
     },
 
     created() {
       if (this.id) {
-        this.loadData();
+        this.initData();
       }
     }
   }

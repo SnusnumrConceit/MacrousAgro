@@ -8,7 +8,7 @@ export default {
         headers: {"X-CSRF-TOKEN": $('meta').attr('content')},
         addRemoveLinks: true,
 
-        "dictDefaultMessage": this.$t('dropzone.dictDefaultMessage.articles'),
+        "dictDefaultMessage": this.$t('dropzone.dictDefaultMessage.images'),
 
         "dictFallbackMessage": this.$t('dropzone.dictFallbackMessage'),
         "dictResponseError": this.$t('dropzone.dictResponseError'),

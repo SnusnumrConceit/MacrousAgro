@@ -1,6 +1,6 @@
 <template>
     <div>
-        <v-card>
+        <v-card v-show="! loading">
             <v-form v-model="form.valid" ref="user_form">
                 <v-card-title>
                     Редактирование пользователя
@@ -72,9 +72,11 @@
                 </v-card-actions>
             </v-form>
         </v-card>
-        <v-btn outlined color="error" @click="remove">
-            {{ $t('users.btn.delete') }}
-        </v-btn>
+
+        <v-skeleton-loader type="table-row-divider@4" v-show="loading"></v-skeleton-loader>
+        <!--<v-btn outlined color="error" @click="remove">-->
+            <!--{{ $t('users.btn.delete') }}-->
+        <!--</v-btn>-->
     </div>
 </template>
 
@@ -95,46 +97,46 @@
           valid:false,
           email: {
             rules: [
-              v => v.length > 0 || this.$t('users.form.rules.email.required'),
-              v => v.length > 10 || this.$t('users.form.rules.email.min_length', {length:10}),
-              v => v.length <= 255 || this.$t('users.form.rules.email.max_length', {length: 255})
+              v => v !== '' || this.$t('users.form.rules.email.required'),
+              v => (v !== undefined && v !== null && v.length > 10) || this.$t('users.form.rules.email.min_length', {length:10}),
+              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('users.form.rules.email.max_length', {length: 255})
             ]
           },
 
           birthday: {
             rules: [
-              v => v.length > 0 || this.$t('users.form.rules.birthday.required'),
-              v => v < Date.now || this.$t('users.form.rules.birthday.max_length'),
+              v => v !== '' || this.$t('users.form.rules.birthday.required'),
+              v => (v !== undefined && v !== null && v < Date.now) || this.$t('users.form.rules.birthday.max_length'),
             ]
           },
 
           first_name: {
             rules: [
-              v => v.length > 0 || this.$t('users.form.rules.first_name.required'),
-              v => v.length >= 2 || this.$t('users.form.rules.first_name.min_length', {length:2}),
-              v => v.length <= 60 || this.$t('users.form.rules.first_name.max_length', {length: 60})
+              v => v !== '' || this.$t('users.form.rules.first_name.required'),
+              v => (v !== undefined && v !== null && v.length >= 2) || this.$t('users.form.rules.first_name.min_length', {length:2}),
+              v => (v !== undefined && v !== null && v.length <= 60) || this.$t('users.form.rules.first_name.max_length', {length: 60})
             ]
           },
 
           last_name: {
             rules: [
-              v => v.length > 0 || this.$t('users.form.rules.last_name.required'),
-              v => v.length >= 2 || this.$t('users.form.rules.last_name.min_length', {length:2}),
-              v => v.length <= 100 || this.$t('users.form.rules.last_name.max_length', {length: 100})
+              v => v !== '' || this.$t('users.form.rules.last_name.required'),
+              v => (v !== undefined && v !== null && v.length >= 2) || this.$t('users.form.rules.last_name.min_length', {length:2}),
+              v => (v !== undefined && v !== null && v.length <= 100) || this.$t('users.form.rules.last_name.max_length', {length: 100})
             ]
           },
 
           password: {
             rules: [
-              v => v.length > 0 || this.$t('users.form.rules.password.required'),
-              v => v.length >= 8 || this.$t('users.form.rules.password.min_length', {length:8}),
-              v => v.length <= 60 || this.$t('users.form.rules.password.max_length', {length: 255})
+              v => v !== '' || this.$t('users.form.rules.password.required'),
+              v => (v !== undefined && v !== null && v.length >= 8) || this.$t('users.form.rules.password.min_length', {length:8}),
+              v => (v !== undefined && v !== null && v.length <= 60) || this.$t('users.form.rules.password.max_length', {length: 255})
             ]
           },
 
           password_confirmation: {
             rules: [
-              v => v.length > 0 || this.$t('users.form.rules.password_confirmation.required'),
+              v => v !== '' || this.$t('users.form.rules.password_confirmation.required'),
               v => v === this.user.password || this.$t('users.form.rules.password_confirmation.not_equals')
             ]
           }
@@ -145,6 +147,8 @@
           password: false,
           password_confirmation: false
         },
+
+        loading: false
       }
     },
 
@@ -156,19 +160,22 @@
 
     methods: {
       async loadData() {
-        const response = await axios.get(`/admin/users/${this.id}/edit`);
+        this.loading = true;
+        const response = await axios.get(`${this.$attrs.apiRoute}/users/${this.id}/edit`);
 
         if (response.data.status === 'error' || response.status !== 200) {
           this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
+          this.loading = false;
           return false;
         }
 
         this.user = response.data.user;
+        this.loading = false;
       },
 
       async save() {
 
-        const response = await axios.put(`/admin/users/${this.id}`, {
+        const response = await axios.put(`${this.$attrs.apiRoute}/users/${this.id}`, {
           ...this.user
         });
 
@@ -185,7 +192,7 @@
       },
 
       async remove() {
-        const response = await axios.delete(`/admin/users/${this.id}`);
+        const response = await axios.delete(`${this.$attrs.apiRoute}/users/${this.id}`);
 
         switch (response.data.status) {
           case 'error':
@@ -201,12 +208,16 @@
 
       goBack() {
         this.$router.go(-1);
+      },
+
+      async initData() {
+        await this.loadData();
       }
     },
 
     created() {
       if (this.id) {
-        this.loadData();
+        this.initData();
       }
     }
   }

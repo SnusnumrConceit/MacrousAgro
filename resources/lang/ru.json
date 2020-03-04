@@ -15,6 +15,10 @@
   "photo_msg_success_delete": "Фотография успешно удалена!",
   "photo_msg_success_update": "Сведения о фотографии успешно обновлены!",
 
+  "product_msg_success_create": "Товар успешно создан!",
+  "product_msg_success_delete": "Товар успешно удален!",
+  "product_msg_success_update": "Сведения о товаре успешно обновлены!",
+
   "user_msg_success_create": "Пользователь успешно создан!",
   "user_msg_success_delete": "Пользователь успешно удален!",
   "user_msg_success_update": "Сведения о пользователе успешно обновлены!",

@@ -27,7 +27,7 @@
     methods: {
       async save() {
         if (this.id !== undefined) {
-          const response = await axios.post(`/admin/articles/update/${this.id}`, {...this.article});
+          const response = await axios.patch(`${this.$attrs.apiRoute}/articles/${this.id}`, {...this.article});
 
           switch (response.data.status) {
             case 'error':
@@ -40,7 +40,7 @@
               break;
           }
         } else {
-          const response = await axios.post(`/admin/articles/create`, {...this.article});
+          const response = await axios.post(`${this.$attrs.apiRoute}/articles`, {...this.article});
 
           switch (response.data.status) {
             case 'error':

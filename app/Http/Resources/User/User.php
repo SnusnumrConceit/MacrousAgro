@@ -16,10 +16,14 @@ class User extends JsonResource
     public function toArray($request)
     {
         return [
-            'last_name' => $this->last_name,
-            'first_name' => $this->first_name,
-            'email' => $this->email,
-            'birthday' => $this->birthday //Carbon::parse($this->birthday)->format('d.m.Y'),
+            'full_name'          => $this->full_name,
+            'email'              => $this->email,
+            'formatted_birthday' => $this->formatted_birthday,
+            'birthday'           => $this->birthday->format('Y/m/d'),
+            'registration_date'  => $this->registration_date,
+            'last_activity_date' => $this->last_activity_date,
+            'last_name'          => $this->last_name,
+            'first_name'          => $this->first_name
         ];
     }
 }

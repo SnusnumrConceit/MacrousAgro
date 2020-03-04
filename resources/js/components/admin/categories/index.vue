@@ -1,109 +1,129 @@
 <template>
     <div>
         <v-card>
-            <v-data-table :headers="table.headers"
-                          :items="categories"
-                          :items-per-page="15"
-                          :item-key="'name'"
-                          class="elevation-1"
-                          :page.sync="pagination.page"
-                          :search="'Search'"
-                          :locale="$i18n.locale"
-                          :noDataText="$t('v-data-table.no-data-text')"
-                          :noResultsText="$t('v-data-table.no-results-text')"
-                          :loading="loading"
-                          multi-sort
-                          :sort-by="['name']"
-                          :sort-desc="[true]"
-                          :page-text="'На странице'"
-                          :loading-text="$t('v-data-table.loading-text')" :per-page="$t('v-data-table.per-page')"
-                          :footer-props="{itemsPerPageText: 'На странице'}">
-                <template v-slot:top>
-                    <v-toolbar>
-                        <v-toolbar-title>
-                            {{ $t('categories.table.header')}}
-                        </v-toolbar-title>
+            <v-toolbar>
+                <v-toolbar-title>
+                    {{ $t('categories.table.header')}}
+                </v-toolbar-title>
 
-                        <v-divider class="mx-4" vertical inset></v-divider>
-                        <v-spacer></v-spacer>
+                <v-divider class="mx-4" vertical inset></v-divider>
+                <v-spacer></v-spacer>
 
-                        <v-text-field v-model="search.keyword"
-                                      @keyup.enter="onSearch"
-                                      append-icon="search"
-                                      label="Поиск"
-                                      single-line>
-                        </v-text-field>
+                <v-text-field v-model="search.keyword"
+                              @keyup.enter="onSearch"
+                              append-icon="search"
+                              label="Поиск"
+                              single-line>
+                </v-text-field>
 
-                        <v-dialog v-model="modal" max-width="500px">
-                            <template v-slot:activator="{on}">
-                                <v-btn outlined color="success" class="" dark v-on="on">
-                                    <i class="pe-7s-plus"></i> {{ $t('categories.btn.add')}}
+                <v-spacer></v-spacer>
+
+                <v-dialog v-model="modal" max-width="500px">
+                    <template v-slot:activator="{on}">
+                        <v-btn outlined color="success" class="" dark v-on="on">
+                            <i class="pe-7s-plus"></i> {{ $t('categories.btn.add')}}
+                        </v-btn>
+                    </template>
+
+                    <v-card>
+                        <v-form v-model="form.valid" ref="form">
+                            <v-card-title class="headline">
+                                {{ $t('categories.form.header')}}
+                            </v-card-title>
+
+                            <v-card-text>
+                                <v-text-field label="Название*"
+                                              required
+                                              v-model="category.name"
+                                              clearable
+                                              counter
+                                              :rules="form.name.rules"
+                                              maxlength="25">
+
+                                </v-text-field>
+                            </v-card-text>
+
+                            <v-card-actions>
+                                <v-spacer></v-spacer>
+
+                                <v-btn color="success"
+                                       @click="save()"
+                                       :disabled="! form.valid">
+                                    {{ $t('categories.btn.save')}}
                                 </v-btn>
-                            </template>
+                                <v-btn color="blue darken-1"
+                                       text
+                                       @click="close()">
+                                    {{ $t('categories.btn.cancel') }}
+                                </v-btn>
+                            </v-card-actions>
+                        </v-form>
+                    </v-card>
+                </v-dialog>
+            </v-toolbar>
 
-                            <v-card>
-                                <v-form v-model="form.valid" ref="form">
-                                    <v-card-title class="headline">
-                                        {{ $t('categories.form.header')}}
-                                    </v-card-title>
 
-                                     <v-card-text>
-                                         <v-text-field label="Название*"
-                                                       required
-                                                       v-model="category.name"
-                                                       clearable
-                                                       counter
-                                                       :rules="form.name.rules"
-                                                       maxlength="25">
+            <v-card-text>
+                <v-simple-table fixed-header :height="750" v-show="! loading">
+                    <template v-slot:default>
+                        <thead>
+                        <th v-for="header in table.headers" :key="header.text" class="text-left">
+                            {{ header.text }}
+                        </th>
+                        </thead>
+                        <tbody>
+                        <tr v-for="category in categories" :key="category.id">
+                            <td class="text-left">
+                                {{ category.name }}
+                            </td>
+                            <td class="text-right">
+                                <v-tooltip top color="primary">
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon v-on="on"
+                                                small
+                                                @click="$router.push(`/admin/categories/${category.id}`)"
+                                        >
+                                            mdi-pencil
+                                        </v-icon>
+                                    </template>
+                                    <span>
+                                        Править
+                                    </span>
+                                </v-tooltip>
 
-                                         </v-text-field>
-                                     </v-card-text>
+                                <v-tooltip top color="error">
+                                    <template v-slot:activator="{ on }">
+                                        <v-icon color="red"
+                                                v-on="on"
+                                                small
+                                                @click="remove(category.id)"
+                                        >
+                                            mdi-delete
+                                        </v-icon>
+                                    </template>
+                                    <span>
+                                        Удалить
+                                    </span>
+                                </v-tooltip>
+                            </td>
+                        </tr>
+                        </tbody>
+                        <tfoot>
+                        <tr>
+                            <td></td>
+                            <td class="text-right">
+                                Всего: {{ categories.length }}
+                            </td>
+                        </tr>
+                        </tfoot>
+                    </template>
+                </v-simple-table>
 
-                                    <v-card-actions>
-                                        <v-spacer></v-spacer>
+                <v-skeleton-loader type="table-row-divider@6" v-show="loading">
 
-                                        <v-btn color="success"
-                                               @click="save()"
-                                               :disabled="! form.valid">
-                                            {{ $t('categories.btn.save')}}
-                                        </v-btn>
-                                        <v-btn color="blue darken-1"
-                                               text
-                                               @click="close()">
-                                            {{ $t('categories.btn.cancel') }}
-                                        </v-btn>
-                                    </v-card-actions>
-                                </v-form>
-                            </v-card>
-                        </v-dialog>
-
-                    </v-toolbar>
-                </template>
-                <template v-slot:items="props">
-                    <td>{{ props.item.name }}</td>
-                </template>
-                <template v-slot:category.action="{ category }">
-<!--                    <v-icon-->
-<!--                        small-->
-<!--                        class="mr-2"-->
-<!--                        @click="editItem(item)"-->
-<!--                    >-->
-<!--                        edit-->
-<!--                    </v-icon>-->
-                    <v-icon
-                        small
-                        @click="remove(category.id)"
-                    >
-                        delete
-                    </v-icon>
-                </template>
-            </v-data-table>
+                </v-skeleton-loader>
+            </v-card-text>
         </v-card>
-<!--        <div>-->
-<!--            <v-btn color="success" dark  outlined @click="toRoute('create')">-->
-<!--                <i class="pe-7s-plus"></i> Добавить-->
-<!--            </v-btn>-->
-<!--        </div>-->
     </div>
 </template>
 
@@ -117,7 +137,7 @@
       return {
         categories: [],
 
-        is_search: false,
+        searching: false,
         loading: false,
 
         search: {
@@ -133,8 +153,8 @@
           valid: false,
           name: {
             rules: [
-              v => v.length <= 25 || 'Длина не может превышать 25 символов',
-              v => v.length > 0 || 'Поле обязательное к заполнению'
+              v => (v !== undefined && v.length <= 25) || 'Длина не может превышать 25 символов',
+              v => v !== '' || 'Поле обязательное к заполнению'
             ]
           }
         },
@@ -175,7 +195,7 @@
     methods: {
       async loadData() {
         this.loading = true;
-        const response = await axios.get('/admin/categories', {
+        const response = await axios.get(`${this.$attrs.apiRoute}/categories`, {
           params: {
             page: this.pagination.page
           }
@@ -187,15 +207,15 @@
             this.loading = false;
             break;
           case 'success':
-            this.categories = response.data.categories.data;
-            this.pagination.last_page = response.data.categories.last_page;
+            this.categories = response.data.categories;
+            // this.pagination.last_page = response.data.categories.last_page;
             this.loading = false;
             break;
         }
       },
 
       async save() {
-        const response = await axios.post('/admin/categories', {
+        const response = await axios.post(`${this.$attrs.apiRoute}/categories`, {
           ...this.category
         });
 
@@ -213,16 +233,16 @@
       },
 
       async remove(id) {
-        const response = await axios.delete(`/admin/categories/${id}`);
+        const response = await axios.delete(`${this.$attrs.apiRoute}/categories/${id}`);
 
         switch (response.data.status) {
           case 'error':
-            this.$swal('swal.title.error', response.data.msg, 'error');
+            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
             return false;
 
           case 'success':
-            this.$swal('swal.title.success', response.data.msg, 'success');
-            this.loadData();
+            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+            this.categories = this.categories.filter(category => category.id !== id);
         }
       },
 
@@ -235,15 +255,15 @@
       },
 
       searchData: debounce((vm) => {
-        axios.get('/admin/categories', {
+        axios.get(`${vm.$attrs.apiRoute}/categories`, {
           params: {
             page: vm.pagination.page,
             keyword: vm.search.keyword
           }
         })
         .then(response => {
-          vm.videos = response.data.videos.data;
-          vm.pagination.last_page = response.data.videos.last_page;
+          vm.categories = response.data.categories;
+          vm.pagination.last_page = response.data.categories.last_page;
         })
         .catch(error => {
           vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
@@ -275,12 +295,16 @@
     watch: {
       'search.keyword': function (after, before) {
         if (after.length) {
+          this.pagination.page = 1;
           this.onSearch();
+        } else {
+          this.pagination.page = 1;
+          this.loadData();
         }
       }
     },
 
-    mounted() {
+    created() {
       this.loadData();
     }
   }

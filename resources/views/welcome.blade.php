@@ -85,7 +85,8 @@
 
             <div class="content" id="app">
                 <div>
-                    <admin></admin>
+                    {{--<admin></admin>--}}
+                    <dashboard></dashboard>
                 </div>
                 {{--<div class="title m-b-md">
                     Laravel

@@ -135,6 +135,10 @@ return [
         ],
     ],
 
+    'max_file_width' => 'The file width must be less than :value px',
+    'max_file_height' => 'The file height must be less than :value px',
+    'non_mediable' => 'The category is not Mediable',
+
     /*
     |--------------------------------------------------------------------------
     | Custom Validation Attributes

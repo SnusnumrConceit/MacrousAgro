@@ -5,7 +5,7 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\Article\ArticleStoreRequest;
 use App\Models\Article;
-use App\Services\ArticleService;
+use App\Repositories\ArticleRepo;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -14,9 +14,10 @@ class ArticleController extends Controller
 {
     private $article;
 
-    public function __construct(ArticleService $article)
+    public function __construct(ArticleRepo $article)
     {
         $this->article = $article;
+//        $this->authorizeResource(Article::class, 'article');
     }
 
     /**
@@ -56,9 +57,9 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
-    public function show(int $id) : JsonResponse
+    public function show(Article $article) : JsonResponse
     {
-        return $this->article->info($id);
+        return $this->article->info($article);
     }
 
     /**
@@ -67,9 +68,9 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
-    public function edit(int $id) : JsonResponse
+    public function edit(Article $article) : JsonResponse
     {
-        return $this->article->info($id);
+        return $this->article->info($article);
     }
 
     /**
@@ -79,9 +80,9 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
-    public function update(Request $request, int $id) : JsonResponse
+    public function update(Request $request, Article $article) : JsonResponse
     {
-        return $this->article->update($request, $id);
+        return $this->article->update($request, $article);
     }
 
     /**
@@ -90,9 +91,9 @@ class ArticleController extends Controller
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
-    public function destroy(int $id) : JsonResponse
+    public function destroy(Article $article) : JsonResponse
     {
-        return $this->article->destroy($id);
+        return $this->article->destroy($article);
     }
 
     public function export(Request $request)

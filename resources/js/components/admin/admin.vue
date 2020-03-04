@@ -4,7 +4,7 @@
 <!--        <v-toolbar app></v-toolbar>-->
         <v-content fluid>
             <v-container fluid cols="12">
-                <router-view></router-view>
+                <router-view apiRoute="/api/admin"></router-view>
             </v-container>
         </v-content>
         <v-footer app></v-footer>

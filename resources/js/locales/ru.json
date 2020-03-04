@@ -1,234 +1,269 @@
 {
-    "categories": {
-        "table": {
-            "header": "Категории"
-        },
-
-        "form": {
-            "header": "Категория",
-
-            "labels": {
-                "title": "Название"
-            }
-        },
-
-        "btn": {
-            "add": "Добавить",
-            "save": "Сохранить",
-            "cancel": "Отмена",
-            "delete": "Удалить",
-            "edit": "Изменить",
-            "back": "Назад"
-        }
+  "categories": {
+    "table": {
+      "header": "Категории"
     },
-    "articles": {
-        "table": {
-            "header": "Новости"
-        },
-
-        "form": {
-            "header": "Новость",
-
-            "labels": {
-                "title": "Название*",
-                "description": "Описание*",
-                "publication_date": "Дата публикации*",
-                "is_publicated": "Опубликовать"
-            },
-
-            "rules": {
-                "title": {
-                    "required": "Вы не указали заголовок статьи",
-                    "length": "Заголовок не может превышать более {length} символов"
-                },
-
-                "description": {
-                    "required": "Вы не указали содержимое статьи",
-                    "length": "Содержимое не может превышать более {length} символов"
-                },
-
-                "publication_date": {
-                    "required": "Вы не указали дату публикации",
-                    "length": "Публикация не может быть совершена раньше текущей даты"
-                }
-            }
-        },
-
-        "btn": {
-            "add": "Добавить",
-            "save": "Сохранить",
-            "cancel": "Отмена",
-            "delete": "Удалить",
-            "edit": "Изменить",
-            "back": "Назад"
-        }
+    "form": {
+      "header": "Категория",
+      "labels": {
+        "title": "Название"
+      }
     },
-
-    "videos": {
-
-        "header": "Видео",
-
-        "form": {
-            "header": "Видео",
-
-            "labels": {
-                "title": "Название*"
-            },
-
-            "rules": {
-                "title": {
-                    "required": "Вы не указали название",
-                    "length": "Название не может превышать более {length} символов"
-                }
-            }
-        },
-
-        "btn": {
-            "add": "Добавить",
-            "save": "Сохранить",
-            "cancel": "Отмена",
-            "delete": "Удалить",
-            "edit": "Изменить",
-            "back": "Назад"
-        }
-    },
-
-    "photos": {
-
-        "header": "Фото",
-
-        "form": {
-            "header": "Фото",
-
-            "labels": {
-                "title": "Название*"
-            },
-
-            "rules": {
-                "title": {
-                    "required": "Вы не указали название фотографии",
-                    "length": "Название не может превышать более {length} символов"
-                }
-            }
-        },
-
-        "btn": {
-            "add": "Добавить",
-            "save": "Сохранить",
-            "cancel": "Отмена",
-            "delete": "Удалить",
-            "edit": "Изменить",
-            "back": "Назад"
-        }
-    },
-
-
-    "users": {
-        "table": {
-            "header": " Пользователи"
-        },
-        "form": {
-            "header": "Пользователь",
-
-            "labels": {
-                "email": "Email*",
-                "birthday": "День рождения*",
-                "last_name": "Фамилия",
-                "first_name": "Имя",
-                "password": "Пароль",
-                "password_confirmation": "Подтверждение пароля"
-            },
-
-            "rules": {
-                "email": {
-                    "required": "Вы не указали Email",
-                    "min_length": "Email не может быть менее {length} символов",
-                    "max_length": "Email не может превышать более {length} символов"
-                },
-
-                "birthday": {
-                    "required": "Вы не указали дату рождения",
-                    "max_length": "Дата рождения не может быть позже текущей даты"
-                },
-
-                "last_name": {
-                    "required": "Вы не указали Фамилию",
-                    "min_length": "Фамилия не может быть менее {length} символов",
-                    "max_length": "Фамилия не может превышать более {length} символов"
-                },
-
-                "first_name": {
-                    "required": "Вы не указали Имя",
-                    "min_length": "Имя не может быть менее {length} символов",
-                    "max_length": "Имя не может превышать более {length} символов"
-                },
-
-                "password": {
-                    "required": "Вы не указали Пароль",
-                    "min_length": "Пароль не может быть менее {length} символов",
-                    "max_length": "Пароль не может превышать более {length} символов",
-                    "not_equals": "Пароли не совпадают"
-                },
-
-                "password_confirmation": {
-                    "required": "Вы не подтвердили Пароль",
-                    "not_equals": "Пароли не совпадают"
-                }
-            }
-        },
-
-        "btn": {
-            "add": "Добавить",
-            "save": "Сохранить",
-            "cancel": "Отмена",
-            "delete": "Удалить",
-            "edit": "Изменить",
-            "back": "Назад"
-        }
-    },
-
-    "nav": {
-        "subtitle": "Панель администрирования",
-        "links": {
-            "categories":   "Категории",
-            "articles":         "Новости",
-            "photos":       "Фотогалерея",
-            "videos":       "Видеогалерея",
-            "roles":        "Роли",
-            "users":        "Пользователи"
-        }
-    },
-
-    "v-data-table": {
-        "no-data-text":     "Данные отсутствуют",
-        "no-results-text":  "Не найдено ни одной записи",
-        "loading-text":      "Подождите...",
-        "per-page":         "Записей на странице:"
-    },
-
-    "dropzone": {
-        "dictDefaultMessage": {
-            "articles": "Переместите изображение в область загрузки",
-            "videos": "Переместите видео в область загрузки",
-            "photos": "Переместите изображение в область загрузки"
-        },
-
-        "dictFallbackMessage":          "Ваш браузер не поддерживает данный компонент! Пожалуйста, обновите браузер на актуальный.",
-        "dictResponseError":            "Ошибка!",
-        "dictInvalidFileType":          "Неверный формат",
-        "dictFileTooBig":               "Файл слишком большого размера",
-        "dictCancelUpload":             "Отмена",
-        "dictUploadCanceled":           "Отменить загрузку",
-        "dictCancelUploadConfirmation": "Вы действительно хотите отменить загрузки?",
-        "dictRemoveFile":               "Удалить файл",
-        "dictRemoveFileConfirmation":   "Вы действительно хотите удалить файл?"
-    },
-
-
-    "swal": {
-        "title": {
-            "success":  "Успешно!",
-            "error":    "Ошибка!"
-        }
+    "btn": {
+      "add": "Добавить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Изменить",
+      "back": "Назад"
     }
+  },
+  "articles": {
+    "table": {
+      "header": "Новости"
+    },
+    "form": {
+      "header": "Новость",
+      "labels": {
+        "title": "Название*",
+        "description": "Описание*",
+        "publication_date": "Дата публикации*",
+        "is_publicated": "Опубликовать"
+      },
+      "rules": {
+        "title": {
+          "required": "Вы не указали заголовок статьи",
+          "length": "Заголовок не может превышать более {length} символов"
+        },
+        "description": {
+          "required": "Вы не указали содержимое статьи",
+          "length": "Содержимое не может превышать более {length} символов"
+        },
+        "publication_date": {
+          "required": "Вы не указали дату публикации",
+          "length": "Публикация не может быть совершена раньше текущей даты"
+        }
+      }
+    },
+    "btn": {
+      "add": "Добавить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Изменить",
+      "back": "Назад"
+    }
+  },
+  "products": {
+    "table": {
+      "header": " Товары"
+    },
+    "form": {
+      "header": "Товар",
+      "labels": {
+        "title": "Наименование*",
+        "url": "Эскиз*",
+        "price": "Цена",
+        "description": "Описание",
+        "category": "Категория"
+      },
+      "rules": {
+        "title": {
+          "required": "Вы не указали Наименование",
+          "min_length": "Наименование не может быть менее {length} символов",
+          "max_length": "Наименование не может превышать более {length} символов"
+        },
+        "url": {
+          "required": "Вы не загрузили изображение"
+        },
+        "price": {
+          "required": "Вы не указали Цену",
+          "min_length": "Цена не может быть менее {length} символов",
+          "max_length": "Цена не может превышать более {length} символов",
+          "not_numeric": "Цена должна состоять из цифр"
+        },
+        "description": {
+          "required": "Вы не указали Описание",
+          "min_length": "Описание не может быть менее {length} символов",
+          "max_length": "Описание не может превышать более {length} символов"
+        },
+        "category": {
+          "required": "Вы не указали Категорию",
+          "min_length": "Пароль не может быть менее {length} символов",
+          "max_length": "Пароль не может превышать более {length} символов"
+        }
+      }
+    },
+    "btn": {
+      "add": "Добавить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Изменить",
+      "back": "Назад"
+    }
+  },
+  "orders": {
+    "table": {
+      "header": "Заказы"
+    },
+    "form": {
+      "header": "Создание заказа",
+      "labels": {
+        "products":    "Товары",
+        "customer":    "Покупатель",
+        "status_code": "Статус",
+        "product":     "Товар"
+      }
+    }
+  },
+  "videos": {
+    "header": "Видео",
+    "form": {
+      "header": "Видео",
+      "labels": {
+        "title": "Название*"
+      },
+      "rules": {
+        "title": {
+          "required": "Вы не указали название",
+          "length": "Название не может превышать более {length} символов"
+        }
+      }
+    },
+    "btn": {
+      "add": "Добавить",
+      "save": "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit": "Изменить",
+      "back": "Назад"
+    }
+  },
+  "photos": {
+    "header": "Фото",
+    "form": {
+      "header": "Фото",
+      "labels": {
+        "title": "Название*"
+      },
+      "rules": {
+        "title": {
+          "required": "Вы не указали название фотографии",
+          "length": "Название не может превышать более {length} символов"
+        }
+      }
+    },
+    "btn": {
+      "add":    "Добавить",
+      "save":   "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit":   "Изменить",
+      "back":   "Назад"
+    }
+  },
+  "users": {
+    "table": {
+      "header": " Пользователи"
+    },
+    "form": {
+      "header": "Пользователь",
+      "labels": {
+        "email":      "Email*",
+        "birthday":   "День рождения*",
+        "last_name":  "Фамилия",
+        "first_name": "Имя",
+        "password":   "Пароль",
+        "password_confirmation": "Подтверждение пароля"
+      },
+      "rules": {
+        "email": {
+          "required":   "Вы не указали Email",
+          "min_length": "Email не может быть менее {length} символов",
+          "max_length": "Email не может превышать более {length} символов"
+        },
+        "birthday": {
+          "required":   "Вы не указали дату рождения",
+          "max_length": "Дата рождения не может быть позже текущей даты"
+        },
+        "last_name": {
+          "required":   "Вы не указали Фамилию",
+          "min_length": "Фамилия не может быть менее {length} символов",
+          "max_length": "Фамилия не может превышать более {length} символов"
+        },
+        "first_name": {
+          "required":   "Вы не указали Имя",
+          "min_length": "Имя не может быть менее {length} символов",
+          "max_length": "Имя не может превышать более {length} символов"
+        },
+        "password": {
+          "required":   "Вы не указали Пароль",
+          "min_length": "Пароль не может быть менее {length} символов",
+          "max_length": "Пароль не может превышать более {length} символов",
+          "not_equals": "Пароли не совпадают"
+        },
+        "password_confirmation": {
+          "required":   "Вы не подтвердили Пароль",
+          "not_equals": "Пароли не совпадают"
+        }
+      }
+    },
+    "btn": {
+      "add":    "Добавить",
+      "save":   "Сохранить",
+      "cancel": "Отмена",
+      "delete": "Удалить",
+      "edit":   "Изменить",
+      "back":   "Назад"
+    }
+  },
+  "nav": {
+    "subtitle": "Панель администрирования",
+    "links": {
+      "products":   "Товары",
+      "orders":     "Заказы",
+      "categories": "Категории",
+      "articles":   "Новости",
+      "photos":     "Фотогалерея",
+      "videos":     "Видеогалерея",
+      "roles":      "Роли",
+      "users":      "Пользователи"
+    }
+  },
+  "btn": {
+    "add":    "Добавить",
+    "save":   "Сохранить",
+    "cancel": "Отмена",
+    "delete": "Удалить",
+    "edit":   "Изменить",
+    "back":   "Назад"
+  },
+  "v-data-table": {
+    "no-data-text":     "Данные отсутствуют",
+    "no-results-text":  "Не найдено ни одной записи",
+    "loading-text":     "Подождите...",
+    "per-page":         "Записей на странице:"
+  },
+  "dropzone": {
+    "dictDefaultMessage": {
+      "images": "Переместите изображение в область загрузки",
+      "videos": "Переместите видео в область загрузки"
+    },
+    "dictFallbackMessage":          "Ваш браузер не поддерживает данный компонент! Пожалуйста, обновите браузер на актуальный.",
+    "dictResponseError":            "Ошибка!",
+    "dictInvalidFileType":          "Неверный формат",
+    "dictFileTooBig":               "Файл слишком большого размера",
+    "dictCancelUpload":             "Отмена",
+    "dictUploadCanceled":           "Отменить загрузку",
+    "dictCancelUploadConfirmation": "Вы действительно хотите отменить загрузки?",
+    "dictRemoveFile":               "Удалить файл",
+    "dictRemoveFileConfirmation":   "Вы действительно хотите удалить файл?"
+  },
+  "swal": {
+    "title": {
+      "success":  "Успешно!",
+      "error":    "Ошибка!"
+    }
+  }
 }

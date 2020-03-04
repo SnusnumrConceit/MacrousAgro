@@ -19,6 +19,7 @@ class PhotoController extends Controller
     {
         $this->photo = $photo;
         $this->media = $media;
+//        $this->authorizeResource(Photo::class, 'photo');
     }
 
     /**

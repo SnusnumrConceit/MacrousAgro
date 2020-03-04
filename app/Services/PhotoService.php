@@ -31,7 +31,7 @@ class PhotoService
                 return $q->where('title', 'LIKE', '%' . $request->keyword . '%');
             });
 
-            $photos = $photos->paginate(6);
+            $photos = $photos->latest('created_at')->paginate(7);
 
             return response()->json([
                 'photos' => new PhotoCollection($photos)
@@ -47,10 +47,12 @@ class PhotoService
 
     public function store(PhotoStoreRequest $request)
     {
+        // TODO вынести в сервис
         $fileName = substr($request->path, strrpos($request->path, '/'));
         $destination = Photo::MEDIA_PATH . $fileName;
 
         $this->media->move($request->path, $destination);
+        //
 
         $photo = Photo::create([
             'title' => $request->title,
@@ -89,6 +91,7 @@ class PhotoService
 
     public function destroy(Photo $photo)
     {
+        // TODO переделать на Mediable
         $this->media->delete(Photo::MEDIA_PATH . '/' . $photo->path);
         $photo->delete();
 

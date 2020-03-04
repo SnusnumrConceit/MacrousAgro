@@ -4,17 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
+use App\Repositories\UserRepo;
 use App\Services\UserService;
 use App\User;
 use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public $user;
+    public $service, $user;
 
-    public function __construct(UserService $user)
+    public function __construct(UserService $userService, UserRepo $user)
     {
         $this->user = $user;
+        $this->service = $userService;
+//        $this->authorizeResource(User::class, 'user');
     }
 
     /**
@@ -56,7 +59,7 @@ class UserController extends Controller
      */
     public function show(User $user)
     {
-        return $this->show($user);
+        return $this->user->show($user);
     }
 
     /**

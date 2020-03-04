@@ -26,11 +26,15 @@ class VideoService
         try {
             $video = Video::query();
 
-            $video->when(isset($request->keyword), function ($q) use ($request) {
-                return $q->where('title', 'LIKE', '%' . $request->keyword . '%');
+            $video->when($request->keyword, function ($q, $keyword) {
+                return $q->where('title', 'LIKE', '%' . $keyword . '%');
             });
 
-            $videos = $video->paginate(15);
+            $video->when($request->created_at, function ($q, $created_at) {
+                return $q->whereBetween('created_at', [$created_at . ' 00:00', $created_at . ' 23:59']);
+            });
+
+            $videos = $video->latest('created_at')->paginate(15);
 
             return response()->json([
                 'videos' => new VideoCollection($videos)
