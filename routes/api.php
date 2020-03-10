@@ -17,6 +17,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('logout', 'AuthController@logout');
+});
+
 \App\Models\OrderStatusCode::apiRoutes();
 
 Route::get('category/{category}/products', 'CategoryController@products');

@@ -3,6 +3,7 @@
         <v-navigation-drawer v-model="panel.display"
                              :mini-variant="panel.mini"
                              color="success"
+                             ref="navigation_drawer"
                              dark
                              expand-on-hover
                              absolute
@@ -51,8 +52,20 @@
             </v-list>
 
             <template v-slot:append>
-                <div class="pa-2">
-                    <v-btn block>Выйти</v-btn>
+                <div class="pa-2" v-if="true">
+                    <v-row>
+                        <v-col cols="4">
+                        <!--<v-col :cols="$refs.navigation_drawer.isMiniVariant() ? '12' : '4'">-->
+                            <v-btn block @click="">Вход</v-btn>
+                        </v-col>
+                        <v-col cols="8">
+                        <!--<v-col :cols="$refs.navigation_drawer.isMiniVariant() ? '12' : '8'">-->
+                            <v-btn block @click="">Регистрация</v-btn>
+                        </v-col>
+                    </v-row>
+                </div>
+                <div class="pa-2" v-else>
+                    <v-btn block @click="logout">Выйти</v-btn>
                 </div>
             </template>
 
@@ -140,16 +153,20 @@
         return this.isProductCategory(category) ? this.displayChildCategories = ! this.displayChildCategories : '';
       },
 
-      async getUser() {
-        const response = await axios.get(`${this.apiRoute}/admin/users/24`);
-
-        this.user = response.data.user;
-      },
+      // async getUser() {
+      //   const response = await axios.get(`${this.apiRoute}/admin/users/24`);
+      //
+      //   this.user = response.data.user;
+      // },
 
       async initData() {
-        await this.getUser();
+        // await this.getUser();
 
         await this.loadCategories();
+      },
+
+      logout() {
+        this.$auth.logout();
       }
     },
 

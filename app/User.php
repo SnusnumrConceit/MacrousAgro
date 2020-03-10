@@ -7,13 +7,14 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Kodeine\Acl\Models\Eloquent\Role;
 use Kodeine\Acl\Traits\HasRole;
+use Laravel\Airlock\HasApiTokens;
 use Route;
 
 //use Kodeine\Acl\Traits\HasRole;
 
 class User extends Authenticatable
 {
-    use HasRole;
+    use HasRole, HasApiTokens;
 
     /**
      * The attributes that are mass assignable.
@@ -46,7 +47,8 @@ class User extends Authenticatable
 
     protected $appends = [
         'full_name', 'formatted_birthday',
-        'registration_date', 'last_activity_date'
+        'registration_date', 'last_activity_date',
+        'role'
     ];
 
     protected $dates = [
@@ -58,12 +60,9 @@ class User extends Authenticatable
         return $this->belongsToMany(Role::class, 'role_user', 'user_id', 'role_id');
     }
 
-    public function role()
+    public function getRoleAttribute()
     {
-//        if (count($this->roles)) {
-//            dd($this->roles);
-//        }
-//        return (count($this->roles)) ? $this->roles()->first() : '';
+        return $this->roles()->first()->name;
     }
 
     public function getFullNameAttribute()

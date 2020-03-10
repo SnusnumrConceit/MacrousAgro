@@ -11,34 +11,50 @@
                     </v-tab>
 
                     <v-tab-item>
-                        <v-data-table :items="orders" :headers="headers">
-                            <template v-slot:body="{ items }">
-                                <tbody>
-                                    <tr v-for="item in items" :key="item.id">
-                                        <td>{{ item.products.title }}</td>
-                                        <td>{{ item.price }}</td>
-                                        <td>{{ item.status_code.description }}</td>
+                        <div v-if="order.products.length">
+                            <v-simple-table>
+                                <template v-slot:default>
+                                    <thead>
+                                    <th v-for="header in table.headers" :key="header" class="text-left">
+                                        {{ header }}
+                                    </th>
+                                    </thead>
+                                    <tbody>
+                                    <tr v-for="product in order.products" :key="product.id" v-if="order.products.length">
+                                        <td class="text-left">{{ product.title }}</td>
+                                        <td class="text-left">{{ product.price }}</td>
                                         <td>
                                             <v-icon
                                                     small
-                                                    @click="remove(item)"
+                                                    @click="removeFromCart(product)"
                                             >
                                                 mdi-delete
                                             </v-icon>
                                         </td>
                                     </tr>
-                                </tbody>
-                            </template>
+                                    </tbody>
+                                </template>
 
-                            <template v-slot:no-data>
-                                У Вас нет заказов
-                            </template>
-                        </v-data-table>
-                        <h3 class="text-right">Итого: 1000 руб.</h3>
-                        <v-card-actions>
-                            <v-btn outlined color="success">Оплатить</v-btn>
-                            <v-btn outlined color="error">Отменить</v-btn>
-                        </v-card-actions>
+                                <template v-slot:no-data>
+                                    У Вас нет заказов
+                                </template>
+                            </v-simple-table>
+                            <h3 class="text-right" v-if="order.products.length">Итого: {{ order.price }} руб.</h3>
+
+                            <v-card-actions>
+                                <v-btn outlined color="success">Оплатить</v-btn>
+                                <v-btn outlined color="error" @click="removeOrder">Отменить</v-btn>
+                            </v-card-actions>
+                        </div>
+                        <v-banner single-line v-else>
+                            У Вас нет текущих заказов
+                        </v-banner>
+                    </v-tab-item>
+
+                    <v-tab-item>
+                        <v-banner single-line>
+                            Нет ни одного заказа в обработке
+                        </v-banner>
                     </v-tab-item>
 
                     <v-tab-item>
@@ -51,16 +67,13 @@
                 </v-tabs>
 
 
-
-
-
             </v-card-text>
         </v-card>
 
 
         <!--<v-parallax-->
-                <!--dark-->
-                <!--src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"-->
+        <!--dark-->
+        <!--src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"-->
         <!--&gt;-->
 
         <!--</v-parallax>-->
@@ -68,13 +81,21 @@
 </template>
 
 <script>
+  import {mapGetters, mapActions} from 'vuex';
+
   export default {
     name: "cabinet",
 
     data() {
       return {
         table: {
-          header: this.$t('orders.table.header')
+          header: this.$t('orders.table.header'),
+          headers: [
+            'Наименование',
+            'Стоимость',
+            // 'Статус',
+            ''
+          ],
         },
 
         tabs: [
@@ -82,34 +103,14 @@
             name: 'Текущие'
           },
           {
+            name: 'В обработкке'
+          },
+          {
             name: 'Завершённые'
           }
         ],
 
         selectedTab: 'Текущие',
-
-        headers: [
-          {
-            text: 'Наименование',
-            value: `product.name`,
-            align: 'center'
-          },
-          {
-            text: 'Стоимость',
-            value: 'price',
-            align: 'center'
-          },
-          {
-            text: 'Статус',
-            value: `status_code.id`,
-            align: 'center'
-          },
-          {
-            text: '',
-            value: '',
-            align: 'center'
-          }
-        ],
 
         orders: [
           {
@@ -140,10 +141,17 @@
       }
     },
 
+    computed: {
+      ...mapGetters('cart', {
+        'order': 'order'
+      }),
+    },
+
     methods: {
-      remove(item) {
-        this.orders = this.orders.filter(order => order !== item);
-      }
+      ...mapActions('cart', [
+        'removeOrder',
+        'removeFromCart'
+      ])
     }
   }
 </script>

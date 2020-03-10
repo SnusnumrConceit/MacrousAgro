@@ -129,16 +129,18 @@
 
 <script>
   import debounce from '../../../debounce';
+  // import Category from '../../../store/models/category';
+
+  import { mapGetters } from 'vuex';
 
   export default {
     name: "index",
 
     data() {
       return {
-        categories: [],
+        // categories: [],
 
         searching: false,
-        loading: false,
 
         search: {
           keyword: '',
@@ -189,30 +191,44 @@
 
       editFormRoute() {
         return '/admin/categories/update';
-      }
+      },
+
+      ...mapGetters({
+        'categories': 'category/categories',
+        'loading':    'category/loading'
+      })
     },
 
     methods: {
       async loadData() {
-        this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/categories`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            this.loading = false;
-            break;
-          case 'success':
-            this.categories = response.data.categories;
-            // this.pagination.last_page = response.data.categories.last_page;
-            this.loading = false;
-            break;
-        }
+        this.$store.dispatch('category/getCategories');
       },
+      // async loadData() {
+      //   this.loading = true;
+      //
+      //   try {
+      //     const response = await axios.get(`${this.$attrs.apiRoute}/categories`, {
+      //       params: {
+      //         page: this.pagination.page
+      //       }
+      //     });
+      //
+      //     switch (response.data.status) {
+      //       case 'error':
+      //         this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+      //         this.loading = false;
+      //         break;
+      //       case 'success':
+      //         this.categories = response.data.categories;
+      //         // this.pagination.last_page = response.data.categories.last_page;
+      //         break;
+      //     }
+      //   } catch (e) {
+      //
+      //   } finally {
+      //     this.loading = false;
+      //   }
+      // },
 
       async save() {
         const response = await axios.post(`${this.$attrs.apiRoute}/categories`, {

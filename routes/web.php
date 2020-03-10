@@ -15,9 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
+//Auth::routes();
+//
+//Route::get('/home', 'HomeController@index')->name('home');
 
 
 /** Admin Routes */
@@ -28,4 +28,4 @@ Route::get('admin/{any}', function () {
 
 Route::get('{any}', function () {
     return view('welcome');
-});
+})->where('any', '.*');

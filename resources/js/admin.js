@@ -27,9 +27,6 @@ Vue.component('example-component', require('./components/ExampleComponent.vue').
 import Admin from './components/admin/admin';
 // import Dashboard from './components/dashboard/dashboard';
 
-import VueRouter from "vue-router";
-Vue.use(VueRouter);
-
 import VueSweetalert2 from "vue-sweetalert2";
 import 'sweetalert2/dist/sweetalert2.min.css';
 
@@ -40,11 +37,13 @@ Vue.use(Vuetify);
 
 import i18n from "./i18n";
 
-import { routes } from './routes/admin_router.js';
-let router = new VueRouter({routes, mode: 'history'});
+// axios.defaults.baseURL = `${process.env.MIX_APP_URL}/api/v1`
 
 import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
+
+import DebouncePlugin from './plugins/debounce';
+Vue.use(DebouncePlugin);
 
 let vuetify = new Vuetify({
   theme: {
@@ -53,6 +52,24 @@ let vuetify = new Vuetify({
     }
   }
 });
+
+import { store } from './store/store';
+
+/** Настройка HTTP **/
+import VueRouter from "vue-router";
+import router from './routes/admin_router';
+Vue.router = router;
+Vue.use(VueRouter, router);
+
+/** Настройка HTTP **/
+import axios from 'axios';
+import VueAxios from 'vue-axios';
+Vue.use(VueAxios, axios);
+
+/** Настройка авторизации **/
+import auth from './auth';
+import VueAuth from '@websanova/vue-auth';
+Vue.use(VueAuth, auth);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application
@@ -62,6 +79,7 @@ let vuetify = new Vuetify({
 const app = new Vue({
   el: '#app',
   router,
+  store,
   i18n,
   vuetify,
   components: {

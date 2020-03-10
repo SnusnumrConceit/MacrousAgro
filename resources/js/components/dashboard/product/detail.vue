@@ -23,7 +23,7 @@
                 </v-row>
             </v-card-text>
             <v-card-actions>
-                <v-btn outlined color="success" @click="addToCart">
+                <v-btn outlined color="success" @click="addToCart(product)">
                     В корзину
                 </v-btn>
                 <v-btn outlined color="default" @click="$router.go(-1)">
@@ -35,6 +35,8 @@
 </template>
 
 <script>
+  import {mapGetters, mapActions} from 'vuex';
+
   export default {
     name: "detail",
 
@@ -57,9 +59,9 @@
         this.product = response.data.product;
       },
 
-      addToCart() {
-        localStorage.setItem('products', JSON.stringify(this.product));
-      }
+        ...mapActions('cart', [
+          'addToCart'
+        ]),
     },
 
     created() {
