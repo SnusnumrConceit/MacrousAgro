@@ -3,15 +3,10 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Http\Requests\Product\ProductStoreRequest;
-use App\Http\Requests\Product\ProductUpdateRequest;
-use App\Http\Resources\Product\ProductCollection;
-use App\Http\Resources\Product\ProductDetail;
-use App\Models\Category;
-use App\Models\Mediable;
 use App\Models\Product;
-use App\Services\MediaService;
 use Illuminate\Http\Request;
+use App\Services\MediaService;
+use App\Http\Resources\Product\ProductCollection;
 
 class ProductRepo
 {
@@ -23,9 +18,10 @@ class ProductRepo
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the products.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
     public function index(Request $request)
     {
@@ -43,15 +39,14 @@ class ProductRepo
             return $q->where('category_id', $category);
         });
 
-        return response()->json([
-            'products' => $products->paginate(15)
-//            'products' => new ProductCollection($products->paginate(15))
-        ], 200);
+        return $products->paginate();
+
 //        return response()->json([
 //            'products' => Product::paginate(15)
 //        ], 200);
     }
 
+    // TODO нужно ли оно? мб объединить с Index
     public function search(Request $request)
     {
         $products = Product::query();
@@ -70,112 +65,37 @@ class ProductRepo
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created product in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @param array $productData
+     * @throws \Exception
      */
-    public function create()
+    public function store(array $productData)
     {
+        $product = Product::create($productData);
 
+        return $product;
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Update the product in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param array $productData
+     * @param Product $product
      */
-    public function store(ProductStoreRequest $request)
+    public function update(array $productData, Product $product) : void
     {
-        $data = $request->validated();
-
-        $product = Product::create($data);
-
-        /* TODO упростить связывание с Media */
-        $fileName = substr($request->url, strrpos($request->url, '/'));
-        $destination = Product::MEDIA_PATH . $fileName;
-
-        \App\Traits\Mediable::move($request->url, $destination);
-
-        $data['url'] = $fileName;
-
-        if ($request->media_id) {
-            $product->media()->create([
-                'media_id' => $request->media_id,
-                'mediable_id' => $product->id,
-                'mediable_type' => self::class
-            ]);
-        }
-
-        return response()->json([
-            'status' => 'success',
-            'msg' => __('product_msg_success_create')
-        ], 200);
+        $product->update($productData);
     }
 
     /**
-     * Display the specified resource.
+     * Remove the product from storage.
      *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @param Product $product
+     * @throws \Exception
      */
-    public function show(Product $product)
-    {
-        return response()->json([
-            'product' => new ProductDetail($product)
-        ], 200);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Product $product)
-    {
-        return response()->json([
-            'product' => new ProductDetail($product),
-            'categories' => Category::all()
-        ], 200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function update(ProductUpdateRequest $request, Product $product)
-    {
-        $data = $request->validated();
-
-        $product->update($data);
-
-        /* TODO упростить связывание с Media */
-
-        return response()->json([
-            'status' => 'success',
-            'msg' => __('product_msg_success_update')
-        ], 200);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Product $product)
+    public function destroy(Product $product) : void
     {
         $product->delete();
-
-        /* TODO упростить связывание с Media */
-
-        return response()->json([
-            'status' => 'success',
-            'msg' => __('product_msg_success_delete')
-        ], 200);
     }
 }

@@ -42,7 +42,7 @@
                             <h3 class="text-right" v-if="order.products.length">Итого: {{ order.price }} руб.</h3>
 
                             <v-card-actions>
-                                <v-btn outlined color="success">Оплатить</v-btn>
+                                <v-btn outlined color="success" @click="createOrder">Оплатить</v-btn>
                                 <v-btn outlined color="error" @click="removeOrder">Отменить</v-btn>
                             </v-card-actions>
                         </div>
@@ -150,7 +150,8 @@
     methods: {
       ...mapActions('cart', [
         'removeOrder',
-        'removeFromCart'
+        'removeFromCart',
+        'createOrder'
       ])
     }
   }

@@ -2,11 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
+use Illuminate\Http\Request;
+use App\Repositories\OrderRepo;
+use App\Http\Resources\Order\OrderCollection;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Http\Requests\Order\OrderUpdateRequest;
-use App\Models\Order;
-use App\Repositories\OrderRepo;
-use Illuminate\Http\Request;
 
 class OrderController extends Controller
 {
@@ -19,79 +20,95 @@ class OrderController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the orders.
      *
      * @return \Illuminate\Http\Response
      */
     public function index(Request $request)
     {
-        return $this->order->index($request);
+        $orders = $this->order->index($request);
+
+        return response()->json(
+            new OrderCollection($orders)
+        , 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created orders in storage.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param OrderStoreRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function store(OrderStoreRequest $request)
     {
-        return $this->order->store($request);
+        $this->order->store($request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'message' => __('order_msg_success_create')
+        ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Display the order.
      *
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
     public function show(Order $order)
     {
-        return $this->order->show($order);
+        return response()->json([
+            'order' => $order
+        ], 200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the order.
      *
      * @param  \App\Models\Order  $order
      * @return \Illuminate\Http\Response
      */
     public function edit(Order $order)
     {
-        return $this->order->edit($order);
+        return response()->json([
+            'order' => $order
+        ], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the order in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param OrderUpdateRequest $request
+     * @param Order $order
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function update(OrderUpdateRequest $request, Order $order)
     {
-        return $this->order->update($request, $order);
+        $this->order->update($request->validated(), $order);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => __('order_msg_success_update')
+        ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the order from storage.
      *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param Order $order
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function destroy(Order $order)
     {
-        return $this->order->destroy($order);
+        $this->order->destroy($order);
+
+        return response()->json([
+            'status'  => 'success',
+            'message' => __('order_msg_success_delete')
+        ], 200);
     }
 
     public function search(Request $request)

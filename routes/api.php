@@ -13,7 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:api')->get('/user', function (Request $request) {
+Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
 
@@ -34,8 +34,10 @@ Route::resource('videos', 'VideoController')->only(['index']);
 Route::get('products/search', 'ProductController@index');
 Route::resource('products', 'ProductController')->only(['show']);
 
+Route::resource('orders', 'OrderController');
+
 Route::group([
-    'prefix' => 'admin'
+    'prefix' => 'admin',
 ], function () {
     Route::get('/', function () {
         return view('layouts.admin');

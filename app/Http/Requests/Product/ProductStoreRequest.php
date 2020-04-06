@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Product;
 
+use App\Models\Product;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,6 +10,16 @@ use Illuminate\Validation\ValidationException;
 
 class ProductStoreRequest extends FormRequest
 {
+    private $minWidth, $minHeight, $maxWidth, $maxHeight, $maxSize;
+
+    protected function prepareForValidation()
+    {
+        $this->minWidth  = Product::DIMENSIONS['min_width'];
+        $this->minHeight = Product::DIMENSIONS['min_height'];
+        $this->maxWidth  = Product::DIMENSIONS['max_width'];
+        $this->maxHeight = Product::DIMENSIONS['max_height'];
+        $this->maxSize   = Product::MAX_FILE_SIZE;
+    }
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -30,8 +41,8 @@ class ProductStoreRequest extends FormRequest
             'title' => 'required|max:100',
             'description' => 'required|between:10,2000',
             'price' => 'required|numeric',
-//            'url' => 'required',
-            'category_id' => 'required|exists:categories,id'
+            'category_id' => 'required|exists:categories,id',
+            'image' =>  "nullable|file|mimes:jpg,jpeg,png|max:$this->maxSize|dimensions:min_width:$this->minWidth,min_height:$this->minHeight,max_width:$this->maxWidth,max_height:$this->maxHeight"
         ];
     }
 

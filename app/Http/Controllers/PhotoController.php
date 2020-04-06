@@ -2,120 +2,120 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Photo;
+use App\Traits\Mediable;
+use App\Repositories\PhotoRepo;
+use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Photo\PhotoStoreRequest;
 use App\Http\Requests\Photo\PhotoUpdateRequest;
-use App\Http\Requests\Photo\PhotoUploadRequest;
-use App\Models\Photo;
-use App\Services\MediaService;
-use App\Services\PhotoService;
-use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
+use App\Http\Resources\Photo\PhotoCollection;
+use App\Http\Resources\Photo\Photo as PhotoResource;
 
 class PhotoController extends Controller
 {
     private $photo, $media;
 
-    public function __construct(PhotoService $photo, MediaService $media)
+    public function __construct(PhotoRepo $photo)
     {
         $this->photo = $photo;
-        $this->media = $media;
 //        $this->authorizeResource(Photo::class, 'photo');
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the photos.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return JsonResponse
      */
-    public function index(Request $request) : JsonResponse
+    public function index(Request $request)
     {
-        return $this->photo->index($request);
+        $photos = $this->photo->index($request);
+
+        return response()->json([
+            'photos' => new PhotoCollection($photos)
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created photo in storage.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param PhotoStoreRequest $request
+     * @return JsonResponse
      */
     public function store(PhotoStoreRequest $request)
     {
-        return $this->photo->store($request);
+        $media = Mediable::upload(Photo::MEDIA_PATH, $request->image, 'photos');
+
+        $photo = $this->photo->store($request->validated());
+
+        $photo->medias()->sync($media->id);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('photo_msg_success_create')
+        ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Display the photo.
      *
      * @param  \App\Models\Photo  $photo
      * @return \Illuminate\Http\Response
      */
     public function show(Photo $photo)
     {
-        return $this->photo->show($photo);
+        return response()->json([
+            'photo' => new PhotoResource($photo)
+        ], 200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the photo.
      *
      * @param  \App\Models\Photo  $photo
      * @return \Illuminate\Http\Response
      */
     public function edit(Photo $photo)
     {
-        return $this->photo->edit($photo);
+        return response()->json([
+            'photo' => new PhotoResource($photo)
+        ], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the photo in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  PhotoUpdateRequest  $request
      * @param  \App\Models\Photo  $photo
      * @return \Illuminate\Http\Response
      */
     public function update(PhotoUpdateRequest $request, Photo $photo)
     {
-        return $this->photo->update($request, $photo);
+        $this->photo->update($request->validated(), $photo);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('photo_msg_success_update')
+        ], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Photo  $photo
-     * @return \Illuminate\Http\Response
+     * @param Photo $photo
+     * @return JsonResponse
+     * @throws \Exception
      */
     public function destroy(Photo $photo)
     {
-        return $this->photo->destroy($photo);
-    }
+        $this->photo->destroy($photo);
 
-    public function upload(PhotoUploadRequest $request)
-    {
-        $photo = $request->file('file');
-
-        $tmp_path = $this->media->upload(Photo::TMP_MEDIA_PATH, $photo);
-
-        return response()->json([
-            'tmp_path' => $tmp_path
-        ], 200);
-    }
-
-    public function removeContent(Request $request)
-    {
-        $this->media->delete($request->path);
+        $photo->remove($photo->medias()->first());
 
         return response()->json([
             'status' => 'success',
-            'msg' => 'Фотография успешно удалена из временного хранилища'
+            'msg' => __('photo_msg_success_delete')
         ], 200);
     }
 }

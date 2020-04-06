@@ -1,154 +1,60 @@
 <?php
-/**
- * Created by PhpStorm.
- * User: snusnumr
- * Date: 05.03.20
- * Time: 2:27
- */
+declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Http\Requests\Category\CategoryStoreRequest;
-use App\Http\Resources\Category\CategoryCollection;
 use App\Models\Category;
-use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+
 
 class CategoryRepo
 {
     /**
-     * Show the form for creating a new resource.
+     * Get list of categories from storage
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
      */
-    public function store(Request $request) : JsonResponse
+    public function index(Request $request)
     {
-        try {
-            /** Validate Input */
-            Category::create([
-                'name' => $request->name
-            ]);
+        $categories = Category::query();
 
-            return response()->json([
-                'status' => 'success',
-                'msg' => __('category_msg_success_create')
-            ], 200);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
+        $categories->when(!empty($request->keyword), function ($q) use ($request) {
+            return $q->where('name', 'LIKE', $request->keyword . '%');
+        });
+
+        return $categories->orderBy('name')->paginate();
     }
 
     /**
-     * Store a newly created resource in storage.
+     * Store a newly created category in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param array $categoryDate
      */
-    public function index(Request $request) : JsonResponse
+    public function store(array $categoryDate) : void
     {
-        try {
-            $categories = Category::query();
-
-            $categories->when(! empty($request->keyword), function ($q) use ($request) {
-                return $q->where('name', 'LIKE', $request->keyword . '%');
-            });
-
-            $categories = $categories->orderBy('name')->paginate(15);
-
-            return response()->json([
-                'categories' => new CategoryCollection($categories),
-                'status' => 'success'
-            ], 200);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
+        $category = Category::create($categoryDate);
     }
 
     /**
-     * Display the specified resource.
+     * Update the category in storage.
      *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
+     * @param array $articleData
+     * @param Category $category
      */
-    public function show(Category $category) : JsonResponse
+    public function update(array $articleData, Category $category) : void
     {
-        try {
-            return response()->json([
-                'category' => $category
-            ], 200);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
+        $category->update($articleData);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Remove the category from storage.
      *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
+     * @param Category $category
+     * @throws \Exception
      */
-    public function edit(Category $category)
+    public function destroy(Category $category) : void
     {
-        return response()->json([
-            'category' => $category
-        ], 200);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function update(CategoryStoreRequest $request, Category $category) : JsonResponse
-    {
-        try {
-            $category->update([
-                'name' => $request->name
-            ]);
-
-            return response()->json([
-                'status' => 'success',
-                'msg' => __('category_msg_success_update')
-            ], 200);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category) : JsonResponse
-    {
-        try {
-            $category->delete();
-
-            return response()->json([
-                'status' => 'success',
-                'msg' => __('category_msg_success_delete')
-            ], 200);
-        } catch (\Exception $error) {
-            return response()->json([
-                'status' => 'error',
-                'msg' => $error->getMessage()
-            ]);
-        }
+        $category->delete();
     }
 }

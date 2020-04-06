@@ -8,16 +8,7 @@
             <v-card-text>
                 <v-row>
                     <v-col>
-                        <v-img :src="product.url" alt="" v-if="product.url.length"></v-img>
-
-                        <vue-dropzone ref="product_dropzone"
-                                      id="dropzone"
-                                      v-else
-                                      :options="dropzone_options"
-                                      @vdropzone-success="onDropzoneSuccess"
-                                      @vdropzone-error="onDropzoneError"
-                                      @vdropzone-removed-file="onDropzoneRemoved"
-                                      @vdropzone-sending="onDropzoneSending"></vue-dropzone>
+                        <preview-upload @uploaded="onUploadImage" ref="previewUpload" v-if="! loading" :src="product.src"></preview-upload>
                     </v-col>
                     <v-col>
                         <v-text-field v-model="product.title"
@@ -80,24 +71,19 @@
 </template>
 
 <script>
-  import vue2Dropzone from 'vue2-dropzone';
-  import 'vue2-dropzone/dist/vue2Dropzone.min.css';
-  import dropzone_options from "../../../mixins/dropzone_options";
+  import previewUpload from '../../../custom_components/previewUploader';
 
   export default {
     name: "form",
 
-    mixins: [dropzone_options],
-
     components: {
-      vueDropzone: vue2Dropzone
+      previewUpload
     },
 
     data() {
       return {
         product: {
           title: '',
-          url: '',
           description: '',
           price: '',
           category_id: ''
@@ -149,6 +135,10 @@
     },
 
     methods: {
+      onUploadImage(image) {
+        this.product.image = image;
+      },
+
       async loadData() {
         const response = await axios.get(`${this.$attrs.apiRoute}/products/${this.ID}/edit`);
 
@@ -185,9 +175,23 @@
       },
 
       async save() {
-        this.modal = false;
+        const formData = new FormData();
 
-        const response = await axios.put(`${this.$attrs.apiRoute}/products/${this.ID}`, this.product);
+        for (const prop in this.product) {
+          formData.append(prop, this.product[prop]);
+        }
+
+        formData.append('_method', 'PATCH');
+
+        const response = await axios.post(
+            `${this.$attrs.apiRoute}/products/${this.ID}`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+        );
 
         switch (response.status) {
           case 200:
@@ -205,47 +209,6 @@
         this.$router.go(-1);
       },
 
-      initializeDropzone() {
-        this.dropzone_options.url = `${this.$attrs.apiRoute}/products/upload`;
-        this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.images');
-        this.dropzone_options.acceptedFiles = '.jpeg,.jpg,.png';
-      },
-
-      onDropzoneSuccess(file, response) {
-        this.product.url = response.tmp_path;
-        this.$refs.product_dropzone.disable();
-      },
-
-      onDropzoneError(file, response, xhr) {
-        console.log(response.data);
-      },
-
-      onDropzoneSending(file, xhr, formData) {
-        formData.append('category', 'product');
-      },
-
-      async onDropzoneRemoved(file, error, xhr) {
-        console.log(file, error, xhr);
-        if (error) {
-          console.error(error);
-          return;
-        }
-
-        const response = await axios.post('/admin/products/remove_tmp_product', {path: this.product.url});
-
-        this.$refs.product_dropzone.enable();
-
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            break;
-
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
-        }
-      },
-
       async initData() {
         this.loading = true;
 
@@ -259,12 +222,6 @@
 
     created() {
       this.initData();
-
-      this.initializeDropzone(
-          `${this.$attrs.apiRoute}/upload`,
-          this.$t('dropzone.dictDefaultMessage.images'),
-          '.jpg,.jpeg,.png'
-      );
     }
 
   }

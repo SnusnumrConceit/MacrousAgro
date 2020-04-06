@@ -12,8 +12,8 @@ class Mediable extends Model
 
     public $timestamps = false;
 
-    public function mediable()
-    {
-        $this->morphTo();
-    }
+//    public function mediable()
+//    {
+//        $this->morphTo();
+//    }
 }

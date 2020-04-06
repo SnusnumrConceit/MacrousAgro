@@ -10,4 +10,9 @@ class Media extends Model
 
     public $timestamps = false;
 
+    public function mediable()
+    {
+        return $this->morphTo();
+    }
+
 }

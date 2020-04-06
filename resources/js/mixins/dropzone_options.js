@@ -24,7 +24,7 @@ export default {
   },
 
   methods: {
-    initializeDropzone(url, dictDefaultMessage, acceptedFiles) {
+    initializeDropzone(url, dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.images'), acceptedFiles = '.jpg,.jpeg,.png') {
       this.dropzone_options.url = url;
       this.dropzone_options.dictDefaultMessage = dictDefaultMessage;
       this.dropzone_options.acceptedFiles = acceptedFiles;

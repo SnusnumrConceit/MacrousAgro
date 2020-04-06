@@ -21,7 +21,7 @@
                 <v-list-item v-for="link in links" :key="link.title" class="text-left">
                     <v-list-item-content>
                         <v-list-item-title>
-                            <router-link :to="link.href">
+                            <router-link :to="link.href" class="d-block">
                                 <i :class="link.icon"></i>
                                 <span>
                                    {{ link.title }}
@@ -60,7 +60,7 @@
           },
           {
             title: this.$t('nav.links.articles'),
-            href: '/admin/news',
+            href: '/admin/articles',
             icon: 'pe-7s-news-paper'
           },
           {

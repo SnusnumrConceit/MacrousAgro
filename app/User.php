@@ -7,14 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Kodeine\Acl\Models\Eloquent\Role;
 use Kodeine\Acl\Traits\HasRole;
-use Laravel\Airlock\HasApiTokens;
+use Laravel\Cashier\Billable;
 use Route;
-
-//use Kodeine\Acl\Traits\HasRole;
 
 class User extends Authenticatable
 {
-    use HasRole, HasApiTokens;
+    use HasRole, Billable;
 
     /**
      * The attributes that are mass assignable.
@@ -50,6 +48,8 @@ class User extends Authenticatable
         'registration_date', 'last_activity_date',
         'role'
     ];
+
+    protected $perPage = 15;
 
     protected $dates = [
       'created_at', 'updated_at', 'birthday'

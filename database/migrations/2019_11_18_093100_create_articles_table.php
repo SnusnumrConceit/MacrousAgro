@@ -20,8 +20,6 @@ class CreateArticlesTable extends Migration
             $table->text('description')
                 ->nullable()
                 ->comment('Содержимое новости');
-            $table->string('image')
-                ->comment('Путь до картинки');
             $table->date('publication_date')
                 ->comment('Дата публикации');
             $table->tinyInteger('is_publicated')

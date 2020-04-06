@@ -18,7 +18,7 @@ class Photo extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'path' => Storage::url('photos' . $this->path)
+            'path' => $this->src
         ];
     }
 }

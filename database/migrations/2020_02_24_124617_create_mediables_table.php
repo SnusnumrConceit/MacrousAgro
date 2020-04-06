@@ -13,11 +13,10 @@ class CreateMediablesTable extends Migration
      */
     public function up()
     {
-        Schema::create('mediable', function (Blueprint $table) {
+        Schema::create('mediables', function (Blueprint $table) {
             $table->bigIncrements('id');
-            $table->unsignedInteger('media_id')->foreign()->references('id')->on('media')->onDelete('cascade');
-            $table->string('mediable_id')->index()->comment('id полиморфа модели');
-            $table->string('mediable_type', 50)->index()->comment('наименование полиморфа модели');
+            $table->unsignedInteger('media_id')->foreign()->references('id')->on('media')->onUpdate('cascade')->onDelete('cascade');
+            $table->nullableMorphs('mediable');
         });
     }
 
@@ -35,6 +34,6 @@ class CreateMediablesTable extends Migration
 //            });
 //        }
 
-        Schema::dropIfExists('mediable');
+        Schema::dropIfExists('mediables');
     }
 }

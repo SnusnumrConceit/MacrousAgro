@@ -27,13 +27,13 @@
                     <tbody>
                     <tr v-for="order in orders" :key="order.id">
                         <td>
-                            {{ order.product.title }}
+                            {{ order.customer.full_name }}
                         </td>
                         <td>
-                            {{ order.order_status_code.name }}
+                            {{ order.status.description }}
                         </td>
                         <td>
-                            {{ order.price }}
+                            {{ order.invoice.payment_amount }} руб.
                         </td>
                         <td class="text-right">
                             <v-tooltip top color="primary">
@@ -50,20 +50,20 @@
                                     </span>
                             </v-tooltip>
 
-                            <v-tooltip top color="error">
-                                <template v-slot:activator="{ on }">
-                                    <v-icon color="red"
-                                            v-on="on"
-                                            small
-                                            @click="remove(order.id)"
-                                    >
-                                        mdi-delete
-                                    </v-icon>
-                                </template>
-                                <span>
-                                        Удалить
-                                    </span>
-                            </v-tooltip>
+                            <!--<v-tooltip top color="error">-->
+                                <!--<template v-slot:activator="{ on }">-->
+                                    <!--<v-icon color="red"-->
+                                            <!--v-on="on"-->
+                                            <!--small-->
+                                            <!--@click="remove(order.id)"-->
+                                    <!--&gt;-->
+                                        <!--mdi-delete-->
+                                    <!--</v-icon>-->
+                                <!--</template>-->
+                                <!--<span>-->
+                                        <!--Удалить-->
+                                    <!--</span>-->
+                            <!--</v-tooltip>-->
                         </td>
                     </tr>
                     </tbody>
@@ -182,8 +182,10 @@
         });
 
         console.log('orders', response.data);
-        this.orders = response.data.data;
+        this.orders = response.data.orders;
         this.pagination.page = response.data.last_page;
+
+        console.log(this.orders);
       },
 
       async searchOrders() {
@@ -194,7 +196,7 @@
           }
         });
 
-        this.orders = response.data.data;
+        this.orders = response.data.orders;
         this.pagination.page = response.data.last_page;
       },
 

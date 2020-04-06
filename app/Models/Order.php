@@ -7,13 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 
 class Order extends Model
 {
+    const STATUS_CREATED   = 'created';
+    const STATUS_CANCELED  = 'canceled';
+    const STATUS_PAYED     = 'payed';
+    const STATUS_DELIVERY  = 'delivery';
+    const STATUS_COMPLETED = 'completed';
+
     protected $fillable = ['product_id', 'user_id', 'order_status_code'];
 
     protected $dates = ['created_at', 'updated_at'];
 
+    protected $perPage = 15;
+
     public function customer()
     {
-        return $this->hasOne(User::class);
+        return $this->belongsTo(User::class, 'user_id', 'id');
     }
 
     public function positions()
@@ -23,16 +31,6 @@ class Order extends Model
 
     public function invoice()
     {
-        return $this->hasOne(Invoice::class);
-    }
-
-    public function getCreatedAtAtrribute()
-    {
-        return $this->created_at->format('d.m.Y');
-    }
-
-    public function orderStatusCode()
-    {
-        return $this->hasOne(OrderStatusCode::class, 'order_status_code', 'id');
+        return $this->hasOne(Invoice::class)->select(['payment_amount']);
     }
 }

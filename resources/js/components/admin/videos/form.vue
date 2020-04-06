@@ -8,7 +8,7 @@
                 <v-card-text>
                     <v-row>
                         <v-col>
-                            <video :src="video.path" controls></video>
+                            <video :src="video.src" controls></video>
                         </v-col>
                         <v-col>
                             <v-text-field v-model="video.title"
@@ -16,7 +16,7 @@
                                           clearable
                                           counter
                                           :rules="form.title.rules"
-                                          maxlength="255">
+                                          maxlength="100">
                             </v-text-field>
                             <v-btn color="success"
                                    :disabled="! form.valid"
@@ -58,7 +58,7 @@
           title: {
             rules: [
               v => v !== '' || this.$t('videos.form.rules.title.required'),
-              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('videos.form.rules.title.length', { length: 255})
+              v => (v !== undefined && v !== null && v.length <= 100) || this.$t('videos.form.rules.title.length', { length: 255})
             ]
           },
         },
@@ -74,6 +74,10 @@
     },
 
     methods: {
+      /**
+       * Получение видео
+       *
+       */
       async loadData() {
         const response = await axios.get(`${this.$attrs.apiRoute}/videos/${this.id}/edit`);
 
@@ -85,6 +89,10 @@
         this.video = response.data.video;
       },
 
+      /**
+       * Удаление видео
+       *
+       */
       async remove() {
         const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${this.id}`);
 
@@ -99,6 +107,10 @@
         }
       },
 
+      /**
+       * Сохранение видео
+       *
+       */
       async save() {
         this.modal = false;
 
@@ -116,10 +128,19 @@
         }
       },
 
+      /**
+       * Назад
+       *
+       */
       goBack() {
         this.$router.go(-1);
       },
 
+      /**
+       * Lazy-загрузка видео
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 

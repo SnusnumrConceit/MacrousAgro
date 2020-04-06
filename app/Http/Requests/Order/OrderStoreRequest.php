@@ -27,9 +27,9 @@ class OrderStoreRequest extends FormRequest
     {
         return [
             'products'    => 'required|array|min:1',
-            'products.*'  => 'required|string|unique',
-            'customer'    => 'required|exists:users,id|is_customer',
-            'status_code' => 'required|exists:order_status_codes,id'
+//            'products.*'  => 'required|string|unique',
+//            'customer'    => 'required|exists:users,id|is_customer',
+//            'status_code' => 'required|exists:order_status_codes,id'
         ];
     }
 
@@ -37,25 +37,20 @@ class OrderStoreRequest extends FormRequest
     {
         return [
             'products'     => __('orders.attributes.products'),
-            'customer'     => __('orders.attributes.customer'),
-            'status_code'  => __('orders.attributes.status_code')
+//            'customer'     => __('orders.attributes.customer'),
+//            'status_code'  => __('orders.attributes.status_code')
         ];
     }
 
-    public function messages()
-    {
-        // заполнить сообщения
-    }
-
-    public function withValidator($validator)
-    {
-        $validator->addExtension('is_customer', function ($attribute, $value) {
-           $user = User::find($value);
-           return $user->hasRole('customer');
-        });
-
-        $validator->addReplacer('is_customer', function () {
-           return __('orders.validation.not_is_customer');
-        });
-    }
+//    public function withValidator($validator)
+//    {
+//        $validator->addExtension('is_customer', function ($attribute, $value) {
+//           $user = User::find($value);
+//           return $user->hasRole('customer');
+//        });
+//
+//        $validator->addReplacer('is_customer', function () {
+//           return __('orders.validation.not_is_customer');
+//        });
+//    }
 }

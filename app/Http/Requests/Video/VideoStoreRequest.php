@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Video;
 
+use App\Models\Video;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,6 +10,17 @@ use Illuminate\Validation\ValidationException;
 
 class VideoStoreRequest extends FormRequest
 {
+    private $minWidth, $minHeight, $maxWidth, $maxHeight, $maxSize;
+
+    protected function prepareForValidation()
+    {
+        $this->minWidth  = Video::DIMENSIONS['min_width'];
+        $this->minHeight = Video::DIMENSIONS['min_height'];
+        $this->maxWidth  = Video::DIMENSIONS['max_width'];
+        $this->maxHeight = Video::DIMENSIONS['max_height'];
+        $this->maxSize   = Video::MAX_FILE_SIZE;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,8 +39,8 @@ class VideoStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            'title' => 'required|max:255',
-            'file' => 'file|mimes:mpg,mpeg,mp4|max:30000'
+            'title' => 'required|max:100',
+            'video' => 'file|mimes:mpg,mpeg,mp4|max:30000'
         ];
     }
 

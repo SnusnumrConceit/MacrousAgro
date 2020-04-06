@@ -3,97 +3,145 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Article\ArticleStoreRequest;
 use App\Models\Article;
-use App\Repositories\ArticleRepo;
-use Illuminate\Http\JsonResponse;
+use App\Services\MediaService;
+use App\Traits\Mediable;
 use Illuminate\Http\Request;
-use Illuminate\Http\Response;
+use Illuminate\Http\JsonResponse;
+use App\Repositories\ArticleRepo;
+use App\Http\Resources\Article\ArticleCollection;
+use App\Http\Requests\Article\ArticleStoreRequest;
+use App\Http\Requests\Article\ArticleUpdateRequest;
 
 class ArticleController extends Controller
 {
-    private $article;
+    // TODO добавить политики
+    private $article, $mediaService;
 
-    public function __construct(ArticleRepo $article)
+    public function __construct(ArticleRepo $article, MediaService $mediaService)
     {
         $this->article = $article;
+        $this->mediaService = $mediaService;
 //        $this->authorizeResource(Article::class, 'article');
     }
 
     /**
-     * Display a listing of the resource.
+     * List of articles in storage
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @param Request $request
+     * @return JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
-    public function index(Request $request)
+    public function index(Request $request): JsonResponse
     {
-        return $this->article->index($request);
+//        $this->authorize('index', Article::class);
+
+        $articles = $this->article->index($request);
+
+        return response()->json([
+            'articles' => new ArticleCollection($articles)
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created article in storage.
      *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function create()
-    {
-
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
+     * @param ArticleStoreRequest $request
+     * @return JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function store(ArticleStoreRequest $request) : JsonResponse
     {
-        return $this->article->store($request);
+//        $this->authorize('create', Article::class);
+
+        $media = Mediable::upload(Article::MEDIA_PATH, $request->image, 'articles');
+
+        $article = $this->article->store($request->validated());
+
+        $article->medias()->sync($media->id);
+
+        return response()->json([
+            'status' => 'success',
+            'msg'    => __('article_msg_success_create')
+        ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Display the article.
      *
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function show(Article $article) : JsonResponse
     {
-        return $this->article->info($article);
+//        $this->authorize('view', Article::class);
+
+        return response()->json([
+            'article' => $article
+        ], 200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the article.
      *
      * @param  \App\Models\Article  $article
      * @return \Illuminate\Http\JsonResponse
      */
     public function edit(Article $article) : JsonResponse
     {
-        return $this->article->info($article);
+//        $this->authorize('update', Article::class);
+
+        return response()->json([
+            'article' => $article
+        ], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the article in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\JsonResponse
+     * @param ArticleUpdateRequest $request
+     * @param Article $article
+     * @return JsonResponse
      */
-    public function update(Request $request, Article $article) : JsonResponse
+    public function update(ArticleUpdateRequest $request, Article $article) : JsonResponse
     {
-        return $this->article->update($request, $article);
+//        $this->authorize('update', Article::class);
+
+        $this->article->update($request->validated(), $article);
+
+        if ($request->validated()['image']) {
+            $article->remove($article->medias()->first());
+
+            $media = Mediable::upload(Article::MEDIA_PATH, $request->image, 'articles');
+
+            $article->medias()->sync($media->id);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'msg'    => __('article_msg_success_update')
+        ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the article from storage.
      *
-     * @param  \App\Models\Article  $article
-     * @return \Illuminate\Http\JsonResponse
+     * @param Article $article
+     * @return JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function destroy(Article $article) : JsonResponse
     {
-        return $this->article->destroy($article);
+//        $this->authorize('delete', Article::class);
+
+        $this->article->destroy($article);
+
+        $article->remove($article->medias()->first());
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('article_msg_success_delete')
+        ], 200);
     }
 
     public function export(Request $request)

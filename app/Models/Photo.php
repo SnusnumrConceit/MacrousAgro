@@ -2,12 +2,23 @@
 
 namespace App\Models;
 
+use \App\Traits\Mediable;
 use Illuminate\Database\Eloquent\Model;
 
 class Photo extends Model
 {
-    const MEDIA_PATH = '/photos';
-    const TMP_MEDIA_PATH = '/tmp' . self::MEDIA_PATH;
+    use Mediable;
 
-    protected $fillable = ['title', 'path'];
+    const MEDIA_PATH = '/photos';
+    const MAX_FILE_SIZE = 3000;
+    const DIMENSIONS = [
+        'min_width'  => 580,
+        'min_height' => 400,
+        'max_width'  => 1280,
+        'max_height' => 1024
+    ];
+
+    protected $perPage = 7;
+
+    protected $fillable = ['title'];
 }

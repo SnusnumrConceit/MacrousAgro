@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Article;
 
+use App\Models\Article;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,6 +10,17 @@ use Illuminate\Validation\ValidationException;
 
 class ArticleStoreRequest extends FormRequest
 {
+    private $minWidth, $minHeight, $maxWidth, $maxHeight, $maxSize;
+
+    protected function prepareForValidation()
+    {
+        $this->minWidth  = Article::DIMENSIONS['min_width'];
+        $this->minHeight = Article::DIMENSIONS['min_height'];
+        $this->maxWidth  = Article::DIMENSIONS['max_width'];
+        $this->maxHeight = Article::DIMENSIONS['max_height'];
+        $this->maxSize   = Article::MAX_FILE_SIZE;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,8 +39,28 @@ class ArticleStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title'             =>  'required|string|max:255',
+            'description'       =>  'required|string|max:4000',
+            'is_publicated'     =>  'required|boolean',
+            'publication_date'  =>  'required|date|date_format:Y-m-d',
+            'image'             =>  "nullable|file|mimes:jpg,jpeg,png|max:$this->maxSize|dimensions:min_width:$this->minWidth,min_height:$this->minHeight,max_width:$this->maxWidth,max_height:$this->maxHeight"
         ];
+    }
+
+    public function attributes()
+    {
+        return parent::attributes();
+//        return [
+//            ''
+//        ];
+    }
+
+    public function messages()
+    {
+        return parent::messages();
+//        return [
+//            ''
+//        ];
     }
 
     protected function failedAuthorization()

@@ -9,25 +9,54 @@ class Article extends Model
 {
     use Mediable;
 
-    protected $fillable = ['title', 'description', 'image', 'publication_date', 'is_publicated'];
+    const MEDIA_PATH = '/articles';
+    const MAX_FILE_SIZE = 3000; // in kbytes
+    const DIMENSIONS = [
+        'min_width'  => 580,
+        'min_height' => 400,
+        'max_width'  => 1280,
+        'max_height' => 1024
+    ];
 
-    protected $appends = ['formatted_publication_date', 'formatted_created_at', 'formatted_updated_at'];
+    protected $perPage = 10;
+
+    protected $fillable = ['title', 'description', 'publication_date', 'is_publicated'];
+
+    protected $appends = ['display_publication_date', 'display_created_at', 'display_updated_at', 'src'];
 
     protected $dates = ['publication_date', 'created_at', 'updated_at'];
 
-    protected $casts = ['is_publicated' => 'boolean'];
+    protected $casts = [
+        'is_publicated' => 'boolean',
+        'publication_date' => 'date:Y-m-d'
+    ];
 
-    public function getFormattedPublicationDateAttribute()
+    /**
+     * Отформатированная дата публикации
+     *
+     * @return mixed
+     */
+    public function getDisplayPublicationDateAttribute()
     {
         return $this->publication_date->format('d.m.Y');
     }
 
-    public function getFormattedCreatedAtAttribute()
+    /**
+     * Отформатированная дата и время создания статьи
+     *
+     * @return mixed
+     */
+    public function getDisplayCreatedAtAttribute()
     {
         return $this->created_at->format('d.m.Y H:i:s');
     }
 
-    public function getFormattedUpdatedAtAttribute()
+    /**
+     * Отформатированная дата и время изменения статьи
+     *
+     * @return mixed
+     */
+    public function getDisplayUpdatedAtAttribute()
     {
         return $this->updated_at->format('d.m.Y H:i:s');
     }

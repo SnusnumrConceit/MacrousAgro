@@ -17,8 +17,8 @@ class CreateVideosTable extends Migration
             $table->bigIncrements('id');
             $table->string('title')
                 ->comment('Название видеоролика');
-            $table->string('path')
-                ->comment('Путь к видео');
+//            $table->string('path')
+//                ->comment('Путь к видео');
             $table->timestamps();
         });
     }

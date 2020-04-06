@@ -3,8 +3,8 @@ import VueRouter from 'vue-router';
 import Categories from '../components/admin/categories/index';
 import CategoryForm from '../components/admin/categories/form';
 
-import News from '../components/admin/news/index';
-import NewsForm from '../components/admin/news/form';
+import Articles from '../components/admin/articles/index';
+import ArticleForm from '../components/admin/articles/form';
 
 import Photos from '../components/admin/photos/index';
 import PhotoForm from '../components/admin/photos/form';
@@ -27,7 +27,7 @@ const routes = [
     name: 'Products',
     component: Products,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -36,7 +36,7 @@ const routes = [
     name: 'ProductForm',
     component: ProductForm,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -45,7 +45,7 @@ const routes = [
     name: 'Order',
     component: Order,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -54,7 +54,7 @@ const routes = [
     name: 'OrderForm',
     component: Order,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -72,26 +72,26 @@ const routes = [
     name: 'CategoryForm',
     component: CategoryForm,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
 
   {
-    path: '/admin/news',
-    name: 'News',
-    component: News,
+    path: '/admin/articles',
+    name: 'Articles',
+    component: Articles,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
   {
-    path: '/admin/news/:id',
-    name: 'NewsForm',
-    component: NewsForm,
+    path: '/admin/articles/:id',
+    name: 'ArticleForm',
+    component: ArticleForm,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -101,7 +101,7 @@ const routes = [
     name: 'Photos',
     component: Photos,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -110,7 +110,7 @@ const routes = [
     name: 'PhotoForm',
     component: PhotoForm,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -120,7 +120,7 @@ const routes = [
     name: 'Videos',
     component: Videos,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -129,7 +129,7 @@ const routes = [
     name: 'VideoForm',
     component: VideoForm,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -139,7 +139,7 @@ const routes = [
     name: 'Users',
     component: Users,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },
@@ -148,7 +148,7 @@ const routes = [
     name: 'UserForm',
     component: UserForm,
     meta: {
-      auth: true
+      auth: undefined
     },
     beforeEnter: null
   },

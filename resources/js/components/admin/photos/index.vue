@@ -77,18 +77,14 @@
 
                             </v-text-field>
 
-                            <vue-dropzone ref="photo_dropzone"
-                                          id="dropzone"
-                                          :options="dropzone_options"
-                                          @vdropzone-success="onDropzoneSuccess"
-                                          @vdropzone-error="onDropzoneError"
-                                          @vdropzone-removed-file="onDropzoneRemoved"></vue-dropzone>
+                            <preview-upload @upload-image="onUploadImage" ref="previewUpload"></preview-upload>
+
                         </v-card-text>
 
                         <v-card-actions>
                             <v-spacer></v-spacer>
 
-                            <v-btn color="success" :disabled="! form.valid || ! photo.path.length" @click="save()">
+                            <v-btn color="success" :disabled="! form.valid || ! photo.image" @click="save()">
                                 {{ $t('photos.btn.save')}}
                             </v-btn>
                             <v-btn color="blue darken-1" text @click="cancel()">
@@ -130,9 +126,7 @@
 </template>
 
 <script>
-  import vue2Dropzone from 'vue2-dropzone';
-  import 'vue2-dropzone/dist/vue2Dropzone.min.css';
-  import dropzone_options from "../../../mixins/dropzone_options";
+  import previewUpload from '../../../custom_components/previewUploader';
 
   import debounce from '../../../debounce';
   import scroll from "../../../mixins/infinite_scroll";
@@ -140,10 +134,10 @@
   export default {
     name: "index",
 
-    mixins: [dropzone_options, scroll],
+    mixins: [scroll],
 
     components: {
-      vueDropzone: vue2Dropzone
+      previewUpload
     },
 
     data() {
@@ -161,7 +155,7 @@
 
         photo: {
           title: '',
-          path: ''
+          image: null
         },
 
         form: {
@@ -187,6 +181,10 @@
     },
 
     methods: {
+      onUploadImage(image) {
+        this.photo.image = image;
+      },
+
       async loadData() {
         this.loading = true;
         const response = await axios.get(`${this.$attrs.apiRoute}/photos`, {
@@ -256,9 +254,21 @@
       },
 
       async save() {
-        this.modal = false;
+        const formData = new FormData();
 
-        const response = await axios.post(`${this.$attrs.apiRoute}/photos`, this.photo);
+        for (const prop in this.photo) {
+            formData.append(prop, this.photo[prop]);
+        }
+
+        const response = await axios.post(
+            `${this.$attrs.apiRoute}/photos`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+        );
 
         switch (response.status) {
           case 200:
@@ -268,7 +278,7 @@
 
           case 500:
             this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+            return ;
         }
 
 
@@ -276,58 +286,14 @@
       },
 
       cancel() {
-        this.modal = false;
-
         this.resetForm();
       },
 
       async resetForm() {
+        this.modal = false;
+        this.photo.image = null;
+        this.$emit('reset-uploader');
         this.$refs.form.reset();
-        this.isDestroying = true;
-        await this.$refs.photo_dropzone.removeAllFiles();
-        this.$refs.photo_dropzone.enable();
-        this.isDestroying = false;
-      },
-
-      initializeDropzone() {
-        this.dropzone_options.url = `${this.$attrs.apiRoute}/photos/upload`;
-        this.dropzone_options.dictDefaultMessage = this.$t('dropzone.dictDefaultMessage.images');
-        this.dropzone_options.acceptedFiles = '.jpeg,.jpg,.png';
-      },
-
-      onDropzoneSuccess(file, response) {
-        this.photo.path = response.tmp_path;
-        this.$refs.photo_dropzone.disable();
-      },
-
-      onDropzoneError(file, response, xhr) {
-        console.log(response.data);
-      },
-
-      async onDropzoneRemoved(file, error, xhr) {
-        if  (this.isDestroying) {
-          return ;
-        }
-
-        console.log(file, error, xhr);
-        if (error) {
-          console.error(error);
-          return;
-        }
-
-        const response = await axios.post(`${this.$attrs.apiRoute}/photos/remove_tmp_photo`, {path: this.photo.path});
-
-        this.$refs.photo_dropzone.enable();
-
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            break;
-
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
-        }
       },
 
       onScroll: function() {
@@ -366,12 +332,6 @@
     },
 
     created() {
-      this.initializeDropzone(
-          '/admin/photos/upload',
-          this.$t('dropzone.dictDefaultMessage.images'),
-          '.jpg,.jpeg,.png'
-      );
-
       this.initData();
     },
 

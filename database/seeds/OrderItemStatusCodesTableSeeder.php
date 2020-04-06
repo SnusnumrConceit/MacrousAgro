@@ -11,12 +11,12 @@ class OrderItemStatusCodesTableSeeder extends Seeder
      */
     public function run()
     {
-        \App\Models\OrderStatusCode::updateOrCreate(['description' => 'в обработке'], ['description' => 'в обработке']);
+        \App\Models\OrderItemStatusCode::firstOrCreate(['description' => 'в обработке'], ['id' => 1, 'description' => 'в обработке']);
 
-        \App\Models\OrderStatusCode::updateOrCreate(['description' => 'отменён'], ['description' => 'отменён']);
+        \App\Models\OrderItemStatusCode::firstOrCreate(['description' => 'отменён'], ['id' => 2, 'description' => 'отменён']);
 
-        \App\Models\OrderStatusCode::updateOrCreate(['description' => 'отправлен'], ['description' => 'завершён']);
+        \App\Models\OrderItemStatusCode::firstOrCreate(['description' => 'отправлен'], ['id' => 3, 'description' => 'отправлен']);
 
-        \App\Models\OrderStatusCode::updateOrCreate(['description' => 'завершён'], ['description' => 'завершён']);
+        \App\Models\OrderItemStatusCode::firstOrCreate(['description' => 'завершён'], ['id' => 4, 'description' => 'завершён']);
     }
 }

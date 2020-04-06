@@ -2,6 +2,7 @@
 
 namespace App\Http\Requests\Photo;
 
+use App\Models\Photo;
 use Illuminate\Auth\Access\AuthorizationException;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
@@ -9,6 +10,17 @@ use Illuminate\Validation\ValidationException;
 
 class PhotoStoreRequest extends FormRequest
 {
+    private $minWidth, $minHeight, $maxWidth, $maxHeight, $maxSize;
+
+    protected function prepareForValidation()
+    {
+        $this->minWidth  = Photo::DIMENSIONS['min_width'];
+        $this->minHeight = Photo::DIMENSIONS['min_height'];
+        $this->maxWidth  = Photo::DIMENSIONS['max_width'];
+        $this->maxHeight = Photo::DIMENSIONS['max_height'];
+        $this->maxSize   = Photo::MAX_FILE_SIZE;
+    }
+
     /**
      * Determine if the user is authorized to make this request.
      *
@@ -27,7 +39,8 @@ class PhotoStoreRequest extends FormRequest
     public function rules()
     {
         return [
-            //
+            'title' => 'nullable|string|max:100',
+            'image' => "nullable|file|mimes:jpg,jpeg,png|max:$this->maxSize|dimensions:min_width:$this->minWidth,min_height:$this->minHeight,max_width:$this->maxWidth,max_height:$this->maxHeight"
         ];
     }
 

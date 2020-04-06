@@ -111,19 +111,14 @@
                                               :rules="form.price.rules">
                                 </v-text-field>
 
-                                <vue-dropzone ref="product_dropzone"
-                                              id="dropzone"
-                                              :options="dropzone_options"
-                                              @vdropzone-sending="onDropzoneSending"
-                                              @vdropzone-success="onDropzoneSuccess"
-                                              @vdropzone-error="onDropzoneError"
-                                              @vdropzone-removed-file="onDropzoneRemoved"></vue-dropzone>
+                                <preview-upload @uploaded="onUploadImage" ref="previewUpload" v-if="! loading"></preview-upload>
+
                             </v-card-text>
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
 
-                                <v-btn color="success" :disabled="! form.valid || ! product.url.length" @click="save()">
+                                <v-btn color="success" :disabled="! form.valid || ! product.image" @click="save()">
                                     {{ $t('products.btn.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1" text @click="cancel()">
@@ -147,7 +142,7 @@
                             <td class="text-left">
                                 <v-row>
                                     <v-col cols="2">
-                                        <v-img :src="product.url" :aspect-ratio="1.5" contain position="left" v-if="product.url.length"></v-img>
+                                        <v-img :src="product.src" :aspect-ratio="1.5" contain position="left" v-if="product.src.length"></v-img>
                                         <v-icon v-else>
                                             mdi-image
                                         </v-icon>
@@ -248,19 +243,18 @@
 </template>
 
 <script>
+  import previewUpload from '../../../custom_components/previewUploader';
+
   import debounce from '../../../debounce';
-  import vue2Dropzone from 'vue2-dropzone';
-  import 'vue2-dropzone/dist/vue2Dropzone.min.css';
-  import dropzone_options from "../../../mixins/dropzone_options";
   import infiniteScrollMixin from "../../../mixins/infinite_scroll";
 
   export default {
     name: "index",
 
-    mixins: [dropzone_options, infiniteScrollMixin],
+    mixins: [infiniteScrollMixin],
 
     components: {
-      vueDropzone: vue2Dropzone
+      previewUpload
     },
 
     data() {
@@ -270,10 +264,8 @@
         product: {
           title: '',
           description: '',
-          url: '',
           price: '',
-          category_id: '',
-          media_id: ''
+          category_id: ''
         },
 
         form: {
@@ -342,6 +334,10 @@
     },
 
     methods: {
+      onUploadImage(image) {
+        this.product.image = image;
+      },
+
       async loadData() {
         this.loading = true;
         const response = await axios.get(`${this.$attrs.apiRoute}/products`, {
@@ -396,9 +392,23 @@
       },
 
       async save() {
-        this.modal = false;
+        let formData = new FormData();
 
-        const response = await axios.post(`${this.$attrs.apiRoute}/products`, this.product);
+        for (const prop in this.product) {
+          formData.append(prop, this.product[prop]);
+        }
+
+        console.log(formData);
+
+        const response = await axios.post(
+            `${this.$attrs.apiRoute}/products`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+        );
 
         switch (response.status) {
           case 200:
@@ -411,84 +421,17 @@
             break;
         }
 
-
         this.resetForm();
       },
 
       cancel() {
-        this.modal = false;
         this.resetForm();
       },
 
       async resetForm() {
+        this.modal = false;
         this.$refs.form.reset();
-        this.isDestroying = true;
-        await this.$refs.product_dropzone.removeAllFiles();
-        this.$refs.product_dropzone.enable();
-        this.isDestroying = false;
       },
-
-      initializeDropzone() {
-        // this.$refs.product_dropzone.setOption('url', '/admin/media');
-        // this.$refs.product_dropzone.setOption('dictDefaultMessage', this.$t('dropzone.dictDefaultMessage.images'));
-        // this.$refs.product_dropzone.setOption('acceptedFiles', '.jpeg,.jpg,.png');
-        this.dropzone_options['url'] = `${this.$attrs.apiRoute}/media`;
-        this.dropzone_options['dictDefaultMessage'] = this.$t('dropzone.dictDefaultMessage.images');
-        this.dropzone_options['acceptedFiles'] = '.jpeg,.jpg,.png';
-      },
-
-      onDropzoneSuccess(file, response) {
-        this.product.url = response.url;
-        this.product.media_id = response.media_id;
-
-        this.$refs.product_dropzone.disable();
-      },
-
-      onDropzoneError(file, response, xhr) {
-        console.log(response.data);
-      },
-
-      onDropzoneSending(file, xhr, formData) {
-        formData.append('category', 'product');
-      },
-
-
-      async onDropzoneRemoved(file, error, xhr) {
-        if  (this.isDestroying) {
-          return ;
-        }
-
-        console.log(file, error, xhr);
-        if (error) {
-          console.error(error);
-          return;
-        }
-
-        const response = await axios.post(`/admin/media/${this.product.media_id}/destroy`, {
-          path: this.product.url,
-          category: 'product'
-        });
-
-        this.$refs.product_dropzone.enable();
-
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            break;
-
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
-        }
-      },
-
-      // parseDate (date) {
-      //   if (!date) return null;
-      //
-      //   console.log(date);
-      //   const [year, month, day] = date.split('-');
-      //   return `${day.padStart(2, '0')}.${month.padStart(2, '0')}.${year}`
-      // },
 
       async initData() {
         this.loading = true;
@@ -531,12 +474,6 @@
     },
 
     mounted() {
-      this.initializeDropzone(
-          `${this.$attrs.apiRoute}/products/upload`,
-          this.$t('dropzone.dictDefaultMessage.images'),
-          '.jpg,.jpeg,.png'
-      );
-
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
     },
 

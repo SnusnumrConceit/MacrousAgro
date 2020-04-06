@@ -2,12 +2,13 @@
 
 namespace App\Http\Controllers;
 
+use App\User;
+use App\Services\UserService;
+use App\Repositories\UserRepo;
+use Illuminate\Http\Request;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
-use App\Repositories\UserRepo;
-use App\Services\UserService;
-use App\User;
-use Illuminate\Http\Request;
+use App\Http\Resources\User\User as UserResource;
 
 class UserController extends Controller
 {
@@ -21,79 +22,98 @@ class UserController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the users.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function index(Request $request)
     {
-        return $this->user->index($request);
+        $users = $this->user->index($request);
+
+        return response()->json([
+            'users' => $users
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created user in storage.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param UserStoreRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function store(UserStoreRequest $request)
     {
-       return $this->user->store($request);
+       $this->user->store($request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('user_msg_success_create')
+        ]);
+
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified user.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
      */
     public function show(User $user)
     {
-        return $this->user->show($user);
+        return response()->json([
+            'user' => new UserResource($user)
+        ], 200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the user.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
      */
     public function edit(User $user)
     {
-        return $this->user->edit($user);
+        return response()->json([
+            'user' => new UserResource($user)
+        ], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the user in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param UserUpdateRequest $request
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function update(UserUpdateRequest $request, User $user)
     {
-        return $this->user->update($request, $user);
+        $this->user->update($request->validated(), $user);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('user_msg_success_update')
+        ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the user from storage.
      *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
+     * @param User $user
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function destroy(User $user)
     {
-        return $this->user->destroy($user);
+        $this->user->destroy($user);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('user_msg_success_delete')
+        ], 200);
     }
 
     public function export(Request $request)

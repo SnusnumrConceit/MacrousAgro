@@ -27,7 +27,7 @@ class CreateOrderItemsTable extends Migration
                 ->references('id')
                 ->on('orders')
                 ->onDelete('cascade');
-            $table->unsignedInteger('order_item_status_code')
+            $table->string('order_item_status_code')
                 ->comment('статус позиции заказа');
 
             $table->timestamps();

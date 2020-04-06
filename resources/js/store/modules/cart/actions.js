@@ -90,15 +90,18 @@ const removeFromCart = ({state, commit}, product, total = false) => {
  */
 const createOrder = async ({state, commit}) => {
   try {
-    commit('SET_CART_ORDER_LOADING', true);
-    const response = await axios.post('/api/orders', ...state.order);
+    commit('SET_CART_ORDERS_LOADING', true);
+    console.log(state.order);
+    const response = await axios.post('/api/orders', {...state.order});
+    console.log('i m here');
+    console.log(response);
 
-    removeOrder({commit});
+    // removeOrder({commit});
 
   } catch (e) {
-    console.log(e.message);
+    console.error(e.message);
   } finally {
-    commit('SET_CART_ORDER_LOADING', false);
+    commit('SET_CART_ORDERS_LOADING', false);
   }
 };
 

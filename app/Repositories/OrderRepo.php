@@ -3,109 +3,104 @@ declare(strict_types=1);
 
 namespace App\Repositories;
 
-use App\Http\Requests\Order\OrderStoreRequest;
-use App\Http\Requests\Order\OrderUpdateRequest;
 use App\Models\Order;
 use Illuminate\Http\Request;
 
 class OrderRepo
 {
     /**
-     * Display a listing of the resource.
+     * List of orders in storage
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return mixed
      */
     public function index(Request $request)
     {
-        return Order::paginate(15);
+        return Order::paginate();
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created order in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @param array $orderData
      */
-    public function create()
+    public function store(array $orderData) : void
     {
-        //
-    }
+        $amountPrice = $this->countOrderPrice($orderData['products']);
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(OrderStoreRequest $request)
-    {
-        $order = Order::create($request->validated());
+        $order = Order::create([
+            'user_id' => 36, // TODO убрать хардкод и добавить auth()->id()
+            'order_status_code' => Order::STATUSES['CREATED']
+        ]);
 
-        $order->positions->sync($request->products);
+        // TODO нарушение SPR - вынести в OrderService
+        $products = array_map(function ($product) use ($order) {
+            return [
+                'product_id' => $product['id'],
+                'order_id' => $order->id,
+                'order_item_status_code' => $order->order_status_code
+            ];
+        }, $orderData['products']);
 
-        return response()->json([
-            'message' => 'Заказ успешно добавлен'
+        $order->positions()->createMany($products);
+
+        $order->invoice()->create([
+            'payment_amount' => $amountPrice,
+            'invoice_status_code' => 1
         ]);
     }
 
     /**
-     * Display the specified resource.
+     * Get total price of order
      *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param array $products
+     * @return int
      */
-    public function show(Order $order)
+    private function countOrderPrice(array $products) // TODO нарушение SPR - вынести в OrderService
     {
+        $summa = 0;
 
+        foreach ($products as $product) {
+            $summa += $product['price'];
+        }
+
+        return $summa;
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update the order in storage.
      *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param array $orderData
+     * @param Order $order
      */
-    public function edit(Order $order)
+    public function update(array $orderData, Order $order)
     {
+        $order = $order->update($orderData);
 
+        $order->positions->sync($orderData['products']);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Remove the order from storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
-     */
-    public function update(OrderUpdateRequest $request, Order $order)
-    {
-        $order = $order->update($request->validated());
-
-        $order->positions->sync($request->products);
-
-        return response()->json([
-            'message' => 'Заказ успешно отредактирован'
-        ]);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Order  $order
-     * @return \Illuminate\Http\Response
+     * @param Order $order
      */
     public function destroy(Order $order)
     {
         $order->delete();
 
         $order->positions->detach();
-
-        return response()->json([
-            'message' => 'Заказ успешно удалён'
-        ], 200);
     }
 
+    /**
+     * Searching the list of orders in storage
+     *
+     * @param Request $request
+     * @return \Illuminate\Contracts\Pagination\LengthAwarePaginator
+     */
     public function search(Request $request)
     {
+        // TODO объединить с Index
         $orders = Order::query();
 
         $orders->when($request->keyword, function ($q, $keyword) {

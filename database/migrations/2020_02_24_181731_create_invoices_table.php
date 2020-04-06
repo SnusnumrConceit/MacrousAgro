@@ -24,7 +24,7 @@ class CreateInvoicesTable extends Migration
                 ->onDelete('set null');
             $table->decimal('payment_amount', 2)
                 ->comment('сумма заказа');
-            $table->unsignedInteger('invoice_status_code')
+            $table->string('invoice_status_code')
                 ->comment('статуса для счёт-фактуры');
             $table->timestamps();
         });

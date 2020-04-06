@@ -91,40 +91,11 @@
                                                        v-if="menu"
                                                        :locale="$i18n.locale">
                                             <v-spacer></v-spacer>
-                                            <v-btn flat color="blue darken-1" @click="menu = false" text>
+                                            <v-btn color="blue darken-1" @click="menu = false" text>
                                                 {{ $t('articles.btn.cancel') }}
                                             </v-btn>
-                                            <v-btn flat color="primary" outline @click="menu = false">OK</v-btn>
+                                            <v-btn color="primary" outline @click="menu = false">OK</v-btn>
                                         </v-date-picker>
-
-                                        <!--                                                 <v-menu-->
-                                        <!--                                                     ref="menu"-->
-                                        <!--                                                     :close-on-content-click="false"-->
-                                        <!--                                                     v-model="menu"-->
-                                        <!--                                                     :nudge-right="40"-->
-                                        <!--                                                     :return-value.sync="article.publication_date"-->
-                                        <!--                                                     transition="scale-transition"-->
-                                        <!--                                                     offset-y-->
-                                        <!--                                                     full-width-->
-                                        <!--                                                     min-width="290px"-->
-                                        <!--                                                 >-->
-
-                                        <!--  -->
-                                        <!--                                                 </v-menu>-->
-
-                                        <!--                                                 <v-text-field v-model="article.publication_date"-->
-                                        <!--                                                               :label="$t('articles.form.labels.publication_date')"-->
-                                        <!--                                                               readonly-->
-                                        <!--                                                               :rules="form.publication_date.rules">-->
-                                        <!--                                                 </v-text-field>-->
-
-                                        <!--                                                 <v-date-picker v-model="article.publication_date" scrollable>-->
-                                        <!--                                                     <v-spacer></v-spacer>-->
-                                        <!--                                                     <v-btn flat color="primary" @click="calendar_modal = false">-->
-                                        <!--                                                         {{ $t('articles.btn.cancel') }}-->
-                                        <!--                                                     </v-btn>-->
-                                        <!--                                                     <v-btn flat color="primary" @click="">OK</v-btn>-->
-                                        <!--                                                 </v-date-picker>-->
                                     </v-col>
                                 </v-row>
 
@@ -147,7 +118,8 @@
 
                                 <v-row>
                                     <v-col>
-                                        <vue-dropzone ref="article_dropzone" id="dropzone" :options="form.dropzone_options"></vue-dropzone>
+                                        <!--<vue-dropzone ref="article_dropzone" id="dropzone" :options="dropzone_options"></vue-dropzone>-->
+                                        <preview-upload @uploaded="onUploadImage"></preview-upload>
                                     </v-col>
                                 </v-row>
 
@@ -243,8 +215,7 @@
 </template>
 
 <script>
-  import vue2Dropzone from 'vue2-dropzone';
-  import 'vue2-dropzone/dist/vue2Dropzone.min.css';
+  import previewUpload from '../../../custom_components/previewUploader';
 
   import debounce from '../../../debounce';
 
@@ -254,7 +225,7 @@
     name: "index",
 
     components: {
-      vueDropzone: vue2Dropzone
+      previewUpload
     },
 
     mixins: [infiniteScrollMixin],
@@ -275,7 +246,8 @@
           title: '',
           description: '',
           publication_date: new Date().toISOString().substr(0,10),
-          is_publicated: false
+          is_publicated: false,
+          image: null
         },
 
         form: {
@@ -301,26 +273,6 @@
               v => (v !== undefined && v !== null && v > Date.now) || this.$t('articles.form.rules.publication_date.length'),
             ]
           },
-
-          dropzone_options: {
-            url: 'https://httpbin.org/post',
-            thumbnailWidth: 150,
-            maxFilesize: 0.5,
-            headers: { "X-CSRF-TOKEN": $('meta').attr('content') },
-
-            "dictDefaultMessage": this.$t('dropzone.dictDefaultMessage.images'),
-
-            "dictFallbackMessage":          this.$t('dropzone.dictFallbackMessage'),
-            "dictResponseError":            this.$t('dropzone.dictResponseError'),
-            "dictInvalidFileType":          this.$t('dropzone.dictInvalidFileType'),
-            "dictFileTooBig":               this.$t('dropzone.dictFileTooBig'),
-            "dictCancelUpload":             this.$t('dropzone.dictCancelUpload'),
-            "dictUploadCanceled":           this.$t('dropzone.dictUploadCanceled'),
-            "dictCancelUploadConfirmation": this.$t('dropzone.dictCancelUploadConfirmation'),
-            "dictRemoveFile":               this.$t('dropzone.dictRemoveFile'),
-            "dictRemoveFileConfirmation":   this.$t('dropzone.dictRemoveFileConfirmation'),
-          }
-
         },
 
         table: {
@@ -345,6 +297,25 @@
     },
 
     methods: {
+      /** **/
+      onUploadImage(image) {
+        this.article.image = image;
+      },
+
+
+      /**
+       * Инициализация данных для компонента
+       *
+       */
+      async initData() {
+        await this.loadData();
+      },
+
+      /**
+       * Загрузка списка статей
+       *
+       * @returns {Promise<boolean>}
+       */
       async loadData() {
         this.loading = true;
         const response = await axios.get(`${this.$attrs.apiRoute}/articles`, {
@@ -358,14 +329,19 @@
           return false;
         }
 
-        this.$nextTick(() => {
-          this.articles = (this.pagination.page === 1) ? response.data.articles.data : this.articles.concat(response.data.articles.data);
-          this.pagination.total = response.data.articles.total;
-          this.pagination.last_page = response.data.articles.last_page;
-          this.loading = false;
-        });
+        console.log(response.data);
+        this.articles = (this.pagination.page === 1) ? response.data.articles.data : this.articles.concat(response.data.articles.data);
+        this.pagination.total = response.data.articles.total;
+        this.pagination.last_page = response.data.articles.last_page;
+        this.loading = false;
       },
 
+      /**
+       * Удаление статьи
+       *
+       * @param id
+       * @returns {Promise<boolean>}
+       */
       async remove(id) {
         const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${id}`);
 
@@ -380,6 +356,9 @@
         }
       },
 
+      /**
+       * Обработчик события для debounce-поиска
+       */
       onSearch() {
         this.searchData(this);
       },
@@ -397,20 +376,37 @@
         }).catch(error => console.error(error));
       }, 300),
 
+      /**
+       * Сохранение статьи
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
-        const response = await axios.post(`${this.$attrs.apiRoute}/articles`, {
-          ...this.article
-        });
+        let formData = new FormData();
+
+        for (const prop in this.article) {
+          formData.append(prop, (typeof this.article[prop] == 'boolean') ? Number(this.article[prop]) : this.article[prop]);
+        }
+
+        const response = await axios.post(
+            `${this.$attrs.apiRoute}/articles`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data'
+              }
+            }
+        );
 
         switch (response.data.status) {
           case 'error':
             this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+            return ;
 
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
             this.loadData();
-            this.$refs.form.reset();
+            // this.$refs.form.reset();
             this.modal = false;
             break;
         }
@@ -418,25 +414,39 @@
         this.resetForm();
       },
 
+      /**
+       * Сброс формы
+       *
+       * @returns {Promise<void>}
+       */
       async resetForm() {
+        this.article.image = null;
         this.$refs.form.reset();
-        this.isDestroying = true;
-        await this.$refs.article_dropzone.removeAllFiles();
-        this.$refs.article_dropzone.enable();
-        this.isDestroying = false;
       },
 
+      /**
+       * Закрытие модального окна
+       *
+       */
       cancel() {
         this.modal = false;
         this.resetForm();
       },
 
+      /**
+       * Обработчик события для скролловой пагинации
+       *
+       */
       onScroll: function() {
         this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
       },
     },
 
     watch: {
+      /**
+       * отслеживание поиска в целом
+       *
+       */
       'search': {
         handler: function(after, before) {
           if (after.publication_date || after.keyword.length > 3) {
@@ -455,6 +465,10 @@
         deep: true
       },
 
+      /**
+       * отслеживание поискового ввода
+       *
+       */
       'search.keyword': function (after, before) {
         if (after.length > 3) {
           this.onSearch();
@@ -463,13 +477,15 @@
     },
 
     created() {
-      this.loadData();
+      this.initData();
     },
-
-
 
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
+    },
+
+    beforeDestroy() {
+      this.isDestroying = true;
     }
   }
 </script>

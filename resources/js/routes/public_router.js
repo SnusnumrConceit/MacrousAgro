@@ -8,7 +8,15 @@ import CategoryProducts from '../components/dashboard/product/products';
 import DashboardPhotos from '../components/dashboard/photos';
 import DashboardVideos from '../components/dashboard/videos';
 
+import Login from '../components/auth/login';
+import Registration from '../components/auth/registration';
+
 const routes = [
+  {
+    path: '/login',
+    name: 'Login',
+    component: Login
+  },
   // {
   //   path: '/',
   //   name: 'Dashboard',

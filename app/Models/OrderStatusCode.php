@@ -7,6 +7,8 @@ use Route;
 
 class OrderStatusCode extends Model
 {
+    public $timestamps = false;
+
     public static function apiRoutes()
     {
         Route::get('order_status_codes', function () {

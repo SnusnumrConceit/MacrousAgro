@@ -18,7 +18,7 @@ class Video extends JsonResource
         return [
             'id' => $this->id,
             'title' => $this->title,
-            'path' => Storage::url('videos' . $this->path)
+            'src' => $this->src
         ];
     }
 }

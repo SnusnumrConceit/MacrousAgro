@@ -15,17 +15,9 @@ class ProductCollection extends ResourceCollection
     public function toArray($request)
     {
         return [
-            'data' => $this->collection
-        ];
-    }
-
-    public function with($request)
-    {
-        return [
-            'meta' => [
-                'total'     => $this->total(),
-                'last_page' => $this->lastPage()
-            ]
+            'data' => $this->collection,
+            'total'     => $this->total(),
+            'last_page' => $this->lastPage()
         ];
     }
 }

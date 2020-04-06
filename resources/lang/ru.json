@@ -11,6 +11,10 @@
   "video_msg_success_delete": "Видеоролик успешно удален!",
   "video_msg_success_update": "Сведения о видеоролике успешно обновлены!",
 
+  "order_msg_success_create": "Заказ успешно создан!",
+  "order_msg_success_delete": "Заказ успешно удален!",
+  "order_msg_success_update": "Сведения о заказе успешно обновлены!",
+
   "photo_msg_success_create": "Фотография успешно загружена!",
   "photo_msg_success_delete": "Фотография успешно удалена!",
   "photo_msg_success_update": "Сведения о фотографии успешно обновлены!",

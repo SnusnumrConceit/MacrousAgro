@@ -8,6 +8,8 @@ class Category extends Model
 {
     protected $fillable = ['name'];
 
+    protected $perPage = 15;
+
     public function products()
     {
         return $this->hasMany(Product::class);

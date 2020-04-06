@@ -20,7 +20,7 @@ const config = {
   },
 
   loginData: {
-    url: '/api/auth/login',
+    url: '/login', //url: '/api/auth/login',
     method: 'POST',
     redirect: '/login',
     fetchUser: true

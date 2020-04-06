@@ -2,15 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Product\ProductStoreRequest;
-use App\Http\Requests\Product\ProductUpdateRequest;
-use App\Http\Requests\Product\ProductUploadRequest;
+use App\Http\Resources\Product\ProductCollection;
 use App\Models\Product;
-use App\Repositories\ProductRepo;
+use App\Models\Category;
 use App\Services\MediaService;
-use App\Services\ProductService;
+use App\Repositories\ProductRepo;
 use App\Traits\Mediable;
 use Illuminate\Http\Request;
+use App\Http\Requests\Product\ProductStoreRequest;
+use App\Http\Requests\Product\ProductUpdateRequest;
+use App\Http\Resources\Product\ProductDetail;
 
 class ProductController extends Controller
 {
@@ -24,79 +25,113 @@ class ProductController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of the products.
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function index(Request $request)
     {
-        return $this->product->index($request);
+        $products = $this->product->index($request);
+
+        return response()->json([
+            'products' => new ProductCollection($products)
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created product in storage.
      *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        return $this->product->create();
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
+     * @param ProductStoreRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function store(ProductStoreRequest $request)
     {
-        return $this->product->store($request);
+        dd($request->validated());
+        $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
+
+        $product = $this->product->store($request->validated());
+
+        $product->medias()->sync($media->id);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('product_msg_success_create')
+        ], 200);
     }
 
     /**
-     * Display the specified resource.
+     * Display the specified product.
      *
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function show(Product $product)
     {
-        return $this->product->show($product);
+        return response()->json([
+            'product' => new ProductDetail($product)
+        ], 200);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Show the form for editing the product.
      *
      * @param  \App\Models\Product  $product
      * @return \Illuminate\Http\Response
      */
     public function edit(Product $product)
     {
-        return $this->product->show($product);
+        return response()->json([
+            'product' => new ProductDetail($product),
+            'categories' => Category::all()
+        ], 200);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Update the product in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @param ProductUpdateRequest $request
+     * @param Product $product
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function update(ProductUpdateRequest $request, Product $product)
     {
-        return $this->product->update($request, $product);
+        $this->product->update($request->validated(), $product);
+
+        if ($request->image) {
+            $product->remove($product->medias()->first());
+
+            $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
+
+            $product->medias()->sync($media->id);
+        }
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('product_msg_success_update')
+        ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Remove the product from storage.
      *
-     * @param  \App\Models\Product  $product
-     * @return \Illuminate\Http\Response
+     * @param Product $product
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
     public function destroy(Product $product)
     {
-        return $this->product->destroy($product);
+        $this->product->destroy($product);
+
+        $product->remove($product->medias()->first());
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('product_msg_success_delete')
+        ], 200);
     }
 
     public function upload(ProductUploadRequest $request)

@@ -19,8 +19,9 @@ class CreateOrdersTable extends Migration
                 ->comment('идентификатор пользователя')
                 ->foreign()
                 ->references('id')
-                ->on('users');
-            $table->unsignedInteger('order_status_code')
+                ->on('users')->onUpdate('cascade');
+            $table->string('order_status_code')
+                ->index()
                 ->comment('статус по заказу');
             $table->timestamps();
         });

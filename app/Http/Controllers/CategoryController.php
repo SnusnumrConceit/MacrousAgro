@@ -3,14 +3,16 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Category\CategoryStoreRequest;
 use App\Models\Category;
-use App\Repositories\CategoryRepo;
-use App\Services\CategoryService;
 use Illuminate\Http\Request;
+use Illuminate\Http\JsonResponse;
+use App\Repositories\CategoryRepo;
+use App\Http\Requests\Category\CategoryStoreRequest;
+use App\Http\Resources\Category\CategoryCollection;
 
 class CategoryController extends Controller
 {
+    // TODO добавить политики
     private $category;
 
     public function __construct(CategoryRepo $category)
@@ -20,85 +22,111 @@ class CategoryController extends Controller
     }
 
     /**
-     * Display a listing of the resource.
+     * Get list of categories from storage
      *
-     * @return \Illuminate\Http\Response
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
-    public function index(Request $request)
+    public function index(Request $request) : JsonResponse
     {
-        return $this->category->index($request);
+        $categories = $this->category->index($request);
+
+        return response()->json([
+            'categories' => new CategoryCollection($categories),
+            'status' => 'success'
+        ], 200);
     }
 
     /**
-     * Show the form for creating a new resource.
+     * Store a newly created category in storage.
      *
-     * @return \Illuminate\Http\Response
+     * @param CategoryStoreRequest $request
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
      */
-    public function create()
+    public function store(CategoryStoreRequest $request) : JsonResponse
     {
-        return $this->category->create();
+        $this->category->store($request->validated());
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('category_msg_success_create')
+        ], 200);
     }
 
     /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(CategoryStoreRequest $request)
-    {
-        return $this->category->store($request);
-    }
-
-    /**
-     * Display the specified resource.
+     * Display the category.
      *
      * @param  \App\Models\Category  $category
      * @return \Illuminate\Http\Response
      */
-    public function show(Category $category)
-    {
-        return $this->category->show($category);
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Category $category)
-    {
-        return $this->category->edit($category);
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function update(CategoryStoreRequest $request, Category $category)
-    {
-        return $this->category->update($request, $category);
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  \App\Models\Category  $category
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy(Category $category)
-    {
-        return $this->category->destroy($category);
-    }
-
-    public function products(Category $category, Request $request)
+    public function show(Category $category) : JsonResponse
     {
         return response()->json([
-            'products' => $category->products()->paginate(15),
+            'category' => $category
+        ], 200);
+    }
+
+    /**
+     * Show the form for editing the category.
+     *
+     * @param  \App\Models\Category  $category
+     * @return \Illuminate\Http\Response
+     */
+    public function edit(Category $category) : JsonResponse
+    {
+        return response()->json([
+            'category' => $category
+        ], 200);
+    }
+
+    /**
+     * Update the category in storage.
+     *
+     * @param CategoryStoreRequest $request
+     * @param Category $category
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
+     */
+    public function update(CategoryStoreRequest $request, Category $category) : JsonResponse
+    {
+        $this->category->update($request->validated(), $category);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('category_msg_success_update')
+        ], 200);
+    }
+
+    /**
+     * Remove the category from storage.
+     *
+     * @param Category $category
+     * @return \Illuminate\Http\JsonResponse
+     * @throws \App\Exceptions\ApiErrorMessageException
+     */
+    public function destroy(Category $category) : JsonResponse
+    {
+        $this->category->destroy($category);
+
+        return response()->json([
+            'status' => 'success',
+            'msg' => __('category_msg_success_delete')
+        ], 200);
+    }
+
+    /**
+     * Get products of category
+     *
+     * @param Category $category
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function products(Category $category, Request $request) : JsonResponse
+    {
+        return response()->json([
+            'products'      => $category->products()->paginate(),
             'category_name' => $category->name
         ],200);
     }
