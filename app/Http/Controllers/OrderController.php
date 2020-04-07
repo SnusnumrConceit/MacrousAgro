@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Repositories\OrderRepo;
+use App\Http\Resources\Order\OrderDetail;
 use App\Http\Resources\Order\OrderCollection;
 use App\Http\Requests\Order\OrderStoreRequest;
 use App\Http\Requests\Order\OrderUpdateRequest;
@@ -28,9 +29,9 @@ class OrderController extends Controller
     {
         $orders = $this->order->index($request);
 
-        return response()->json(
-            new OrderCollection($orders)
-        , 200);
+        return response()->json([
+            'orders' => new OrderCollection($orders)
+        ], 200);
     }
 
     /**
@@ -59,7 +60,7 @@ class OrderController extends Controller
     public function show(Order $order)
     {
         return response()->json([
-            'order' => $order
+            'order' => new OrderDetail($order)
         ], 200);
     }
 

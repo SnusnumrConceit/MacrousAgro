@@ -115,6 +115,13 @@
         "status_code": "Статус",
         "product":     "Товар"
       }
+    },
+    "statuses": {
+      "created": "Создан",
+      "canceled": "Отменён",
+      "payed": "Оплачен",
+      "delivery": "Отправлен",
+      "completed": "Завершён"
     }
   },
   "videos": {

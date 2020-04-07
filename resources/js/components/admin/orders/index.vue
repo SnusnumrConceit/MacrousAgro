@@ -18,59 +18,159 @@
             </v-toolbar>
 
             <v-card-text>
-                <v-simple-table v-show="! loading && orders.length">
+                <v-simple-table v-show="! loading && orders.length" :height="750" fixed-header>
                     <thead>
-                        <th v-for="header in table.headers">
-                            {{ header }}
-                        </th>
+                    <th v-for="header in table.headers" class="text-center" :key="header">
+                        {{ header }}
+                    </th>
                     </thead>
                     <tbody>
                     <tr v-for="order in orders" :key="order.id">
                         <td>
-                            {{ order.customer.full_name }}
+                            <v-btn text @click="displayModal(true, order.id)">
+                                Заказ #{{order.id}}
+                            </v-btn>
                         </td>
                         <td>
-                            {{ order.status.description }}
+                            <span v-if="order.customer">{{ order.customer.full_name }}</span>
                         </td>
                         <td>
-                            {{ order.invoice.payment_amount }} руб.
+                            <span :class="`${ getStatusIndication(order.order_status_code) }--text`">
+                                {{ $t(`orders.statuses.${order.order_status_code}`) }}
+                            </span>
+                        </td>
+                        <td>
+                            <span v-if="order.invoice">{{ order.invoice.payment_amount }} руб. </span>
                         </td>
                         <td class="text-right">
                             <v-tooltip top color="primary">
                                 <template v-slot:activator="{ on }">
                                     <v-icon v-on="on"
                                             small
-                                            @click="$router.push(`/admin/orders/${order.id}`)"
-                                    >
+                                            @click="displayModal(true, order.id)">
                                         mdi-pencil
                                     </v-icon>
                                 </template>
                                 <span>
-                                        Править
-                                    </span>
+                                    Править
+                                </span>
                             </v-tooltip>
-
-                            <!--<v-tooltip top color="error">-->
-                                <!--<template v-slot:activator="{ on }">-->
-                                    <!--<v-icon color="red"-->
-                                            <!--v-on="on"-->
-                                            <!--small-->
-                                            <!--@click="remove(order.id)"-->
-                                    <!--&gt;-->
-                                        <!--mdi-delete-->
-                                    <!--</v-icon>-->
-                                <!--</template>-->
-                                <!--<span>-->
-                                        <!--Удалить-->
-                                    <!--</span>-->
-                            <!--</v-tooltip>-->
                         </td>
                     </tr>
                     </tbody>
                 </v-simple-table>
+                <span v-show="! loading && orders.length" class="d-flex flex-row-reverse">
+                    Всего: {{ pagination.total }}
+                </span>
+
+                <v-dialog v-model="modal" max-width="850px" v-if="modal.display" scrollable persistent>
+                    <v-skeleton-loader type="card" v-show="modal.loading"></v-skeleton-loader>>
+
+                    <v-card v-if="! modal.loading">
+                        <v-card-title>
+                            <v-row>
+                                <v-col cols="6" class="text-left">
+                                    Заказ #{{ modal.order.id }}
+                                </v-col>
+
+                                <v-col>
+                                    <v-alert :color="getStatusIndication(modal.order.order_status_code)" class="float-right" outlined>
+                                        {{ $t(`orders.statuses.${modal.order.order_status_code}`).toUpperCase() }}
+                                    </v-alert>
+                                </v-col>
+                            </v-row>
+                        </v-card-title>
+
+                        <v-card-text>
+                            <v-row>
+                                <v-col cols="2">
+                                    <v-avatar color="primary">
+                                        <span class="white--text headline">{{ getCustomerInitials(modal.order.customer.full_name) }}</span>
+                                    </v-avatar>
+                                </v-col>
+                                <v-col cols="10" class="text-left">
+                                    <div>{{ modal.order.customer.full_name }}</div>
+
+                                    <div>{{ modal.order.customer.email }}</div>
+                                </v-col>
+                            </v-row>
+
+                            <v-simple-table v-if="modal.order.positions.length">
+                                <thead>
+                                    <th v-for="header in table.detailHeaders" :key="header" class="text-center">
+                                        {{ header }}
+                                    </th>
+                                </thead>
+                                <tbody>
+                                    <tr v-for="position in modal.order.positions" :key="position.id">
+                                        <!--<td :colspan="table.detailHeaders.length" class="text-center">-->
+
+                                        <!--</td>-->
+
+                                        <td>
+                                            {{ position.product.title }}
+                                        </td>
+                                        <td>
+                                            <span :class="`${ getStatusIndication(position.order_item_status_code) }--text`">
+                                                {{ $t(`orders.statuses.${position.order_item_status_code}`) }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            {{ position.product.price }}
+                                        </td>
+                                        <td>
+                                            <v-btn outlined
+                                                   small
+                                                   icon
+                                                   text
+                                                   :color="getStatusIndication(status)"
+                                                   @click="changeStatus(status, position.id)"
+                                                   v-for="status in status_codes"
+                                                   :key="status">
+                                                <v-tooltip top :color="getStatusIndication(status)">
+                                                    <template v-slot:activator="{ on }">
+                                                        <v-icon v-on="on">
+                                                            {{ icons[status]}}
+                                                        </v-icon>
+                                                    </template>
+                                                    <span class="white--text">
+                                                        {{ $t(`orders.statuses.${status}`) }}
+                                                    </span>
+                                                </v-tooltip>
+                                            </v-btn>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </v-simple-table>
+
+                            <v-alert color="primary" outlined v-else>
+                                Позиции по заказу отсутствуют
+                            </v-alert>
+                        </v-card-text>
+
+                        <v-card-actions>
+                            <v-btn outlined
+                                   :color="getStatusIndication(status)"
+                                   @click="changeStatus(status)"
+                                   v-for="status in status_codes"
+                                   :key="status">
+                                {{ $t(`orders.statuses.${status}`) }}
+                                <v-icon>
+                                    {{ icons[status]}}
+                                </v-icon>
+                            </v-btn>
+
+                            <v-spacer></v-spacer>
+
+                            <v-btn outlined color="default" @click="displayModal(false)">
+                                Закрыть
+                            </v-btn>
+                        </v-card-actions>
+                    </v-card>
+                </v-dialog>
 
                 <!--<span class="d-flex flex-row-reverse" v-show="! loading && orders.length">-->
-                    <!--Всего {{ pagination.total }}-->
+                <!--Всего {{ pagination.total }}-->
                 <!--</span>-->
 
                 <v-skeleton-loader type="table-row-divider@6" v-show="loading"></v-skeleton-loader>
@@ -108,7 +208,7 @@
 
         order: {
           products: [],
-          status_code: '',
+          order_status_code: '',
           customer: ''
         },
 
@@ -125,7 +225,15 @@
 
         table: {
           headers: [
-            'Наименование Товара',
+            'Идентификатор заказа',
+            'Покупатель',
+            'Статус',
+            'Стоимость',
+            ''
+          ],
+
+          detailHeaders: [
+            'Наименование товара',
             'Статус',
             'Стоимость',
             ''
@@ -134,7 +242,19 @@
 
         searching: false,
         loading: false,
-        modal: false,
+        modal: {
+          display: false,
+          loading: true,
+          order: {}
+        },
+
+        icons: {
+          completed: 'mdi-check-outline',
+          created: 'mdi-clipboard-outline',
+          canceled: 'mdi-cancel',
+          delivery: 'mdi-truck-delivery-outline',
+          payed: 'mdi-cash',
+        }
       }
     },
 
@@ -169,29 +289,25 @@
 
       async loadStatusCodes() {
         const response = await axios.get('/api/order_status_codes');
-
-        console.log('statuses', response.data);
         this.status_codes = response.data;
       },
 
-      async loadOrders() {
+      async loadData() {
         const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
           params: {
-            page: this.page
+            page: this.pagination.page
           }
         });
 
-        console.log('orders', response.data);
-        this.orders = response.data.orders;
-        this.pagination.page = response.data.last_page;
-
-        console.log(this.orders);
+        this.orders = (this.pagination.page === 1) ? response.data.orders.data : this.orders.concat(response.data.orders.data);
+        this.pagination.last_page = response.data.orders.last_page;
+        this.pagination.total = response.data.orders.total;
       },
 
-      async searchOrders() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/orders/search`, {
+      async searchData() {
+        const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
           params: {
-            page: this.page,
+            page: this.pagination.page,
             search: this.search
           }
         });
@@ -205,14 +321,125 @@
 
         await this.loadStatusCodes();
 
-        await this.loadOrders();
+        await this.loadData();
 
         this.loading = false;
       },
 
-      onScroll: function() {
+      onScroll: function () {
         this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
       },
+
+      /**
+       * Получить стиль индикации статуса в зависимости от статуса
+       *
+       * @param status
+       * @returns {string}
+       */
+      getStatusIndication(status) {
+        switch (status) {
+          case 'completed':
+            return 'success';
+          case 'created':
+            return 'success';
+          case 'canceled' :
+            return 'error';
+          case 'delivery' :
+            return 'primary';
+          case 'payed'    :
+            return 'primary';
+        }
+      },
+
+      /**
+       * Показать модальное окно с детальной информацией
+       *
+       * @param show
+       */
+      displayModal(show, id = null) {
+        this.$emit(show ? 'fetch-order-detail' : 'clear-modal', id);
+        this.modal.display = show;
+
+        if (! show) {
+          this.modal.loading = ! show;
+        }
+      },
+
+      /**
+       * Загрузить детальную информацию о заказе
+       *
+       * @param id
+       * @returns {Promise<void>}
+       */
+      async loadOrderDetail(id) {
+        const response = await axios.get(`${this.$attrs.apiRoute}/orders/${id}`);
+
+        this.modal.order = response.data.order;
+
+        this.modal.loading = false;
+      },
+
+      /**
+       * Обнуление детального заказа
+       */
+      clearOrderDetail() {
+        this.modal.order = {};
+      },
+
+      /**
+       * Форматирование инициалов
+       *
+       * @param name
+       * @returns {string}
+       */
+      getCustomerInitials(name) {
+        return name.split(' ').map((name) => (name[0])).join('');
+      },
+
+      /**
+       * Смена статуса как заказа целиком, так и конкретной позиции
+       *
+       * @param String  status
+       * @param Boolean isItem
+       * @param Number  itemId
+       * @returns {Promise<void>}
+       */
+      async changeStatus(status, itemId = null) {
+        const route = itemId ? `${this.$attrs.apiRoute}/order_items/${itemId}`: `${this.$attrs.apiRoute}/orders/${this.modal.order.id}`;
+        // const response = await axios.put(`${this.$attrs.apiRoute}/orders/${this.modal.order.id}${itemId ? `/item/${itemId}` : ''}`, {
+        const response = await axios.patch(route, {
+           [`order_${itemId ? 'item_' : ''}status_code` ]: status
+        });
+
+        switch (response.status) {
+          case 200: this.$swal('Успешно!', 'Статус успешно изменён!', 'success'); break;
+          case 500: this.$swal('Ошибка!', `${response.data.msg}`, 'error'); return;
+        }
+
+        this.displayModal(false);
+      }
+
+    },
+
+    watch: {
+      'search': {
+        handler: function(after, before) {
+          if (after.status || after.created_at || after.keyword.length) {
+            this.pagination.page = 1;
+            this.searching = true;
+
+            this.searchData(this);
+          }
+        },
+
+        deep: true
+      },
+
+      'search.keyword': function (after, before) {
+        if (after.length > 3) {
+          this.onSearch();
+        }
+      }
     },
 
     created() {
@@ -221,6 +448,10 @@
 
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
+
+      this.$on('fetch-order-detail', this.loadOrderDetail);
+
+      this.$on('clear-modal', this.clearOrderDetail);
     }
 
 

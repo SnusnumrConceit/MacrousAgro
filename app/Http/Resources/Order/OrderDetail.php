@@ -16,11 +16,11 @@ class OrderDetail extends JsonResource
     {
         return [
             'id'          =>  $this->id,
-            'status_code' =>  $this->orderStatusCode,
-            'positions'   =>  $this->positions,
-            'customer'    =>  $this->user_id,
-            'created_at'  =>  $this->created_at,
-            'updated_at'  =>  $this->updated_at
+            'order_status_code' =>  $this->order_status_code,
+            'positions'   =>  $this->positions->load('product'),
+            'customer'    =>  $this->customer,
+            'created_at'  =>  $this->display_created_at,
+            'updated_at'  =>  $this->display_updated_at
         ];
     }
 }

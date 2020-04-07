@@ -21,7 +21,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::post('logout', 'AuthController@logout');
 });
 
-\App\Models\OrderStatusCode::apiRoutes();
+\App\Models\Order::apiRoutes();
 
 Route::get('category/{category}/products', 'CategoryController@products');
 
@@ -68,5 +68,7 @@ Route::group([
     Route::post('media/{media}/destroy', 'MediaController@destroy');
     Route::resource('media', 'MediaController')->only('store');
 
+//    Route::patch('/orders/{order_id}/items/{item_id}', 'OrderItemController@update')->name('orders.items.update');
+    Route::patch('/order_items/{item_id}', 'OrderItemController@update')->name('orders.items.update');
     Route::resource('orders', 'OrderController');
 });

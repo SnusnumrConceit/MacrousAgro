@@ -40,7 +40,7 @@ trait Mediable {
      */
     public function getSrcAttribute()
     {
-        return Storage::url(self::MEDIA_PATH . '/' . self::medias()->first()->filename);
+        return self::medias()->exists() ? Storage::url(self::MEDIA_PATH . '/' . self::medias()->first()->filename) : '';
     }
 
     /**
@@ -62,7 +62,7 @@ trait Mediable {
         $media = Media::create([
             'filename' => substr($path, strrpos($path, '/') + 1),
             'mime' => $file->getMimeType(),
-            'size' => $file->getClientSize(),
+            'size' => $file->getSize(),
             'type' => $category,
             'uploaded_at' => Carbon::now()
         ]);

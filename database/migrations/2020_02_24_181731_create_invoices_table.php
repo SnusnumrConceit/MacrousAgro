@@ -22,7 +22,7 @@ class CreateInvoicesTable extends Migration
                 ->references('id')
                 ->on('orders')
                 ->onDelete('set null');
-            $table->decimal('payment_amount', 2)
+            $table->decimal('payment_amount', 14, 2)
                 ->comment('сумма заказа');
             $table->string('invoice_status_code')
                 ->comment('статуса для счёт-фактуры');

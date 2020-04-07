@@ -14,7 +14,11 @@ class OrderCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection;
+        return [
+            'data' => $this->collection,
+            'total'     => $this->total(),
+            'last_page' => $this->lastPage()
+        ];
     }
 
     public function with($request)

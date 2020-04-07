@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use Route;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -17,6 +18,8 @@ class Order extends Model
 
     protected $dates = ['created_at', 'updated_at'];
 
+    protected $appends = ['display_created_at', 'display_updated_at'];
+
     protected $perPage = 15;
 
     public function customer()
@@ -31,6 +34,37 @@ class Order extends Model
 
     public function invoice()
     {
-        return $this->hasOne(Invoice::class)->select(['payment_amount']);
+        return $this->hasOne(Invoice::class);
+    }
+
+    public static function getStatuses()
+    {
+        return self::getConstants('STATUS_');
+    }
+
+    private static function getConstants(string $prefix)
+    {
+        $constants = (new \ReflectionClass(self::class))->getConstants();
+
+        return array_filter($constants, function ($constant) use ($prefix) {
+            return preg_match("/$prefix/", $constant);
+        }, ARRAY_FILTER_USE_KEY);
+    }
+
+    public function getDisplayCreatedAtAttribute()
+    {
+        return $this->created_at->format('d.m.Y H:i:s');
+    }
+
+    public function getDisplayUpdatedAtAttribute()
+    {
+        return $this->updated_at->format('d.m.Y H:i:s');
+    }
+
+    public static function apiRoutes()
+    {
+        Route::get('order_status_codes', function () {
+            return self::getStatuses();
+        });
     }
 }
