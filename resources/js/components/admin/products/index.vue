@@ -365,7 +365,7 @@
       searchData: debounce(vm => {
         axios.get('/api/products/search', {
           params: {
-            paeg: vm.page,
+            page: vm.page,
             keyword: vm.search.keyword,
             created_at: vm.search.created_at,
             category: vm.search.category

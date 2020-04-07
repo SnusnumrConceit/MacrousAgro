@@ -101,7 +101,7 @@ class ProductController extends Controller
     {
         $this->product->update($request->validated(), $product);
 
-        if ($request->image) {
+        if (! empty($request->image)) {
             $product->remove($product->medias()->first());
 
             $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');

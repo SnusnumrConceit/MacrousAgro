@@ -15,6 +15,53 @@
                               label="Поиск"
                               single-line>
                 </v-text-field>
+
+                <v-spacer></v-spacer>
+
+                <v-select v-model="search.status" :items="Object.keys(status_codes)" label="Статус" name="status" item-text="name">
+                    <!--<template v-slot:item="{item, index}">-->
+                        <!--<v-list-item>-->
+                            <!--<v-list-item-content>-->
+                                <!--<v-list-item-title>-->
+                                    <!--{{ $t(`orders.statuses.${status_codes[index]}`) }}-->
+                                <!--</v-list-item-title>-->
+                            <!--</v-list-item-content>-->
+                        <!--</v-list-item>-->
+                    <!--</template>-->
+                </v-select>
+
+                <v-spacer></v-spacer>
+
+                <v-text-field
+                        @click="calendar = true"
+                        v-model="search.created_at"
+                        label="Дата публикации"
+                        prepend-icon="event"
+                        hint="Формат даты: ГГГГ-ММ-ДД"
+                        dense
+                        readonly
+                        clearable
+                        persistent-hint
+                        single-line
+
+                ></v-text-field>
+
+                <v-date-picker :locale="$i18n.locale"
+                               width="550"
+                               :style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"
+                               no-title
+                               scrollable
+                               first-day-of-week="1"
+                               color="primary"
+                               v-if="calendar"
+                               v-model="search.created_at">
+                    <v-spacer></v-spacer>
+                    <v-btn color="blue darken-1" @click="calendar = false" text>
+                        {{ $t('users.btn.cancel') }}
+                    </v-btn>
+                    <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
+                </v-date-picker>
+
             </v-toolbar>
 
             <v-card-text>
@@ -220,7 +267,8 @@
 
         search: {
           keyword: '',
-          created_at: ''
+          created_at: '',
+          status: ''
         },
 
         table: {
@@ -240,6 +288,7 @@
           ]
         },
 
+        calendar: false,
         searching: false,
         loading: false,
         modal: {
@@ -304,17 +353,24 @@
         this.pagination.total = response.data.orders.total;
       },
 
-      async searchData() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
-          params: {
-            page: this.pagination.page,
-            search: this.search
-          }
-        });
-
-        this.orders = response.data.orders;
-        this.pagination.page = response.data.last_page;
+      onSearch() {
+        this.searchData(this);
       },
+
+      searchData: debounce(vm => {
+        axios.get(`${vm.$attrs.apiRoute}/orders`, {
+          params: {
+            page: vm.pagination.page,
+            keyword: vm.search.keyword,
+            created_at: vm.search.created_at,
+            status: vm.search.status
+          }
+        }).then(response => {
+          vm.orders = (vm.pagination.page === 1) ? response.data.orders.data : vm.orders.concat(response.data.orders.data);
+          vm.pagination.last_page = response.data.orders.last_page;
+          vm.pagination.total = response.data.orders.total;
+        }).catch(error => console.error(error));
+      }, 300),
 
       async initData() {
         this.loading = true;

@@ -19,7 +19,7 @@ class OrderRepo
         $orders = Order::query();
 
         $orders->when($request->keyword, function ($q, $keyword) {
-            return $q->where('id', $keyword);
+            return $q->where('id', 'LIKE', '%' . $keyword . '%');
         });
 
         $orders->when($request->status, function ($q, $status) {
@@ -30,7 +30,7 @@ class OrderRepo
             return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . [' 23:59:59']]);
         });
 
-        $orders = Order::with('customer', 'invoice')->latest()->paginate();
+        $orders = $orders->with('customer', 'invoice')->latest()->paginate();
 
         return $orders;
     }

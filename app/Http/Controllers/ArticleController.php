@@ -109,7 +109,7 @@ class ArticleController extends Controller
 
         $this->article->update($request->validated(), $article);
 
-        if ($request->validated()['image']) {
+        if (! empty($request->validated()['image'])) {
             $article->remove($article->medias()->first());
 
             $media = Mediable::upload(Article::MEDIA_PATH, $request->image, 'articles');
