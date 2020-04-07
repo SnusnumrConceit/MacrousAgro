@@ -77,7 +77,7 @@
 
                             </v-text-field>
 
-                            <preview-upload @upload-image="onUploadImage" ref="previewUpload"></preview-upload>
+                            <preview-upload @uploaded="onUploadImage" ref="previewUpload"></preview-upload>
 
                         </v-card-text>
 
@@ -182,6 +182,7 @@
 
     methods: {
       onUploadImage(image) {
+        console.log(image);
         this.photo.image = image;
       },
 
@@ -217,7 +218,7 @@
 
       searchData: debounce((vm) => {
         vm.loading = true;
-        axios.get(`${this.$attrs.apiRoute}/photos`, {
+        axios.get(`${vm.$attrs.apiRoute}/photos`, {
           params: {
             page: vm.pagination.page,
             ...vm.search,

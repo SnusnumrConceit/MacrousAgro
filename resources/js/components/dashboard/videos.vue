@@ -59,7 +59,7 @@
       },
 
       searchData: debounce((vm) => {
-        axios.get(`${this.$attrs.apiRoute}/videos/search`, {
+        axios.get(`${vm.$attrs.apiRoute}/videos/search`, {
           params: {
             page: vm.pagination.page,
           }
