@@ -49,7 +49,6 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        dd($request->validated());
         $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
 
         $product = $this->product->store($request->validated());
