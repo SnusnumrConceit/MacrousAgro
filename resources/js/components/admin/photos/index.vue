@@ -241,7 +241,7 @@
       }, 300),
 
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/admin/photos/${id}`);
+        const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${id}`);
 
         switch (response.data.status) {
           case 'error':
