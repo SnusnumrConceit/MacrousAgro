@@ -16,16 +16,6 @@ trait Mediable {
     private $max_file_height = 580;
 
     /**
-     * Получить Медиа-контент
-     *
-     * @return mixed
-     */
-    public function content()
-    {
-        return $this->hasOneThrough(Media::class, \App\Models\Mediable::class, 'mediable_id', 'id', 'id', 'media_id');
-    }
-
-    /**
      * Получить Медиа-объект
      *
      * @return mixed

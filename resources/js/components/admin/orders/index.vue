@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div style="height: 100%">
         <v-card>
             <v-toolbar>
                 <v-toolbar-title>
@@ -18,49 +18,64 @@
 
                 <v-spacer></v-spacer>
 
-                <v-select v-model="search.status" :items="Object.keys(status_codes)" label="Статус" name="status" item-text="name">
-                    <!--<template v-slot:item="{item, index}">-->
-                        <!--<v-list-item>-->
-                            <!--<v-list-item-content>-->
-                                <!--<v-list-item-title>-->
-                                    <!--{{ $t(`orders.statuses.${status_codes[index]}`) }}-->
-                                <!--</v-list-item-title>-->
-                            <!--</v-list-item-content>-->
-                        <!--</v-list-item>-->
-                    <!--</template>-->
+                <!-- TODO разобраться с переводами статусов-->
+                <v-select v-model="search.status"
+                          clearable
+                          :items="status_codes"
+                          label="Статус">
+                    <template v-slot:item="{item}">
+                        <v-list>
+                        <v-list-item>
+                            <v-list-item-content>
+                                <v-list-item-title>
+                                    {{ $t(`orders.statuses.${item}`) }}
+                                </v-list-item-title>
+                            </v-list-item-content>
+                        </v-list-item>
+                        </v-list>
+                    </template>
                 </v-select>
 
                 <v-spacer></v-spacer>
 
-                <v-text-field
-                        @click="calendar = true"
-                        v-model="search.created_at"
-                        label="Дата публикации"
-                        prepend-icon="event"
-                        hint="Формат даты: ГГГГ-ММ-ДД"
-                        dense
-                        readonly
-                        clearable
-                        persistent-hint
-                        single-line
+                <v-menu ref="search-calendar-menu"
+                        v-model="calendar"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        max-width="290px"
+                        min-width="200px">
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                                v-on="on"
+                                v-model="search.display_created_at"
+                                label="Дата создания"
+                                prepend-icon="event"
+                                hint="Дата создания"
+                                dense
+                                readonly
+                                clearable
+                                persistent-hint
+                                single-line
 
-                ></v-text-field>
+                        ></v-text-field>
+                    </template>
 
-                <v-date-picker :locale="$i18n.locale"
-                               width="550"
-                               :style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"
-                               no-title
-                               scrollable
-                               first-day-of-week="1"
-                               color="primary"
-                               v-if="calendar"
-                               v-model="search.created_at">
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" @click="calendar = false" text>
-                        {{ $t('users.btn.cancel') }}
-                    </v-btn>
-                    <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
-                </v-date-picker>
+                    <v-date-picker :locale="$i18n.locale"
+                                   width="290"
+                                   no-title
+                                   scrollable
+                                   first-day-of-week="1"
+                                   color="primary"
+                                   v-if="calendar"
+                                   v-model="search.created_at">
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" @click="calendar = false" text>
+                            {{ $t('users.btn.cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
+                    </v-date-picker>
+                </v-menu>
 
             </v-toolbar>
 
@@ -88,6 +103,11 @@
                         </td>
                         <td>
                             <span v-if="order.invoice">{{ order.invoice.payment_amount }} руб. </span>
+                        </td>
+                        <td>
+                            <span>
+                                {{ order.display_created_at }}
+                            </span>
                         </td>
                         <td class="text-right">
                             <v-tooltip top color="primary">
@@ -150,10 +170,6 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="position in modal.order.positions" :key="position.id">
-                                        <!--<td :colspan="table.detailHeaders.length" class="text-center">-->
-
-                                        <!--</td>-->
-
                                         <td>
                                             {{ position.product.title }}
                                         </td>
@@ -267,7 +283,8 @@
 
         search: {
           keyword: '',
-          created_at: '',
+          created_at: null,
+          display_created_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'}),
           status: ''
         },
 
@@ -277,6 +294,7 @@
             'Покупатель',
             'Статус',
             'Стоимость',
+            'Дата заказа',
             ''
           ],
 
@@ -480,11 +498,12 @@
     watch: {
       'search': {
         handler: function(after, before) {
+          this.pagination.page = 1;
+          this.searching = true;
           if (after.status || after.created_at || after.keyword.length) {
-            this.pagination.page = 1;
-            this.searching = true;
-
             this.searchData(this);
+          } else if (! after.status && ! after.created_at && ! after.keyword.length) {
+            this.loadData();
           }
         },
 
@@ -494,6 +513,18 @@
       'search.keyword': function (after, before) {
         if (after.length > 3) {
           this.onSearch();
+        }
+      },
+
+      'search.created_at': function (after, before) {
+        if (after !== null) {
+          this.search.display_created_at = after.split('-').reverse().join('.');
+        }
+      },
+
+      'search.display_created_at': function (after, before) {
+        if (after === null) {
+          this.search.created_at = null;
         }
       }
     },

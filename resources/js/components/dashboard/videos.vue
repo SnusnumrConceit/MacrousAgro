@@ -1,14 +1,14 @@
 <template>
-    <v-card>
+    <v-card height="100%" class="flex-card-full-size">
         <v-card-title>
             Видеогалерея
         </v-card-title>
         <v-card-text>
             <v-row>
-                <v-col cols="6" v-for="(video, index) in videos" :key="video.id">
+                <v-col cols="6" v-for="(video, index) in videos" :key="video.id" height="100%" class="flex-card-full-size">
                     <v-card>
                         <v-card-text>
-                            <video :src="video.path" controls></video>
+                            <video :src="video.path" controls height="240" width="320"></video>
                         </v-card-text>
                         <v-card-title class="text-center">
                             {{ video.title }}
@@ -108,5 +108,8 @@
 </script>
 
 <style scoped>
-
+    .flex-card-full-size {
+        display: flex;
+        flex-direction: column;
+    }
 </style>

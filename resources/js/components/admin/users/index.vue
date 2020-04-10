@@ -18,34 +18,43 @@
 
                 <v-spacer></v-spacer>
 
-                <v-text-field
-                        v-model="search.updated_at"
-                        label="Последнее действие"
-                        hint="Формат даты: ГГГГ-ММ-ДД"
-                        @click="calendar = true"
-                        persistent-hint
-                        dense
-                        readonly
-                        clearable
-                        single-line
-                        prepend-icon="event"
-                ></v-text-field>
+                <v-menu ref="search-calendar-menu"
+                        v-model="calendar"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        max-width="290px"
+                        min-width="200px">
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                                v-on="on"
+                                v-model="search.display_updated_at"
+                                label="Последнее действие"
+                                hint="Последнее действие"
+                                persistent-hint
+                                dense
+                                readonly
+                                clearable
+                                single-line
+                                prepend-icon="event"
+                        ></v-text-field>
+                    </template>
 
-                <v-date-picker :locale="$i18n.locale"
-                               :style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"
-                               width="550"
-                               first-day-of-week="1"
-                               color="primary"
-                               no-title
-                               scrollable
-                               v-if="calendar"
-                               v-model="search.updated_at">
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" @click="calendar = false" text>
-                        {{ $t('users.btn.cancel') }}
-                    </v-btn>
-                    <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
-                </v-date-picker>
+                    <v-date-picker :locale="$i18n.locale"
+                                   width="290"
+                                   first-day-of-week="1"
+                                   color="primary"
+                                   no-title
+                                   scrollable
+                                   @input="calendar = false"
+                                   v-model="search.updated_at">
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" @click="calendar = false" text>
+                            {{ $t('users.btn.cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
+                    </v-date-picker>
+                </v-menu>
 
                 <v-spacer></v-spacer>
 
@@ -97,26 +106,39 @@
                                             </v-text-field>
                                         </v-col>
                                         <v-col cols="12" sm="12" md="12">
-                                            <v-text-field v-model="user.birthday"
-                                                          @click="form_calendar = true"
-                                                          :label="$t('users.form.labels.birthday')"
-                                                          prepend-icon="event"
-                                                          :rules="form.birthday.rules"
-                                                          readonly
-                                            ></v-text-field>
+                                            <v-menu ref="search-calendar-menu"
+                                                    v-model="form_calendar"
+                                                    :close-on-content-click="false"
+                                                    transition="scale-transition"
+                                                    offset-y
+                                                    max-width="290px"
+                                                    min-width="200px">
+                                                <template v-slot:activator="{ on }">
+                                                    <v-text-field v-model="user.display_birthday"
+                                                                  v-on="on"
+                                                                  :label="$t('users.form.labels.birthday')"
+                                                                  prepend-icon="event"
+                                                                  :rules="form.birthday.rules"
+                                                                  readonly
+                                                    ></v-text-field>
+                                                </template>
 
-                                            <v-date-picker v-model="user.birthday"
-                                                           :style="{position: 'absolute', right: '20%', 'z-index': 3}"
-                                                           no-title
-                                                           scrollable
-                                                           v-if="form_calendar"
-                                                           :locale="$i18n.locale">
-                                                <v-spacer></v-spacer>
-                                                <v-btn color="blue darken-1" @click="form_calendar = false" text>
-                                                    {{ $t('users.btn.cancel') }}
-                                                </v-btn>
-                                                <v-btn color="primary" outlined @click="form_calendar = false">OK</v-btn>
-                                            </v-date-picker>
+                                                <v-date-picker v-model="user.birthday"
+                                                               @input="form_calendar = true"
+                                                               :max="new Date().toISOString().substr(0,10)"
+                                                               no-title
+                                                               scrollable
+                                                               v-if="form_calendar"
+                                                               :locale="$i18n.locale">
+
+                                                    <v-spacer></v-spacer>
+
+                                                    <v-btn color="blue darken-1" @click="form_calendar = false" text>
+                                                        {{ $t('users.btn.cancel') }}
+                                                    </v-btn>
+                                                    <v-btn color="primary" outlined @click="form_calendar = false">OK</v-btn>
+                                                </v-date-picker>
+                                            </v-menu>
                                         </v-col>
                                         <v-col cols="12" sm="6" md="6">
                                             <v-text-field v-model="user.password"
@@ -169,7 +191,7 @@
             </v-row>
 
             <v-card-text>
-                <v-simple-table :fixed-header="! calendar" :height="750" v-show="! loading">
+                <v-simple-table :fixed-header="! calendar" :height="750" v-show="! loading && users.length">
                     <template v-slot:default>
                         <thead>
                         <th v-for="header in table.headers" :key="header.text" class="text-left">
@@ -185,7 +207,7 @@
                                 {{ user.email }}
                             </td>
                             <td class="text-left">
-                                {{ user.formatted_birthday }}
+                                {{ user.display_birthday }}
                             </td>
                             <td class="text-left">
                                 {{ user.registration_date }}
@@ -234,6 +256,17 @@
                 <v-skeleton-loader type="table-row-divider@6" v-show="loading">
 
                 </v-skeleton-loader>
+
+                <v-alert color="info" outlined v-if="! loading && ! users.length">
+                    <div class="">
+                        <span v-show="! searching">
+                            Пользователи отсутствуют в системе
+                        </span>
+                        <span v-show="searching">
+                            По Вашему запросу ничего не найдено
+                        </span>
+                    </div>
+                </v-alert>
             </v-card-text>
         </v-card>
 
@@ -257,14 +290,16 @@
 
         search: {
           keyword: '',
-          updated_at: null
+          updated_at: null,
+          display_updated_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'})
         },
 
         user: {
           email: '',
           first_name: '',
           last_name: '',
-          birthday: new Date().toISOString().substr(0, 10),
+          display_birthday: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'}),
+          birthday: null,
           password: '',
           password_confirmation: ''
         },
@@ -396,7 +431,7 @@
 
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
+            this.users = this.users.filter((user) => user.id !== id);
             break;
         }
       },
@@ -485,7 +520,7 @@
             this.searchData(this);
           }
 
-          if (after.updated_at !== null || after.keyword.length === 0) {
+          if (after.updated_at !== null && ! after.keyword.length) {
             this.pagination.page = 1;
             this.searching = false;
 
@@ -499,6 +534,30 @@
       'search.keyword': function (after, before) {
         if (after.length > 3) {
           this.onSearch();
+        }
+      },
+
+      'search.updated_at': function (after) {
+        if (after !== null) {
+          this.search.display_updated_at = after.split('-').reverse().join('.');
+        }
+      },
+
+      'search.display_updated_at': function (after) {
+        if (after === null) {
+          this.search.updated_at = null;
+        }
+      },
+
+      'user.birthday': function (after) {
+        if (after !== null) {
+          this.user.display_birthday = after.split('-').reverse().join('.');
+        }
+      },
+
+      'user.display_updated_at': function (after) {
+        if (after === null) {
+          this.user.birthday = null;
         }
       }
     },

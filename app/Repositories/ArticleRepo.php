@@ -22,6 +22,10 @@ class ArticleRepo
             return $q->where('title', 'LIKE', '%' . $keyword . '%');
         });
 
+        $articles->when($request->is_publicated, function ($q, $is_publicated) {
+            return $q->where('is_publicated', $is_publicated);
+        });
+
         $articles->when($request->publication_date, function ($q, $publication_date) {
             return $q->whereBetween('publication_date', [$publication_date . ' 00:00', $publication_date . ' 23:59']);
         });

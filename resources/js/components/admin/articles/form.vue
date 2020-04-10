@@ -20,27 +20,38 @@
                                           :rules="form.title.rules">
                             </v-text-field>
 
-                            <v-text-field
-                                    @click="menu = true"
-                                    v-model="article.publication_date"
-                                    :label="$t('articles.form.labels.publication_date')"
-                                    prepend-icon="event"
-                                    readonly
-                            ></v-text-field>
+                            <!--:return-value.sync="article.publication_date"-->
+                            <v-menu   ref="calendar-menu"
+                                      v-model="menu"
+                                      :close-on-content-click="false"
+                                      transition="scale-transition"
+                                      offset-y
+                                      max-width="290px"
+                                      min-width="290px">
 
-                            <v-date-picker v-model="article.publication_date"
-                                           :min="new Date().toISOString().substr(0,10)"
-                                           :style="{position: 'absolute', right: '20%', 'z-index': 3}"
-                                           no-title
-                                           scrollable
-                                           v-if="menu"
-                                           :locale="$i18n.locale">
-                                <v-spacer></v-spacer>
-                                <v-btn color="blue darken-1" @click="menu = false" text>
-                                    {{ $t('articles.btn.cancel') }}
-                                </v-btn>
-                                <v-btn color="primary" outlined @click="menu = false">OK</v-btn>
-                            </v-date-picker>
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field
+                                            v-on="on"
+                                            v-model="article.display_publication_date"
+                                            :label="$t('articles.form.labels.publication_date')"
+                                            prepend-icon="event"
+                                            readonly
+                                    ></v-text-field>
+                                </template>
+
+                                <v-date-picker v-model="article.publication_date"
+                                               :min="new Date().toISOString().substr(0,10)"
+                                               no-title
+                                               first-day-of-week="1"
+                                               @input="menu = false"
+                                               :locale="$i18n.locale">
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="blue darken-1" @click="menu = false" text>
+                                        {{ $t('articles.btn.cancel') }}
+                                    </v-btn>
+                                    <v-btn color="primary" outlined @click="menu = false">OK</v-btn>
+                                </v-date-picker>
+                            </v-menu>
 
                             <v-textarea v-model="article.description"
                                         :label="$t('articles.form.labels.description')"
@@ -137,7 +148,8 @@
     },
 
     methods: {
-      onUploaded(image) {
+      /** **/
+      onUploadImage(image) {
         this.article.image = image;
       },
 
@@ -161,11 +173,12 @@
 
           switch (response.data.status) {
             case 'error':
-              this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
+              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
               return false;
 
             case 'success':
-              this.$swal(this.$t('swal.title.success', response.data.msg, 'success'));
+              console.log(response.data.msg);
+              this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
               this.$router.push({name: 'Articles'});
               break;
           }
@@ -174,11 +187,11 @@
 
           switch (response.data.status) {
             case 'error':
-              this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
+              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
               return false;
 
             case 'success':
-              this.$swal(this.$t('swal.title.success', response.data.msg, 'success'));
+              this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
               this.$router.push({name: 'Articles'});
               break;
           }
@@ -220,6 +233,12 @@
         await this.loadData();
 
         this.loading = false;
+      }
+    },
+
+    watch: {
+      'article.publication_date': function (after, before) {
+        this.article.display_publication_date = after.split('-').reverse().join('.');
       }
     },
 

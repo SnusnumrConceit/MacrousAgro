@@ -11,8 +11,12 @@ class PhotoRepo
     {
         $photos = Photo::query();
 
-        $photos->when(isset($request->keyword), function ($q) use ($request) {
-            return $q->where('title', 'LIKE', '%' . $request->keyword . '%');
+        $photos->when(isset($request->keyword), function ($q, $keyword) {
+            return $q->where('title', 'LIKE', '%' . $keyword . '%');
+        });
+
+        $photos->when($request->created_at, function ($q, $created_at) {
+            return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . ' 23:59:59']);
         });
 
         return $photos->latest('created_at')->paginate();

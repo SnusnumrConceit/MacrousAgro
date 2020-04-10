@@ -19,46 +19,59 @@
 
                 <v-spacer></v-spacer>
 
-                <!-- TODO необходимо что-то сделать с z-index у календаря -->
-                <!--<v-text-field-->
-                        <!--@click="calendar = true"-->
-                        <!--v-model="search.created_at"-->
-                        <!--label="Дата создания"-->
-                        <!--prepend-icon="event"-->
-                        <!--dense-->
-                        <!--readonly-->
-                        <!--hide-details-->
+                <v-menu ref="search-calendar-menu"
+                        v-model="calendar"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        max-width="290px"
+                        min-width="200px">
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                                v-on="on"
+                                v-model="search.display_created_at"
+                                label="Дата загрузки"
+                                prepend-icon="event"
+                                hint="Дата загрузки"
+                                dense
+                                readonly
+                                clearable
+                                persistent-hint
+                                single-line
+                        ></v-text-field>
+                    </template>
 
-                <!--&gt;</v-text-field>-->
+                    <v-date-picker
+                            :locale="$i18n.locale"
+                            width="290"
+                            no-title
+                            scrollable
+                            first-day-of-week="1"
+                            color="primary"
+                            @input="calendar = false"
+                            v-model="search.created_at">
 
-                <!--<v-date-picker-->
-                        <!--:locale="$i18n.locale"-->
-                        <!--width="550"-->
-                        <!--:style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"-->
-                        <!--no-title-->
-                        <!--scrollable-->
-                        <!--first-day-of-week="1"-->
-                        <!--color="primary"-->
-                        <!--v-if="calendar"-->
-                        <!--v-model="search.created_at">-->
+                        <v-spacer></v-spacer>
 
-                    <!--<v-spacer></v-spacer>-->
+                        <v-btn color="blue darken-1" @click="calendar = false" text>
+                            {{ $t('users.btn.cancel') }}
+                        </v-btn>
 
-                    <!--<v-btn color="blue darken-1" @click="calendar = false" text>-->
-                        <!--{{ $t('users.btn.cancel') }}-->
-                    <!--</v-btn>-->
+                        <v-btn color="primary" outlined @click="calendar = false">
+                            OK
+                        </v-btn>
+                    </v-date-picker>
+                </v-menu>
 
-                    <!--<v-btn color="primary" outlined @click="calendar = false">-->
-                        <!--OK-->
-                    <!--</v-btn>-->
-                <!--</v-date-picker>-->
-
-                <!--<v-spacer></v-spacer>-->
+                <v-spacer></v-spacer>
 
 
-                <v-dialog v-model="modal" max-width="500px">
+                <v-dialog v-model="modal" max-width="500px" persistent>
                     <template v-slot:activator="{on}">
-                        <v-btn color="success" v-on="on" outlined>
+                        <v-btn color="success"
+                               outlined
+                               v-on="on"
+                               @click="resetPreview = false">
                             <i class="pe-7s-plus"></i>
                             {{ $t('videos.btn.add')}}
                         </v-btn>
@@ -78,7 +91,11 @@
 
                                 </v-text-field>
 
-                                <preview-upload @uploaded="onUpload" ref="previewUpload" :extensions="extensions.join(',')" type="video"></preview-upload>
+                                <preview-upload @uploaded="onUpload" ref="previewUpload"
+                                                :extensions="extensions.join(',')"
+                                                type="video"
+                                                :reset="resetPreview">
+                                </preview-upload>
 
                             </v-card-text>
 
@@ -102,14 +119,14 @@
             </v-toolbar>
 
             <v-card-text>
-                <v-row v-show="! loading">
-                    <v-col col="6" v-for="(video, index) in videos" :key="video.id">
-                        <v-card>
+                <v-row v-show="! loading && videos.length">
+                    <v-col col="6" v-for="(video, index) in videos" :key="video.id" height="100%" class="flex-card-full-size">
+                        <v-card height="100%" class="flex-card-full-size">
                             <v-card-title>
                                 {{ video.title }}
                             </v-card-title>
-                            <v-card-text>
-                                <video :src="video.src" controls></video>
+                            <v-card-text class="m-b-md">
+                                <video :src="video.src" controls height="240" width="320"></video>
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn color="error" outlined @click="remove(video.id)">
@@ -121,13 +138,24 @@
                             </v-card-actions>
                         </v-card>
                     </v-col>
-                    <v-pagination :length="pagination.last_page"
-                                  v-model="pagination.page"
-                                  :total-visible="7"
-                                  circle></v-pagination>
+                    <!--<v-pagination :length="pagination.last_page"-->
+                                  <!--v-model="pagination.page"-->
+                                  <!--:total-visible="7"-->
+                                  <!--circle></v-pagination>-->
                 </v-row>
 
                 <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+
+                <v-alert color="info" outlined v-if="! loading && ! videos.length">
+                    <div class="">
+                        <span v-show="! searching">
+                            Видеоролики отсутствуют в системе
+                        </span>
+                        <span v-show="searching">
+                            По Вашему запросу ничего не найдено
+                        </span>
+                    </div>
+                </v-alert>
             </v-card-text>
 
 
@@ -159,7 +187,7 @@
 
         video: {
           title: '',
-          path: ''
+          video: null
         },
 
         form: {
@@ -173,7 +201,9 @@
         },
 
         search: {
-          keyword: ''
+          keyword: '',
+          created_at: null,
+          display_created_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'})
         },
 
         pagination: {
@@ -186,6 +216,7 @@
 
         isDestroying: false,
         loading: false,
+        resetPreview: false
       }
     },
 
@@ -235,7 +266,8 @@
 
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
+            this.videos = this.videos.filter(video => video.id !== id);
+            break;
         }
       },
 
@@ -323,7 +355,8 @@
        */
       async resetForm() {
         this.modal = false;
-
+        this.resetPreview = true;
+        this.video.video = null;
         this.$refs.form.reset();
       },
 
@@ -335,12 +368,12 @@
     watch: {
       'search': {
         handler: function(after, before) {
-          if (after.category || after.created_at || after.keyword.length > 3) {
+          if (after.created_at || after.keyword.length > 3) {
             this.pagination.page = 1;
             this.searching = true;
 
             this.searchData(this);
-          } else if (! after.category && ! after.created_at && ! after.keyword.length) {
+          } else if (! after.created_at && ! after.keyword.length) {
             this.pagination.page = 1;
             this.searching = false;
 
@@ -354,6 +387,18 @@
       'search.keyword': function (after, before) {
         if (after.length > 3) {
           this.onSearch();
+        }
+      },
+
+      'search.created_at': function (after) {
+        if (after !== null) {
+          this.search.display_created_at = after.split('-').reverse().join('.');
+        }
+      },
+
+      'search.display_created_at': function (after) {
+        if (after === null) {
+          this.search.created_at = null;
         }
       }
     },
@@ -373,5 +418,8 @@
 </script>
 
 <style scoped>
-
+    .flex-card-full-size {
+        display: flex;
+        flex-direction: column;
+    }
 </style>

@@ -16,7 +16,7 @@ class VideoRepo
         });
 
         $video->when($request->created_at, function ($q, $created_at) {
-            return $q->whereBetween('created_at', [$created_at . ' 00:00', $created_at . ' 23:59']);
+            return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . ' 23:59:59']);
         });
 
         return $video->latest('created_at')->paginate();

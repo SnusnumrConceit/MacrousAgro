@@ -18,45 +18,56 @@
 
                 <v-spacer></v-spacer>
 
-                <!-- TODO необходимо что-то сделать с z-index у календаря -->
-                <!--<v-text-field-->
-                <!--@click="calendar = true"-->
-                <!--v-model="search.created_at"-->
-                <!--label="Дата создания"-->
-                <!--prepend-icon="event"-->
-                <!--dense-->
-                <!--readonly-->
-                <!--hide-details-->
+                <v-menu ref="search-calendar-menu"
+                        v-model="calendar"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        max-width="290px"
+                        min-width="200px">
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                                v-on="on"
+                                v-model="search.display_created_at"
+                                label="Дата загрузки"
+                                prepend-icon="event"
+                                hint="Дата загрузки"
+                                dense
+                                readonly
+                                clearable
+                                persistent-hint
+                                single-line
+                        ></v-text-field>
+                    </template>
 
-                <!--&gt;</v-text-field>-->
+                    <v-date-picker
+                            @input="calendar = false"
+                            :locale="$i18n.locale"
+                            width="290"
+                            no-title
+                            scrollable
+                            first-day-of-week="1"
+                            color="primary"
+                            v-if="calendar"
+                            v-model="search.created_at">
 
-                <!--<v-date-picker-->
-                <!--:locale="$i18n.locale"-->
-                <!--width="550"-->
-                <!--:style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"-->
-                <!--no-title-->
-                <!--scrollable-->
-                <!--first-day-of-week="1"-->
-                <!--color="primary"-->
-                <!--v-if="calendar"-->
-                <!--v-model="search.created_at">-->
+                        <v-spacer></v-spacer>
 
-                <!--<v-spacer></v-spacer>-->
+                        <v-btn color="blue darken-1" @click="calendar = false" text>
+                            {{ $t('users.btn.cancel') }}
+                        </v-btn>
 
-                <!--<v-btn color="blue darken-1" @click="calendar = false" text>-->
-                <!--{{ $t('users.btn.cancel') }}-->
-                <!--</v-btn>-->
+                        <v-btn color="primary" outlined @click="calendar = false">
+                            OK
+                        </v-btn>
+                    </v-date-picker>
+                </v-menu>
 
-                <!--<v-btn color="primary" outlined @click="calendar = false">-->
-                <!--OK-->
-                <!--</v-btn>-->
-                <!--</v-date-picker>-->
+                <v-spacer></v-spacer>
 
-                <!--<v-spacer></v-spacer>-->
-
-                <v-dialog v-model="modal" max-width="500px">
+                <v-dialog v-model="modal" max-width="500px" persistent>
                     <template v-slot:activator="{on}">
-                        <v-btn color="success" outlined v-on="on">
+                        <v-btn color="success" outlined v-on="on" @click="resetImage = false">
                             <i class="pe-7s-plus"></i>
                             {{ $t('photos.btn.add')}}
                         </v-btn>
@@ -77,7 +88,7 @@
 
                             </v-text-field>
 
-                            <preview-upload @uploaded="onUploadImage" ref="previewUpload"></preview-upload>
+                            <preview-upload @uploaded="onUploadImage" :reset="resetPreview"></preview-upload>
 
                         </v-card-text>
 
@@ -97,9 +108,9 @@
             </v-toolbar>
 
             <v-card-text>
-                <v-row v-show="! loading">
-                    <v-col cols="4" v-for="(photo, index) in photos" :key="photo.id">
-                        <v-card>
+                <v-row v-show="! loading && photos.length">
+                    <v-col cols="4" v-for="photo in photos" :key="photo.id">
+                        <v-card height="100%" class="flex-card-full-size">
                             <v-card-title>
                                 {{ photo.title }}
                             </v-card-title>
@@ -120,6 +131,17 @@
                 </v-row>
 
                 <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+
+                <v-alert color="info" outlined v-if="! loading && ! photos.length">
+                    <div class="">
+                        <span v-show="! searching">
+                            Фотографии отсутствуют в системе
+                        </span>
+                        <span v-show="searching">
+                            По Вашему запросу ничего не найдено
+                        </span>
+                    </div>
+                </v-alert>
             </v-card-text>
         </v-card>
     </div>
@@ -144,18 +166,16 @@
       return {
         photos: [],
 
-        searching: false,
-
-        loading: false,
-
         search: {
           keyword: '',
-          created_at: null
+          created_at: null,
+          display_created_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'})
         },
 
         photo: {
           title: '',
-          image: null
+          image: null,
+          src: ''
         },
 
         form: {
@@ -176,13 +196,14 @@
         modal: false,
         calendar: false,
 
-        isDestroying: false
+        searching: false,
+        resetPreview: false,
+        loading: false
       }
     },
 
     methods: {
       onUploadImage(image) {
-        console.log(image);
         this.photo.image = image;
       },
 
@@ -204,6 +225,7 @@
             ? response.data.photos.data
             : this.photos.concat(response.data.photos.data);
 
+        console.log(this.photos);
         this.pagination.last_page = response.data.photos.last_page;
         this.loading = false;
       },
@@ -250,7 +272,8 @@
 
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
+            this.photos = this.photos.filter(photo => photo.id !== id);
+            break;
         }
       },
 
@@ -292,9 +315,9 @@
 
       async resetForm() {
         this.modal = false;
-        this.photo.image = null;
-        this.$emit('reset-uploader');
         this.$refs.form.reset();
+        this.photo.image = null;
+        this.resetPreview = true;
       },
 
       onScroll: function() {
@@ -309,12 +332,12 @@
     watch: {
       'search': {
         handler: function(after, before) {
-          if (after.category || after.created_at || after.keyword.length > 3) {
+          if (after.created_at || after.keyword.length > 3) {
             this.pagination.page = 1;
             this.searching = true;
 
             this.searchData(this);
-          } else if (! after.category && ! after.created_at && ! after.keyword.length) {
+          } else if (! after.created_at && ! after.keyword.length) {
             this.pagination.page = 1;
             this.searching = false;
 
@@ -330,6 +353,18 @@
           this.onSearch();
         }
       },
+
+      'search.created_at': function (after) {
+        if (after !== null) {
+          this.search.display_created_at = after.split('-').reverse().join('.');
+        }
+      },
+
+      'search.display_created_at': function (after) {
+        if (after === null) {
+          this.search.created_at = null;
+        }
+      }
     },
 
     created() {
@@ -347,5 +382,8 @@
 </script>
 
 <style scoped>
-
+    .flex-card-full-size {
+        display: flex;
+        flex-direction: column;
+    }
 </style>

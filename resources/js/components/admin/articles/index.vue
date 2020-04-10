@@ -17,41 +17,55 @@
 
                 <v-spacer></v-spacer>
 
-                <v-text-field
-                        @click="calendar = true"
-                        v-model="search.publication_date"
-                        label="Дата публикации"
-                        prepend-icon="event"
-                        hint="Формат даты: ГГГГ-ММ-ДД"
-                        dense
-                        readonly
-                        clearable
-                        persistent-hint
-                        single-line
+                <v-menu ref="search-calendar-menu"
+                        v-model="calendar"
+                        :close-on-content-click="false"
+                        transition="scale-transition"
+                        offset-y
+                        max-width="290px"
+                        min-width="200px">
+                    <template v-slot:activator="{ on }">
+                        <v-text-field
+                                @click="calendar = true"
+                                v-model="search.display_publication_date"
+                                label="Дата публикации"
+                                prepend-icon="event"
+                                hint="Дата публикации"
+                                dense
+                                readonly
+                                clearable
+                                persistent-hint
+                                single-line
 
-                ></v-text-field>
+                        ></v-text-field>
+                    </template>
 
-                <v-date-picker :locale="$i18n.locale"
-                               width="550"
-                               :style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"
-                               no-title
-                               scrollable
-                               first-day-of-week="1"
-                               color="primary"
-                               v-if="calendar"
-                               v-model="search.publication_date">
-                    <v-spacer></v-spacer>
-                    <v-btn color="blue darken-1" @click="calendar = false" text>
-                        {{ $t('users.btn.cancel') }}
-                    </v-btn>
-                    <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
-                </v-date-picker>
+                    <v-date-picker :locale="$i18n.locale"
+                                   width="290"
+                                   @input="calendar = false"
+                                   no-title
+                                   scrollable
+                                   first-day-of-week="1"
+                                   color="primary"
+                                   v-if="calendar"
+                                   v-model="search.publication_date">
+                        <v-spacer></v-spacer>
+                        <v-btn color="blue darken-1" @click="calendar = false" text>
+                            {{ $t('users.btn.cancel') }}
+                        </v-btn>
+                        <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
+                    </v-date-picker>
+                </v-menu>
 
                 <v-spacer></v-spacer>
 
-                <v-dialog v-model="modal" max-width="1000px">
+                <v-checkbox v-model="search.is_publicated" label="Публикация"></v-checkbox>
+
+                <v-spacer></v-spacer>
+
+                <v-dialog v-model="modal" max-width="1000px" persistent>
                     <template v-slot:activator="{on}">
-                        <v-btn color="success" outlined v-on="on">
+                        <v-btn color="success" outlined v-on="on" @click="resetPreview = false">
                             <i class="pe-7s-plus"></i> {{ $t('articles.btn.add') }}
                         </v-btn>
                     </template>
@@ -74,28 +88,41 @@
                                         </v-text-field>
                                     </v-col>
                                     <v-col>
+                                        <v-menu ref="form-calendar-menu"
+                                                v-model="menu"
+                                                :close-on-content-click="false"
+                                                transition="scale-transition"
+                                                offset-y
+                                                max-width="290px"
+                                                min-width="290px">
+                                            <template v-slot:activator="{ on }">
+                                                <v-text-field
+                                                        v-on="on"
+                                                        v-model="article.display_publication_date"
+                                                        :label="$t('articles.form.labels.publication_date')"
+                                                        prepend-icon="event"
+                                                        readonly
+                                                ></v-text-field>
+                                            </template>
 
-                                        <v-text-field
-                                                @click="menu = true"
-                                                v-model="article.publication_date"
-                                                :label="$t('articles.form.labels.publication_date')"
-                                                prepend-icon="event"
-                                                readonly
-                                        ></v-text-field>
+                                            <v-date-picker v-model="article.publication_date"
+                                                           :min="new Date().toISOString().substr(0,10)"
+                                                           @input="menu = false"
+                                                           no-title
+                                                           first-day-of-week="1"
+                                                           scrollable
+                                                           :locale="$i18n.locale">
 
-                                        <v-date-picker v-model="article.publication_date"
-                                                       :min="new Date().toISOString().substr(0,10)"
-                                                       :style="{position: 'absolute', right: '20%', 'z-index': 3}"
-                                                       no-title
-                                                       scrollable
-                                                       v-if="menu"
-                                                       :locale="$i18n.locale">
-                                            <v-spacer></v-spacer>
-                                            <v-btn color="blue darken-1" @click="menu = false" text>
-                                                {{ $t('articles.btn.cancel') }}
-                                            </v-btn>
-                                            <v-btn color="primary" outline @click="menu = false">OK</v-btn>
-                                        </v-date-picker>
+                                                <v-spacer></v-spacer>
+
+                                                <v-btn color="blue darken-1" text @click="menu = false">
+                                                    {{ $t('articles.btn.cancel') }}
+                                                </v-btn>
+
+                                                <v-btn color="primary" outlined @click="menu = false">OK</v-btn>
+
+                                            </v-date-picker>
+                                        </v-menu>
                                     </v-col>
                                 </v-row>
 
@@ -119,7 +146,7 @@
                                 <v-row>
                                     <v-col>
                                         <!--<vue-dropzone ref="article_dropzone" id="dropzone" :options="dropzone_options"></vue-dropzone>-->
-                                        <preview-upload @uploaded="onUploadImage"></preview-upload>
+                                        <preview-upload @uploaded="onUploadImage" :reset="resetPreview"></preview-upload>
                                     </v-col>
                                 </v-row>
 
@@ -129,7 +156,7 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="success"
-                                       :disabled="! form.valid"
+                                       :disabled="! form.valid || article.image === null"
                                        outlined
                                        @click="save()">
                                     {{ $t('articles.btn.save') }}
@@ -149,7 +176,7 @@
             </v-toolbar>
 
             <v-card-text>
-                <v-simple-table :fixed-header=" ! calendar" :height="750" v-show="! loading" ref="table">
+                <v-simple-table :fixed-header=" ! calendar" :height="750" v-show="! loading && articles.length" ref="table">
                     <template v-slot:default>
                         <thead>
                         <th v-for="header in table.headers" :key="header" class="text-left">
@@ -209,6 +236,17 @@
                 <v-skeleton-loader type="table-row-divider@6" v-show="loading">
 
                 </v-skeleton-loader>
+
+                <v-alert color="info" outlined v-if="! loading && ! articles.length">
+                    <div class="">
+                        <span v-show="! searching">
+                            Новости отсутствуют в системе
+                        </span>
+                        <span v-show="searching">
+                            По Вашему запросу ничего не найдено
+                        </span>
+                    </div>
+                </v-alert>
             </v-card-text>
         </v-card>
     </div>
@@ -239,7 +277,9 @@
 
         search: {
           keyword: '',
-          publication_date: null
+          publication_date: null,
+          display_publication_date: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'}),
+          is_publicated: Number(false)
         },
 
         article: {
@@ -292,7 +332,8 @@
 
         modal: false,
         menu: false,
-        calendar: false
+        calendar: false,
+        resetPreview: false
       }
     },
 
@@ -329,7 +370,6 @@
           return false;
         }
 
-        console.log(response.data);
         this.articles = (this.pagination.page === 1) ? response.data.articles.data : this.articles.concat(response.data.articles.data);
         this.pagination.total = response.data.articles.total;
         this.pagination.last_page = response.data.articles.last_page;
@@ -352,6 +392,7 @@
 
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+            this.articles = this.articles.filter((article) => article.id !== id);
             this.loadData();
         }
       },
@@ -420,7 +461,9 @@
        * @returns {Promise<void>}
        */
       async resetForm() {
+        this.modal = false;
         this.article.image = null;
+        this.resetPreview = true;
         this.$refs.form.reset();
       },
 
@@ -429,7 +472,6 @@
        *
        */
       cancel() {
-        this.modal = false;
         this.resetForm();
       },
 
@@ -444,17 +486,24 @@
 
     watch: {
       /**
+       * отслеживание форматирования даты публикации в модальном окне
+       */
+      'article.publication_date': function (after, before) {
+        this.article.display_publication_date = after.split('-').reverse().join('.');
+      },
+
+      /**
        * отслеживание поиска в целом
        *
        */
       'search': {
         handler: function(after, before) {
-          if (after.publication_date || after.keyword.length > 3) {
+          if (after.keyword.length > 3 || after.publication_date || after.is_publicated) {
             this.pagination.page = 1;
             this.searching = true;
 
             this.searchData(this);
-          } else if(! after.publication_date || after.keyword.length === 0) {
+          } else if(! after.keyword.length || ! after.publication_date || ! after.is_publicated) {
             this.pagination.page = 1;
             this.searching = true;
 
@@ -473,7 +522,24 @@
         if (after.length > 3) {
           this.onSearch();
         }
-      }
+      },
+
+      'search.is_publicated': function (after) {
+        this.search.is_publicated = Number(after);
+      },
+
+      /**
+       * отслеживание форматирования даты публикации в  поисковой форме
+       */
+      'search.publication_date': function (after, before) {
+        this.search.display_publication_date = after.split('-').reverse().join('.');
+      },
+
+      'search.display_publication_date': function (after, before) {
+        if (after === null) {
+          this.search.publication_date = null;
+        }
+      },
     },
 
     created() {

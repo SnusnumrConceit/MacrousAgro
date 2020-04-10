@@ -15,10 +15,5 @@ class CategoryTableSeeder extends Seeder
         $combi_category = \App\Models\Category::firstOrCreate([
             'name' => 'Комбикорм'
         ]);
-
-        /** Создание категории Животноводства **/
-        $animal_category = \App\Models\Category::firstOrCreate([
-            'name' => 'Животноводство'
-        ]);
     }
 }

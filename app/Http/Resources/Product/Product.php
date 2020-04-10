@@ -19,7 +19,8 @@ class Product extends JsonResource
             'title' => $this->title,
             'src' => $this->src,
             'price' => $this->price,
-            'created_at' => $this->created_at
+            'created_at' => $this->display_created_at,
+            'updated_at' => $this->display_updated_at
         ];
     }
 }

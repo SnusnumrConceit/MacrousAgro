@@ -24,47 +24,60 @@
                               label="Категория"
                               single-line
                               item-text="name"
-                              item-value="id">
+                              item-value="id"
+                              clearable>
                     </v-select>
 
                     <v-spacer></v-spacer>
 
+                    <v-menu ref="search-calendar-menu"
+                            v-model="calendar"
+                            :close-on-content-click="false"
+                            transition="scale-transition"
+                            offset-y
+                            max-width="290px"
+                            min-width="200px">
+                        <template v-slot:activator="{ on }">
+                            <v-text-field
+                                    v-on="on"
+                                    v-model="search.display_created_at"
+                                    @input="calendar = false"
+                                    label="Дата создания"
+                                    prepend-icon="event"
+                                    dense
+                                    readonly
+                                    clearable
+                                    hint="Дата создания"
+                                    persistent-hint
+                                    single-line
 
-                    <v-text-field
-                            @click="calendar = true"
-                            v-model="search.created_at"
-                            label="Дата создания"
-                            prepend-icon="event"
-                            dense
-                            readonly
-                            clearable
-                            hint="Формат даты: ГГГГ-ММ-ДД"
-                            persistent-hint
-                            single-line
+                            ></v-text-field>
+                        </template>
 
-                    ></v-text-field>
-
-                    <v-date-picker :locale="$i18n.locale"
-                                   width="550"
-                                   :style="{position: 'absolute', right: '10%', top: '100%', 'z-index': 3}"
-                                   no-title
-                                   scrollable
-                                   first-day-of-week="1"
-                                   color="primary"
-                                   v-if="calendar"
-                                   v-model="search.created_at">
-                        <v-spacer></v-spacer>
-                        <v-btn color="blue darken-1" @click="calendar = false" text>
-                            {{ $t('users.btn.cancel') }}
-                        </v-btn>
-                        <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
-                    </v-date-picker>
+                        <v-date-picker :locale="$i18n.locale"
+                                       width="290"
+                                       no-title
+                                       scrollable
+                                       first-day-of-week="1"
+                                       color="primary"
+                                       v-if="calendar"
+                                       v-model="search.created_at">
+                            <v-spacer></v-spacer>
+                            <v-btn color="blue darken-1" @click="calendar = false" text>
+                                {{ $t('users.btn.cancel') }}
+                            </v-btn>
+                            <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
+                        </v-date-picker>
+                    </v-menu>
 
                     <v-spacer></v-spacer>
 
-                    <v-dialog v-model="modal" max-width="500px">
+                    <v-dialog v-model="modal" max-width="500px" persistent>
                         <template v-slot:activator="{on}">
-                            <v-btn color="success" outlined v-on="on">
+                            <v-btn color="success"
+                                   outlined
+                                   v-on="on"
+                                   @click="resetPreview">
                                 <i class="pe-7s-plus"></i>
                                 {{ $t('products.btn.add')}}
                             </v-btn>
@@ -111,14 +124,14 @@
                                               :rules="form.price.rules">
                                 </v-text-field>
 
-                                <preview-upload @uploaded="onUploadImage" ref="previewUpload" v-if="! loading"></preview-upload>
+                                <preview-upload @uploaded="onUploadImage" ref="previewUpload" :reset="resetPreview"></preview-upload>
 
                             </v-card-text>
 
                             <v-card-actions>
                                 <v-spacer></v-spacer>
 
-                                <v-btn color="success" :disabled="! form.valid || ! product.image" @click="save()">
+                                <v-btn color="success" :disabled="! form.valid" @click="save()">
                                     {{ $t('products.btn.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1" text @click="cancel()">
@@ -131,7 +144,7 @@
                 </v-toolbar>
 
                 <v-card-text>
-                    <v-simple-table v-show="products.length && ! loading" :fixed-header="! calendar" :height="750">
+                    <v-simple-table v-show="! loading && products.length" :fixed-header="! calendar" :height="750">
                         <thead>
                         <th v-for="header in table.headers" :key="header">
                             {{ header }}
@@ -158,10 +171,10 @@
                                 {{ product.price }} руб.
                             </td>
                             <td class="text-left">
-                                {{ product.creation_date }}
+                                {{ product.created_at }}
                             </td>
                             <td class="text-left">
-                                {{ product.updating_date }}
+                                {{ product.updated_at }}
                             </td>
                             <td class="text-right">
                                 <v-tooltip top color="primary">
@@ -201,42 +214,18 @@
                     </span>
 
                     <v-skeleton-loader type="table-row-divider@6" v-show="loading"></v-skeleton-loader>
-                    <!--<v-row>-->
-                        <!--<v-col lg="4" md="6" sm="12" xs="12" v-for="(product, index) in products" :key="product.id">-->
-                            <!--<v-card>-->
-                                <!--<v-card-title>-->
-                                    <!--{{ product.title }}-->
-                                <!--</v-card-title>-->
-                                <!--<v-card-text>-->
-                                    <!--<v-img :src="product.url" alt=""></v-img>-->
-                                <!--</v-card-text>-->
-                                <!--<v-card-actions>-->
-                                    <!--<v-btn color="error" outlined @click="remove(product.id)">-->
-                                        <!--{{ $t('products.btn.delete')}}-->
-                                    <!--</v-btn>-->
-                                    <!--<v-btn color="warning" outlined-->
-                                           <!--@click="$router.push('/admin/products/' + product.id)">-->
-                                        <!--{{ $t('products.btn.edit')}}-->
-                                    <!--</v-btn>-->
-                                <!--</v-card-actions>-->
-                            <!--</v-card>-->
-                        <!--</v-col>-->
-                        <!--<v-pagination :length="pagination.last_page"-->
-                        <!--circle-->
-                        <!--v-model="pagination.page"-->
-                        <!--:total-visible="7"></v-pagination>-->
-                    <!--</v-row>-->
-                </v-card-text>
-                <v-alert type="info" outlined v-show="! loading && ! products.length">
-                    <div class="title">
+
+                    <v-alert color="info" outlined v-if="! loading && ! products.length">
+                        <div class="">
                         <span v-show="! searching">
                             Товары отсутствуют в системе
                         </span>
-                        <span v-show="searching">
+                            <span v-show="searching">
                             По Вашему запросу ничего не найдено
                         </span>
-                    </div>
-                </v-alert>
+                        </div>
+                    </v-alert>
+                </v-card-text>
             </v-card>
         </div>
     </div>
@@ -265,7 +254,8 @@
           title: '',
           description: '',
           price: '',
-          category_id: ''
+          category_id: '',
+          image: null
         },
 
         form: {
@@ -273,14 +263,14 @@
           title: {
             rules: [
               v => v !== '' || this.$t('products.form.rules.title.required'),
-              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('products.form.rules.title.length', {length: 255})
+              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('products.form.rules.title.max_length', {length: 255})
             ],
           },
 
           description: {
             rules: [
               v => v !== '' || this.$t('products.form.rules.description.required'),
-              v => (v !== undefined && v !== null && v.length <= 2000) || this.$t('products.form.rules.title.length', {length: 2000})
+              v => (v !== undefined && v !== null && v.length <= 2000) || this.$t('products.form.rules.description.max_length', {length: 2000})
             ]
           },
 
@@ -293,7 +283,7 @@
 
           category: {
             rules: [
-              v => v !== '' || this.$t('products.form.rules.category.required')
+              v => v !== '' && v !== undefined && v !== null || this.$t('products.form.rules.category.required')
             ]
           }
         },
@@ -311,6 +301,7 @@
         search: {
           keyword: '',
           created_at: null,
+          display_created_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'}),
           category: ''
         },
 
@@ -327,6 +318,7 @@
 
         searching: false,
         loading: false,
+        resetPreview: false,
 
         isDestroying: false
 
@@ -387,7 +379,8 @@
 
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
+            this.products = this.products.filter(product => product.id !== id);
+            break;
         }
       },
 
@@ -397,8 +390,6 @@
         for (const prop in this.product) {
           formData.append(prop, this.product[prop]);
         }
-
-        console.log(formData);
 
         const response = await axios.post(
             `${this.$attrs.apiRoute}/products`,
@@ -430,6 +421,8 @@
 
       async resetForm() {
         this.modal = false;
+        this.product.image = null;
+        this.resetPreview = true;
         this.$refs.form.reset();
       },
 
@@ -466,6 +459,16 @@
         if (after.length > 3) {
           this.onSearch();
         }
+      },
+
+      'search.display_created_at': function (after) {
+        if (after === null) {
+          this.search.publication_date = null;
+        }
+      },
+
+      'search.created_at': function (after) {
+        this.search.display_created_at = after.split('-').reverse().join('.');
       }
     },
 

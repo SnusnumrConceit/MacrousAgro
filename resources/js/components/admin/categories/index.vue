@@ -64,7 +64,7 @@
 
 
             <v-card-text>
-                <v-simple-table fixed-header :height="750" v-show="! loading">
+                <v-simple-table fixed-header :height="750" v-show="! loading && categories.length">
                     <template v-slot:default>
                         <thead>
                         <th v-for="header in table.headers" :key="header.text" class="text-left">
@@ -122,6 +122,17 @@
                 <v-skeleton-loader type="table-row-divider@6" v-show="loading">
 
                 </v-skeleton-loader>
+
+                <v-alert color="info" outlined v-if="! loading && ! categories.length">
+                    <div class="">
+                        <span v-show="! searching">
+                            Категории отсутствуют в системе
+                        </span>
+                        <span v-show="searching">
+                            По Вашему запросу ничего не найдено
+                        </span>
+                    </div>
+                </v-alert>
             </v-card-text>
         </v-card>
     </div>
@@ -131,14 +142,14 @@
   import debounce from '../../../debounce';
   // import Category from '../../../store/models/category';
 
-  import { mapGetters } from 'vuex';
+  // import { mapGetters } from 'vuex';
 
   export default {
     name: "index",
 
     data() {
       return {
-        // categories: [],
+        categories: [],
 
         searching: false,
 
@@ -180,7 +191,8 @@
           page: 1
         },
 
-        modal: false
+        modal: false,
+        loading: false
       }
     },
 
@@ -193,42 +205,42 @@
         return '/admin/categories/update';
       },
 
-      ...mapGetters({
-        'categories': 'category/categories',
-        'loading':    'category/loading'
-      })
+      // ...mapGetters({
+      //   'categories': 'category/categories',
+      //   'loading':    'category/loading'
+      // })
     },
 
     methods: {
-      async loadData() {
-        this.$store.dispatch('category/getCategories');
-      },
       // async loadData() {
-      //   this.loading = true;
-      //
-      //   try {
-      //     const response = await axios.get(`${this.$attrs.apiRoute}/categories`, {
-      //       params: {
-      //         page: this.pagination.page
-      //       }
-      //     });
-      //
-      //     switch (response.data.status) {
-      //       case 'error':
-      //         this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-      //         this.loading = false;
-      //         break;
-      //       case 'success':
-      //         this.categories = response.data.categories;
-      //         // this.pagination.last_page = response.data.categories.last_page;
-      //         break;
-      //     }
-      //   } catch (e) {
-      //
-      //   } finally {
-      //     this.loading = false;
-      //   }
+      //   this.$store.dispatch('category/getCategories');
       // },
+      async loadData() {
+        this.loading = true;
+
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/categories`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
+
+          switch (response.data.status) {
+            case 'error':
+              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+              this.loading = false;
+              break;
+            case 'success':
+              this.categories = response.data.categories;
+              // this.pagination.last_page = response.data.categories.last_page;
+              break;
+          }
+        } catch (e) {
+
+        } finally {
+          this.loading = false;
+        }
+      },
 
       async save() {
         const response = await axios.post(`${this.$attrs.apiRoute}/categories`, {
@@ -242,8 +254,7 @@
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
             this.loadData();
-            this.modal = false;
-            this.$refs.form.reset();
+            this.resetForm();
             break;
         }
       },
@@ -259,7 +270,13 @@
           case 'success':
             this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
             this.categories = this.categories.filter(category => category.id !== id);
+            break;
         }
+      },
+
+      resetForm() {
+        this.modal = false;
+        this.$refs.form.reset();
       },
 
       onSearch() {
@@ -287,8 +304,7 @@
       }, 300),
 
       close() {
-        this.$refs.form.reset();
-        this.modal = false;
+        this.resetForm();
       },
 
       toRoute(destination, id = null) {

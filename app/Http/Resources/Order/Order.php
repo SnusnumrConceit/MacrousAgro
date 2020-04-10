@@ -18,7 +18,8 @@ class Order extends JsonResource
             'id'        => $this->id,
             'customer'  => $this->customer,
             'invoice'   => $this->invoice,
-            'order_status_code' => $this->order_status_code
+            'order_status_code' => $this->order_status_code,
+            'display_created_at' => $this->display_created_at
         ];
     }
 }

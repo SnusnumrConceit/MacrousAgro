@@ -20,7 +20,7 @@ class User extends Authenticatable
      * @var array
      */
     protected $fillable = [
-        'name', 'email', 'password', 'first_name',
+        'email', 'password', 'first_name',
         'last_name', 'birthday'
     ];
 
@@ -44,7 +44,7 @@ class User extends Authenticatable
     ];
 
     protected $appends = [
-        'full_name', 'formatted_birthday',
+        'full_name', 'display_birthday',
         'registration_date', 'last_activity_date',
         'role'
     ];
@@ -62,7 +62,7 @@ class User extends Authenticatable
 
     public function getRoleAttribute()
     {
-        return $this->roles()->first()->name;
+        return $this->roles()->exists() ? $this->roles()->first()->name : null;
     }
 
     public function getFullNameAttribute()
@@ -70,7 +70,7 @@ class User extends Authenticatable
         return "$this->first_name $this->last_name";
     }
 
-    public function getFormattedBirthdayAttribute()
+    public function getDisplayBirthdayAttribute()
     {
         return $this->birthday->format('d.m.Y');
     }

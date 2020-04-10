@@ -49,11 +49,13 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
-
         $product = $this->product->store($request->validated());
 
-        $product->medias()->sync($media->id);
+        if ($request->image) {
+            $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
+
+            $product->medias()->sync($media->id);
+        }
 
         return response()->json([
             'status' => 'success',
@@ -101,7 +103,9 @@ class ProductController extends Controller
         $this->product->update($request->validated(), $product);
 
         if (! empty($request->image)) {
-            $product->remove($product->medias()->first());
+            if ($product->medias()->exists()) {
+                $product->remove($product->medias()->first());
+            }
 
             $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
 
@@ -125,26 +129,13 @@ class ProductController extends Controller
     {
         $this->product->destroy($product);
 
-        $product->remove($product->medias()->first());
+        if ($product->medias()->exists()) {
+            $product->remove($product->medias()->first());
+        }
 
         return response()->json([
             'status' => 'success',
             'msg' => __('product_msg_success_delete')
-        ], 200);
-    }
-
-    public function upload(ProductUploadRequest $request)
-    {
-
-    }
-
-    public function removeContent(Request $request)
-    {
-        $this->media->delete($request->path);
-
-        return response()->json([
-            'status' => 'success',
-            'msg' => 'Фотография успешно удалена из временного хранилища'
         ], 200);
     }
 }

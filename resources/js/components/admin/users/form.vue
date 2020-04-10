@@ -39,26 +39,35 @@
                             </v-text-field>
                         </v-col>
                         <v-col cols="12" sm="12" md="12">
-                            <v-text-field v-model="user.birthday"
-                                          @click="form_calendar = true"
-                                          :label="$t('users.form.labels.birthday')"
-                                          prepend-icon="event"
-                                          :rules="form.birthday.rules"
-                                          readonly
-                            ></v-text-field>
+                            <v-menu ref="search-calendar-menu"
+                                    v-model="form_calendar"
+                                    :close-on-content-click="false"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="200px">
+                                <template v-slot:activator="{ on }">
+                                    <v-text-field v-model="user.display_birthday"
+                                                  :label="$t('users.form.labels.birthday')"
+                                                  prepend-icon="event"
+                                                  :rules="form.birthday.rules"
+                                                  readonly
+                                    ></v-text-field>
+                                </template>
 
-                            <v-date-picker v-model="user.birthday"
-                                           :style="{position: 'absolute', right: '20%', 'z-index': 3}"
-                                           no-title
-                                           scrollable
-                                           v-if="form_calendar"
-                                           :locale="$i18n.locale">
-                                <v-spacer></v-spacer>
-                                <v-btn flat color="blue darken-1" @click="form_calendar = false" text>
-                                    {{ $t('users.btn.cancel') }}
-                                </v-btn>
-                                <v-btn flat color="primary" outlined @click="form_calendar = false">OK</v-btn>
-                            </v-date-picker>
+                                <v-date-picker v-model="user.birthday"
+                                               first-day-of-week="1"
+                                               no-title
+                                               scrollable
+                                               @input="form_calendar"
+                                               :locale="$i18n.locale">
+                                    <v-spacer></v-spacer>
+                                    <v-btn color="blue darken-1" @click="form_calendar = false" text>
+                                        {{ $t('users.btn.cancel') }}
+                                    </v-btn>
+                                    <v-btn text color="primary" @click="form_calendar = false">OK</v-btn>
+                                </v-date-picker>
+                            </v-menu>
                         </v-col>
                     </v-row>
                 </v-card-text>
@@ -90,7 +99,8 @@
           email: '',
           last_name: '',
           first_name: '',
-          birthday: ''
+          birthday: null,
+          display_birthday: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'})
         },
 
         form: {
@@ -212,6 +222,20 @@
 
       async initData() {
         await this.loadData();
+      }
+    },
+    
+    watch: {
+      'user.birthday': function (after) {
+        if (after !== null) {
+          this.user.display_birthday = after.split('-').reverse().join('.');
+        }   
+      },
+      
+      'user.display_birthday': function (after) {
+        if (after === null) {
+          this.user.birthday = null;
+        }
       }
     },
 

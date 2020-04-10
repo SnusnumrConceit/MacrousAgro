@@ -9,7 +9,7 @@ class Product extends Model
 {
     use Mediable;
 
-    const MEDIA_PATH = '/articles';
+    const MEDIA_PATH = '/products';
     const MAX_FILE_SIZE = 3000; // in kbytes
     const DIMENSIONS = [
         'min_width'  => 580,
@@ -26,14 +26,14 @@ class Product extends Model
 
     protected $perPage = 15;
 
-    public function getCreationDateAttribute()
+    public function getDisplayCreatedAtAttribute()
     {
         return $this->created_at->toDateString() < now()->toDateString()
             ? $this->created_at->format('d.m.Y H:i:s')
             : $this->created_at->diffForHumans();
     }
 
-    public function getUpdatingDateAttribute()
+    public function getDisplayUpdatedAtAttribute()
     {
         return $this->updated_at->toDateString() < now()->toDateString()
             ? $this->updated_at->format('d.m.Y H:i:s')

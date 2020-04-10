@@ -39,7 +39,7 @@ class ProductRepo
             return $q->where('category_id', $category);
         });
 
-        return $products->paginate();
+        return $products->latest()->paginate();
 
 //        return response()->json([
 //            'products' => Product::paginate(15)
