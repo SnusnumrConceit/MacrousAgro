@@ -89,6 +89,8 @@
                                 {{ $t('products.form.header')}}
                             </v-card-title>
                             <v-card-text>
+                                <errors :errors="errors"></errors>
+
                                 <v-text-field v-model="product.title"
                                               :label="$t('products.form.labels.title')"
                                               clearable
@@ -217,12 +219,12 @@
 
                     <v-alert color="info" outlined v-if="! loading && ! products.length">
                         <div class="">
-                        <span v-show="! searching">
-                            Товары отсутствуют в системе
-                        </span>
-                            <span v-show="searching">
-                            По Вашему запросу ничего не найдено
-                        </span>
+                            <span v-show="! searching">
+                                Товары отсутствуют в системе
+                            </span>
+                                <span v-show="searching">
+                                По Вашему запросу ничего не найдено
+                            </span>
                         </div>
                     </v-alert>
                 </v-card-text>
@@ -320,40 +322,69 @@
         loading: false,
         resetPreview: false,
 
-        isDestroying: false
+        isDestroying: false,
+
+        errors: []
 
       }
     },
 
     methods: {
+      /**
+       * Обработчик события загрузки картинки товара
+       */
       onUploadImage(image) {
         this.product.image = image;
       },
 
+      /**
+       * Загрузка списка товаров
+       *
+       * @returns {Promise<void>}
+       */
       async loadData() {
         this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/products`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
 
-        this.products = (this.pagination.page === 1) ? response.data.products.data : this.products.concat(response.data.products.data);
-        this.pagination.last_page = response.data.products.last_page;
-        this.pagination.total = response.data.products.total;
-        this.loading = false;
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/products`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
+
+          this.products = (this.pagination.page === 1) ? response.data.products.data : this.products.concat(response.data.products.data);
+          this.pagination.last_page = response.data.products.last_page;
+          this.pagination.total = response.data.products.total;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+        }
       },
 
+      /**
+       * Загрузка списка категорий
+       *
+       * @returns {Promise<void>}
+       */
       async loadCategories() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/categories`);
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/categories`);
 
-        this.categories = response.data.categories;
+          this.categories = response.data.categories;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+        }
       },
 
+      /**
+       * Обработчик события debounce-поиска товаров
+       */
       onSearch() {
         this.searchData(this);
       },
 
+      /**
+       * Поиск по товарам
+       */
       searchData: debounce(vm => {
         axios.get('/api/products/search', {
           params: {
@@ -369,21 +400,28 @@
         }).catch(error => console.error(error));
       }, 300),
 
+      /**
+       * Удаление товара
+       *
+       * @param id
+       * @returns {Promise<void>}
+       */
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/products/${id}`);
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/products/${id}`);
 
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.products = this.products.filter(product => product.id !== id);
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.products = this.products.filter(product => product.id !== id);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Сохранение товара
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
         let formData = new FormData();
 
@@ -391,34 +429,38 @@
           formData.append(prop, this.product[prop]);
         }
 
-        const response = await axios.post(
-            `${this.$attrs.apiRoute}/products`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data'
+        try {
+          const response = await axios.post(
+              `${this.$attrs.apiRoute}/products`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
               }
-            }
-        );
+          );
 
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.loadData();
 
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+          this.resetForm();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
-
-        this.resetForm();
       },
 
+      /**
+       * Закрыть модалку
+       */
       cancel() {
         this.resetForm();
       },
 
+      /**
+       * Обнуление формы создания товара
+       *
+       * @returns {Promise<void>}
+       */
       async resetForm() {
         this.modal = false;
         this.product.image = null;
@@ -426,6 +468,11 @@
         this.$refs.form.reset();
       },
 
+      /**
+       * Инициализация компонента
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 
@@ -436,6 +483,9 @@
         this.loading = false;
       },
 
+      /**
+       * Обработчик события скролла в таблице
+       */
       onScroll: function() {
         this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
       },
@@ -449,6 +499,11 @@
             this.searching = true;
 
             this.searchData(this);
+          } else if (! after.category || ! after.created_at || ! after.keyword.length) {
+              this.pagination.page = 1;
+              this.searching = true;
+
+              this.loadData();
           }
         },
 

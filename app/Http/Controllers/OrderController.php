@@ -47,7 +47,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'message' => __('order_msg_success_create')
+            'message' => __('orders.response.messages.created')
         ], 200);
     }
 
@@ -91,7 +91,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status'  => 'success',
-            'message' => __('order_msg_success_update')
+            'message' => __('orders.response.messages.updated')
         ], 200);
     }
 
@@ -108,7 +108,7 @@ class OrderController extends Controller
 
         return response()->json([
             'status'  => 'success',
-            'message' => __('order_msg_success_delete')
+            'message' => __('orders.response.messages.deleted')
         ], 200);
     }
 

@@ -30,8 +30,17 @@ class UserStoreRequest extends FormRequest
             'last_name' => 'required|between:2,100',
             'first_name' => 'required|between:2,60',
             'password' => 'required|between:8,60|confirmed',
-            'email' => 'required|email|between:10,100',
+            'email' => 'required|email|between:10,100|exists:users,email',
             'birthday' => 'required|date',
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'last_name' => __('users.validation.attributes.last_name'),
+            'first_name' => __('users.validation.attributes.first_name'),
+            'birthday' => __('users.validation.attributes.birthday')
         ];
     }
 
@@ -45,7 +54,7 @@ class UserStoreRequest extends FormRequest
         throw (new ValidationException($validator, response()->json([
             'status' => 'error',
             'msg' => __('form_request_validation_failed_error'),
-            'error' => $validator->errors()
+            'errors' => $validator->errors()
         ], 500)));
     }
 }

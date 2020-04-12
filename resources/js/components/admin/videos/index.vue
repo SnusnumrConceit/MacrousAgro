@@ -1,6 +1,7 @@
 <template>
     <div>
         <v-card>
+            <!-- TODO вынести в компонент videos-search -->
             <v-toolbar>
                 <v-toolbar-title>
                     {{ $t('videos.header')}}
@@ -65,7 +66,7 @@
 
                 <v-spacer></v-spacer>
 
-
+                <!-- TODO вынести в компонент video-create-form -->
                 <v-dialog v-model="modal" max-width="500px" persistent>
                     <template v-slot:activator="{on}">
                         <v-btn color="success"
@@ -82,6 +83,7 @@
                                 Видео
                             </v-card-title>
                             <v-card-text>
+                                <errors :errors="errors"></errors>
                                 <v-text-field v-model="video.title"
                                               :label="$t('videos.form.labels.title')"
                                               counter
@@ -119,8 +121,10 @@
             </v-toolbar>
 
             <v-card-text>
+                <!-- TODO вынести в компонент videos-list -->
                 <v-row v-show="! loading && videos.length">
-                    <v-col col="6" v-for="(video, index) in videos" :key="video.id" height="100%" class="flex-card-full-size">
+                    <v-col col="6" v-for="(video, index) in videos" :key="video.id" height="100%"
+                           class="flex-card-full-size">
                         <v-card height="100%" class="flex-card-full-size">
                             <v-card-title>
                                 {{ video.title }}
@@ -138,10 +142,6 @@
                             </v-card-actions>
                         </v-card>
                     </v-col>
-                    <!--<v-pagination :length="pagination.last_page"-->
-                                  <!--v-model="pagination.page"-->
-                                  <!--:total-visible="7"-->
-                                  <!--circle></v-pagination>-->
                 </v-row>
 
                 <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
@@ -149,7 +149,7 @@
                 <v-alert color="info" outlined v-if="! loading && ! videos.length">
                     <div class="">
                         <span v-show="! searching">
-                            Видеоролики отсутствуют в системе
+                            Видеоролики отсутствуют в видеогалерее
                         </span>
                         <span v-show="searching">
                             По Вашему запросу ничего не найдено
@@ -194,8 +194,8 @@
           valid: false,
           title: {
             rules: [
-                v => v !== '' || this.$t('videos.form.rules.title.required'),
-                v => (v !== undefined && v !== null && v.length <= 100) || this.$t('videos.form.rules.title.length', { length: 255})
+              v => v !== '' || this.$t('videos.form.rules.title.required'),
+              v => (v !== undefined && v !== null && v.length <= 100) || this.$t('videos.form.rules.title.length', {length: 255})
             ]
           },
         },
@@ -203,7 +203,12 @@
         search: {
           keyword: '',
           created_at: null,
-          display_created_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'})
+          display_created_at: new Date().toLocaleString('ru', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            timezone: 'utc'
+          })
         },
 
         pagination: {
@@ -216,11 +221,17 @@
 
         isDestroying: false,
         loading: false,
-        resetPreview: false
+        resetPreview: false,
+
+        errors: []
       }
     },
 
     methods: {
+      /**
+       * Обработчик события в форме добавления - отслеживает загрузку видео
+       * @param video
+       */
       onUpload(video) {
         this.video.video = video;
       },
@@ -228,55 +239,51 @@
       /**
        * Загрузка списка видео
        *
+       * @returns {Promise<void>}
        */
       async loadData() {
         this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/videos`, {
-          params: {
-            page: this.page
-          }
-        });
 
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/videos`, {
+            params: {
+              page: this.page
+            }
+          });
+
+          this.videos = (this.pagination.page === 1)
+              ? response.data.videos.data
+              : this.videos[response.data.videos.data];
+
+          this.pagination.last_page = response.data.videos.last_page;
+
           this.loading = false;
-          return false;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
-
-        this.videos = (this.pagination.page === 1)
-            ? response.data.videos.data
-            : this.videos[response.data.videos.data];
-
-        this.pagination.last_page = response.data.videos.last_page;
-
-        this.loading = false;
       },
 
       /**
-       *  Удаление видео
+       * Удаление видео
        *
+       * @returns {Promise<void>}
        */
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.videos = this.videos.filter(video => video.id !== id);
-            break;
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.videos = this.videos.filter(video => video.id !== id);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
       /**
-       * Обработчик события для debounce-поиска
+       * Обработчик события для debounce-поиска видео
        */
       onSearch() {
         if (this.search.keyword.length < 3) {
-          return ;
+          return;
         }
 
         this.searchData(this);
@@ -293,22 +300,19 @@
             page: vm.pagination.page,
             ...vm.search,
           }
-        })
-        .then(response => {
+        }).then(response => {
           vm.videos = response.data.videos.data;
           vm.pagination.last_page = response.data.videos.last_page;
           vm.loading = false;
-        })
-        .catch(error => {
+        }).catch(error => {
           vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
-          vm.loading = false;
-        })
-        ;
+        });
       }, 300),
 
       /**
        * Сохранение видео
        *
+       * @returns {Promise<void>}
        */
       async save() {
         const formData = new FormData();
@@ -317,28 +321,24 @@
           formData.append(prop, this.video[prop]);
         }
 
-        const response = await axios.post(
-            `${this.$attrs.apiRoute}/videos`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data'
+        try {
+          const response = await axios.post(
+              `${this.$attrs.apiRoute}/videos`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
               }
-            }
-        );
+          );
 
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.loadData();
 
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+          this.resetForm();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
-
-        this.resetForm();
       },
 
       /**
@@ -367,13 +367,13 @@
 
     watch: {
       'search': {
-        handler: function(after, before) {
+        handler: function (after, before) {
           if (after.created_at || after.keyword.length > 3) {
             this.pagination.page = 1;
             this.searching = true;
 
             this.searchData(this);
-          } else if (! after.created_at && ! after.keyword.length) {
+          } else if (!after.created_at && !after.keyword.length) {
             this.pagination.page = 1;
             this.searching = false;
 

@@ -6,6 +6,7 @@
                 {{ product.title }}
             </v-card-title>
             <v-card-text>
+                <errors :errors="errors"></errors>
                 <v-row>
                     <v-col>
                         <preview-upload @uploaded="onUploadImage" ref="previewUpload" v-if="! loading" :src="product.src"></preview-upload>
@@ -96,14 +97,14 @@
 
           title: {
             rules: [
-              v => v !== '' || this.$t('products.form.rules.title.required'),
-              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('products.form.rules.title.length', {length: 255})
+              v => (v !== ''&& v !== undefined && v !== null) || this.$t('products.form.rules.title.required'),
+              v => (v !== undefined && v !== null && v.length <= 100) || this.$t('products.form.rules.title.max_length', {length: 100})
             ],
           },
 
           description: {
             rules: [
-              v => v !== '' || this.$t('products.form.rules.description.required'),
+              v => v !== '' && v.length || this.$t('products.form.rules.description.required'),
               v => (v !== undefined && v !== null && v.length <= 2000) || this.$t('products.form.rules.title.length', {length: 2000})
             ]
           },
@@ -124,7 +125,9 @@
 
         selectedCategory: {},
 
-        loading: false
+        loading: false,
+
+        errors: []
       }
     },
 
@@ -135,45 +138,65 @@
     },
 
     methods: {
+      /**
+       * Обработчик загрузки изображения товара
+       *
+       * @param image
+       */
       onUploadImage(image) {
         this.product.image = image;
       },
 
+      /**
+       * Загрузка товара для редактирования
+       *
+       * @returns {Promise<void>}
+       */
       async loadData() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/products/${this.ID}/edit`);
-
-        if (response.status === 200) {
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/products/${this.ID}/edit`);
           this.product = response.data.product;
-        } else {
-          console.error(response);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Загрузка списка категорий
+       *
+       * @returns {Promise<void>}
+       */
       async loadCategories() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/categories`);
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/categories`);
 
-        if (response.status === 200) {
           this.categories = response.data.categories;
-        } else {
-          console.error(response);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Удаление товара
+       *
+       * @returns {Promise<void>}
+       */
       async remove() {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/products/${this.ID}`);
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/products/${this.ID}`);
 
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.$router.go(-1);
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Сохранение изменений для товара
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
         const formData = new FormData();
 
@@ -183,32 +206,36 @@
 
         formData.append('_method', 'PATCH');
 
-        const response = await axios.post(
-            `${this.$attrs.apiRoute}/products/${this.ID}`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data'
+        try {
+          const response = await axios.post(
+              `${this.$attrs.apiRoute}/products/${this.ID}`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
               }
-            }
-        );
+          );
 
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.goBack();
-            break;
-
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 
+      /**
+       * Назад
+       */
       goBack() {
         this.$router.go(-1);
       },
 
+      /**
+       * Инициализация компонента данными
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 

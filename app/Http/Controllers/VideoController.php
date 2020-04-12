@@ -67,7 +67,7 @@ class VideoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('video_msg_success_create')
+            'msg' => __('videos.response.messages.created')
         ], 200);
     }
 
@@ -110,7 +110,7 @@ class VideoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('video_msg_success_update')
+            'msg' => __('videos.response.messages.updated')
         ], 200);
     }
 
@@ -129,7 +129,7 @@ class VideoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('video_msg_success_delete')
+            'msg' => __('videos.response.messages.deleted')
         ], 200);
     }
 }

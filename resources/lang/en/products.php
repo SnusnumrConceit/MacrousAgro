@@ -9,18 +9,18 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Товар успешно создан!',
-            'updated' => 'Сведения о товаре успешно обновлены!',
-            'deleted' => 'Товар успешно удален!'
+            'created' => 'Product has been successfully created!',
+            'updated' => 'Product has been successfully updated!',
+            'deleted' => 'Product has been successfully deleted!'
         ]
     ],
 
     'validation' => [
         'attributes' => [
-            'title' => 'Наименование',
-            'price' => 'Цена',
-            'category_id' => 'Категория',
-            'image' => 'Изображение'
+            'title' => 'Title',
+            'price' => 'Price',
+            'category_id' => 'Category',
+            'image' => 'Image'
         ]
     ]
 ];

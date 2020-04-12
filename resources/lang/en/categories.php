@@ -9,15 +9,15 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Категория успешно создана!',
-            'updated' => 'Сведения о категории успешно обновлены!',
-            'deleted' => 'Категория успешно удалена!'
+            'created' => 'Category has been successfully created!',
+            'updated' => 'Category information has been successfully updated!',
+            'deleted' => 'Category has been successfully deleted!'
         ]
     ],
 
     'validation' => [
         'attributes' => [
-            'title' => 'Название'
+            'title' => 'Title'
         ]
     ]
 ];

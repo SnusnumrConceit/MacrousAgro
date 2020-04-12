@@ -51,7 +51,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('category_msg_success_create')
+            'msg' => __('categories.response.messages.created')
         ], 200);
     }
 
@@ -95,7 +95,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('category_msg_success_update')
+            'msg' => __('categories.response.messages.updated')
         ], 200);
     }
 
@@ -112,7 +112,7 @@ class CategoryController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('category_msg_success_delete')
+            'msg' => __('categories.response.messages.deleted')
         ], 200);
     }
 

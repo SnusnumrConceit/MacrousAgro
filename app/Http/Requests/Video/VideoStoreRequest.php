@@ -44,6 +44,13 @@ class VideoStoreRequest extends FormRequest
         ];
     }
 
+    public function attributes()
+    {
+        return [
+            'video' => __('videos.validation.attributes.video')
+        ];
+    }
+
     protected function failedAuthorization()
     {
         throw new AuthorizationException(__('form_request_authorization_error'), 403);

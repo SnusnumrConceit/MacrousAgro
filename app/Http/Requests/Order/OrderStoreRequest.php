@@ -36,9 +36,17 @@ class OrderStoreRequest extends FormRequest
     public function attributes()
     {
         return [
-            'products'     => __('orders.attributes.products'),
-//            'customer'     => __('orders.attributes.customer'),
-//            'status_code'  => __('orders.attributes.status_code')
+            'products' => __('orders.validation.attributes.products'),
+            'customer' => __('orders.validation.attributes.customer'),
+            'order_status_code'  => __('orders.validation.attributes.order_status_code')
+        ];
+    }
+
+    public function messages()
+    {
+        return [
+            'products.array' => __('orders.validation.messages.invalid_format'),
+            'products.*.string' => __('orders.validation.messages.invalid_format')
         ];
     }
 

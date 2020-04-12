@@ -40,7 +40,14 @@ class PhotoStoreRequest extends FormRequest
     {
         return [
             'title' => 'nullable|string|max:100',
-            'image' => "nullable|file|mimes:jpg,jpeg,png|max:$this->maxSize|dimensions:min_width:$this->minWidth,min_height:$this->minHeight,max_width:$this->maxWidth,max_height:$this->maxHeight"
+            'image' => "file|mimes:jpg,jpeg,png|max:$this->maxSize|dimensions:min_width:$this->minWidth,min_height:$this->minHeight,max_width:$this->maxWidth,max_height:$this->maxHeight"
+        ];
+    }
+
+    public function attributes()
+    {
+        return [
+            'image' => __('photos.validation.attributes.image')
         ];
     }
 
@@ -54,7 +61,7 @@ class PhotoStoreRequest extends FormRequest
         throw (new ValidationException($validator, response()->json([
             'status' => 'error',
             'msg' => __('form_request_validation_failed_error'),
-            'error' => $validator->errors()
+            'errors' => $validator->errors()
         ], 500)));
     }
 }

@@ -2,36 +2,38 @@
     <div>
         <v-card v-show="! loading">
             <v-form v-model="form.valid">
-            <v-card-title>
-                {{ photo.title }}
-            </v-card-title>
-            <v-card-text>
-                <v-row>
-                    <v-col>
-                        <v-img :src="photo.path" alt=""></v-img>
-                    </v-col>
-                    <v-col>
-                        <v-text-field v-model="photo.title"
-                                      :label="$t('photos.form.labels.title')"
-                                      clearable
-                                      counter
-                                      :rules="form.title.rules"
-                                      maxlength="100">
-                        </v-text-field>
-                        <v-btn color="success" :disabled="! form.valid" outlined @click="save">
+                <v-card-title>
+                    {{ photo.title }}
+                </v-card-title>
+                <v-card-text>
+                    <errors :errors="errors"></errors>
+
+                    <v-row>
+                        <v-col>
+                            <v-img :src="photo.path" alt=""></v-img>
+                        </v-col>
+                        <v-col>
+                            <v-text-field v-model="photo.title"
+                                          :label="$t('photos.form.labels.title')"
+                                          clearable
+                                          counter
+                                          :rules="form.title.rules"
+                                          maxlength="100">
+                            </v-text-field>
+                            <v-btn color="success" :disabled="! form.valid" outlined @click="save">
                                 Изменить
-                        </v-btn>
-                    </v-col>
-                </v-row>
-            </v-card-text>
-            <v-card-actions>
-                <v-btn color="error" outlined @click="remove">
-                    {{ $t('photos.btn.delete')}}
-                </v-btn>
-                <v-btn color="default" outlined @click="goBack">
-                    {{ $t('photos.btn.back')}}
-                </v-btn>
-            </v-card-actions>
+                            </v-btn>
+                        </v-col>
+                    </v-row>
+                </v-card-text>
+                <v-card-actions>
+                    <v-btn color="error" outlined @click="remove">
+                        {{ $t('photos.btn.delete')}}
+                    </v-btn>
+                    <v-btn color="default" outlined @click="goBack">
+                        {{ $t('photos.btn.back')}}
+                    </v-btn>
+                </v-card-actions>
             </v-form>
         </v-card>
 
@@ -60,7 +62,9 @@
           }
         },
 
-        loading: false
+        loading: false,
+
+        errors: []
       }
     },
 
@@ -71,52 +75,62 @@
     },
 
     methods: {
+      /**
+       * Загрузка фотографии
+       *
+       * @returns {Promise<boolean>}
+       */
       async loadData() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/photos/${this.id}/edit`);
-
-        if (response.data.status === 'error' || response.status !== 200) {
-          this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
-          return false;
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/photos/${this.id}/edit`);
+          this.photo = response.data.photo;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error', e.response.data.msg, 'error'));
         }
-
-        this.photo = response.data.photo;
       },
 
+      /**
+       * Удаление фотографии
+       *
+       * @returns {Promise<void>}
+       */
       async remove() {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${this.id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${this.id}`);
+          this.loadData();
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 
+      /**
+       * Сохранение изменений фотографии
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
-        this.modal = false;
-
-        const response = await axios.put(`${this.$attrs.apiRoute}/photos/${this.id}`, this.photo);
-
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.goBack();
-            break;
-
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+        try {
+          const response = await axios.put(`${this.$attrs.apiRoute}/photos/${this.id}`, this.photo);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 
+      /**
+       * Переход "Назад"
+       */
       goBack() {
         this.$router.go(-1);
       },
 
+      /**
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 

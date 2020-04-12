@@ -9,15 +9,15 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Видеоролик успешно загружен!',
-            'updated' => 'Сведения о видеоролике успешно обновлены!',
-            'deleted' => 'Видеоролик успешно удален!'
+            'created' => 'Video has been successfully uploaded!',
+            'updated' => 'Video information has been successfully updated!',
+            'deleted' => 'Video has been successfully deleted!'
         ]
     ],
 
     'validation' => [
         'attributes' => [
-            'video' => 'Видеоролик'
+            'video' => 'Video'
         ]
     ]
 ];

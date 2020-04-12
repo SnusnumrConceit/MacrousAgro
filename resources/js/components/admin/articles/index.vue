@@ -2,6 +2,7 @@
     <div>
         <v-card>
             <v-toolbar>
+                <!-- TODO вынести в компонент articles-search -->
                 <v-toolbar-title>
                     {{ $t('articles.table.header') }}
                 </v-toolbar-title>
@@ -63,6 +64,7 @@
 
                 <v-spacer></v-spacer>
 
+                <!-- TODO вынести в компонент articles-form-create -->
                 <v-dialog v-model="modal" max-width="1000px" persistent>
                     <template v-slot:activator="{on}">
                         <v-btn color="success" outlined v-on="on" @click="resetPreview = false">
@@ -76,6 +78,7 @@
                                 {{ $t('articles.form.header')}}
                             </v-card-title>
                             <v-card-text>
+                                <errors :errors="errors"></errors>
                                 <v-row>
                                     <v-col cols="6">
                                         <v-text-field v-model="article.title"
@@ -156,7 +159,7 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
                                 <v-btn color="success"
-                                       :disabled="! form.valid || article.image === null"
+                                       :disabled="! form.valid || ! article.image"
                                        outlined
                                        @click="save()">
                                     {{ $t('articles.btn.save') }}
@@ -176,6 +179,7 @@
             </v-toolbar>
 
             <v-card-text>
+                <!-- TODO вынести в компонент articles-list -->
                 <v-simple-table :fixed-header=" ! calendar" :height="750" v-show="! loading && articles.length" ref="table">
                     <template v-slot:default>
                         <thead>
@@ -333,12 +337,16 @@
         modal: false,
         menu: false,
         calendar: false,
-        resetPreview: false
+        resetPreview: false,
+
+        errors: []
       }
     },
 
     methods: {
-      /** **/
+      /**
+       * Обработчик события загрузки картинки статьи
+       */
       onUploadImage(image) {
         this.article.image = image;
       },
@@ -359,21 +367,21 @@
        */
       async loadData() {
         this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/articles`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
 
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-          return false;
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/articles`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
+
+          this.articles = (this.pagination.page === 1) ? response.data.articles.data : this.articles.concat(response.data.articles.data);
+          this.pagination.total = response.data.articles.total;
+          this.pagination.last_page = response.data.articles.last_page;
+          this.loading = false;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
-
-        this.articles = (this.pagination.page === 1) ? response.data.articles.data : this.articles.concat(response.data.articles.data);
-        this.pagination.total = response.data.articles.total;
-        this.pagination.last_page = response.data.articles.last_page;
-        this.loading = false;
       },
 
       /**
@@ -383,17 +391,12 @@
        * @returns {Promise<boolean>}
        */
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.articles = this.articles.filter((article) => article.id !== id);
-            this.loadData();
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.articles = this.articles.filter((article) => article.id !== id);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
@@ -404,6 +407,9 @@
         this.searchData(this);
       },
 
+      /**
+       * Поиск статей
+       */
       searchData: debounce(vm => {
         axios.get(`${vm.$attrs.apiRoute}/articles`, {
           params: {
@@ -429,36 +435,29 @@
           formData.append(prop, (typeof this.article[prop] == 'boolean') ? Number(this.article[prop]) : this.article[prop]);
         }
 
-        const response = await axios.post(
-            `${this.$attrs.apiRoute}/articles`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data'
+        try {
+          const response = await axios.post(
+              `${this.$attrs.apiRoute}/articles`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
               }
-            }
-        );
+          );
 
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return ;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.loadData();
 
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
-            // this.$refs.form.reset();
-            this.modal = false;
-            break;
+          this.resetForm();
+        } catch (e) {
+          this.errors = e.response.data.errors;
         }
-
-        this.resetForm();
       },
 
       /**
        * Сброс формы
        *
-       * @returns {Promise<void>}
        */
       async resetForm() {
         this.modal = false;

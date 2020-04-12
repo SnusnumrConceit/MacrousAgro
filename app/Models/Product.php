@@ -20,7 +20,7 @@ class Product extends Model
 
     protected $fillable = ['title', 'description', 'price', 'category_id'];
 
-    protected $appends = ['src', 'creation_date', 'updating_date'];
+    protected $appends = ['src', 'display_created_at', 'display_updated_at'];
 
     protected $dates = ['created_at', 'updated_at'];
 

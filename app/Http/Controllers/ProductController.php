@@ -59,7 +59,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('product_msg_success_create')
+            'msg' => __('products.response.messages.created')
         ], 200);
     }
 
@@ -114,7 +114,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('product_msg_success_update')
+            'msg' => __('products.response.messages.updated')
         ], 200);
     }
 
@@ -135,7 +135,7 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('product_msg_success_delete')
+            'msg' => __('products.response.messages.deleted')
         ], 200);
     }
 }

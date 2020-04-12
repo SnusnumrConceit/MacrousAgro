@@ -6,6 +6,7 @@
                     Редактирование пользователя
                 </v-card-title>
                 <v-card-text>
+                    <errors :errors="errors"></errors>
                     <v-row>
                         <v-col cols="12" sm="12" md="4">
                             <v-text-field v-model="user.email"
@@ -109,7 +110,8 @@
             rules: [
               v => v !== '' || this.$t('users.form.rules.email.required'),
               v => (v !== undefined && v !== null && v.length > 10) || this.$t('users.form.rules.email.min_length', {length:10}),
-              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('users.form.rules.email.max_length', {length: 255})
+              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('users.form.rules.email.max_length', {length: 255}),
+              v => (v !== undefined && v !== null && /^([0-9a-z]{2,}[@][a-z]{2,10}[.][a-z]{2,3}){1,255}$/.test(v)) || this.$t('users.form.rules.email.invalid_format')
             ]
           },
 
@@ -158,7 +160,8 @@
           password_confirmation: false
         },
 
-        loading: false
+        loading: false,
+        errors: []
       }
     },
 
@@ -169,6 +172,11 @@
     },
 
     methods: {
+      /**
+       * Загрузить видео для редактирования
+       *
+       * @returns {Promise<void>}
+       */
       async loadData() {
         this.loading = true;
         const response = await axios.get(`${this.$attrs.apiRoute}/users/${this.id}/edit`);
@@ -183,43 +191,50 @@
         this.loading = false;
       },
 
+      /**
+       * Сохранить изменения видео
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
-
-        const response = await axios.put(`${this.$attrs.apiRoute}/users/${this.id}`, {
-          ...this.user
-        });
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.goBack();
-            break;
+        try {
+          const response = await axios.put(`${this.$attrs.apiRoute}/users/${this.id}`, {
+            ...this.user
+          });
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 
+      /**
+       * Удалить видео
+       *
+       * @returns {Promise<void>}
+       */
       async remove() {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/users/${this.id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.goBack();
-            break;
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/users/${this.id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Назад
+       */
       goBack() {
         this.$router.go(-1);
       },
 
+      /**
+       * Последовательная загрузка данных
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         await this.loadData();
       }
@@ -246,7 +261,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

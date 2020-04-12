@@ -1,32 +1,4 @@
 {
-  "category_msg_success_create": "Категория успешно создана!",
-  "category_msg_success_delete": "Категория успешно удалена!",
-  "category_msg_success_update": "Сведения о категории успешно обновлены!",
-
-  "article_msg_success_create": "Новость успешно создана!",
-  "article_msg_success_delete": "Новость успешно удалена!",
-  "article_msg_success_update": "Сведения о новости успешно обновлены!",
-
-  "video_msg_success_create": "Видеоролик успешно загружен!",
-  "video_msg_success_delete": "Видеоролик успешно удален!",
-  "video_msg_success_update": "Сведения о видеоролике успешно обновлены!",
-
-  "order_msg_success_create": "Заказ успешно создан!",
-  "order_msg_success_delete": "Заказ успешно удален!",
-  "order_msg_success_update": "Сведения о заказе успешно обновлены!",
-
-  "photo_msg_success_create": "Фотография успешно загружена!",
-  "photo_msg_success_delete": "Фотография успешно удалена!",
-  "photo_msg_success_update": "Сведения о фотографии успешно обновлены!",
-
-  "product_msg_success_create": "Товар успешно создан!",
-  "product_msg_success_delete": "Товар успешно удален!",
-  "product_msg_success_update": "Сведения о товаре успешно обновлены!",
-
-  "user_msg_success_create": "Пользователь успешно создан!",
-  "user_msg_success_delete": "Пользователь успешно удален!",
-  "user_msg_success_update": "Сведения о пользователе успешно обновлены!",
-
   "form_request_authorization_error": "Вы не авторизованы",
   "form_request_validation_failed_error": "Вы не заполнили необходимые поля",
 

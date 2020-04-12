@@ -53,7 +53,7 @@ class PhotoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('photo_msg_success_create')
+            'msg' => __('photos.response.messages.created')
         ], 200);
     }
 
@@ -96,7 +96,7 @@ class PhotoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('photo_msg_success_update')
+            'msg' => __('photos.response.messages.updated')
         ], 200);
     }
 
@@ -115,7 +115,7 @@ class PhotoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('photo_msg_success_delete')
+            'msg' => __('photos.response.messages.deleted')
         ], 200);
     }
 }

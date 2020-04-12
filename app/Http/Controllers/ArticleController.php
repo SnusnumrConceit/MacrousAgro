@@ -62,7 +62,7 @@ class ArticleController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg'    => __('article_msg_success_create')
+            'msg'    => __('articles.response.messages.created')
         ], 200);
     }
 
@@ -121,7 +121,7 @@ class ArticleController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg'    => __('article_msg_success_update')
+            'msg'    => __('articles.response.messages.updated')
         ], 200);
     }
 
@@ -142,7 +142,7 @@ class ArticleController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('article_msg_success_delete')
+            'msg' => __('articles.response.messages.deleted')
         ], 200);
     }
 

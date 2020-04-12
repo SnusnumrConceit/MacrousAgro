@@ -32,6 +32,7 @@
                             </v-card-title>
 
                             <v-card-text>
+                                <errors :errors="errors"></errors>
                                 <v-text-field label="Название*"
                                               required
                                               v-model="category.name"
@@ -47,8 +48,8 @@
                                 <v-spacer></v-spacer>
 
                                 <v-btn color="success"
-                                       @click="save()"
-                                       :disabled="! form.valid">
+                                       :disabled="! form.valid"
+                                       @click="save()">
                                     {{ $t('categories.btn.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1"
@@ -192,7 +193,9 @@
         },
 
         modal: false,
-        loading: false
+        loading: false,
+
+        errors: []
       }
     },
 
@@ -212,6 +215,9 @@
     },
 
     methods: {
+      /**
+       * Загрузка списка категорий
+       */
       // async loadData() {
       //   this.$store.dispatch('category/getCategories');
       // },
@@ -225,60 +231,60 @@
             }
           });
 
-          switch (response.data.status) {
-            case 'error':
-              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-              this.loading = false;
-              break;
-            case 'success':
-              this.categories = response.data.categories;
-              // this.pagination.last_page = response.data.categories.last_page;
-              break;
-          }
+          this.categories = response.data.categories;
         } catch (e) {
-
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         } finally {
           this.loading = false;
         }
       },
 
+      /**
+       * Сохранение категории
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
-        const response = await axios.post(`${this.$attrs.apiRoute}/categories`, {
-          ...this.category
-        });
+        try {
+          const response = await axios.post(`${this.$attrs.apiRoute}/categories`, {
+            ...this.category
+          });
 
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
-            this.resetForm();
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.loadData();
+          this.resetForm();
+        } catch (e) {
+          this.errors = e.response.data.errors;
         }
       },
 
+      /**
+       * Удаление категории
+       *
+       * @param id
+       * @returns {Promise<boolean>}
+       */
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/categories/${id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.categories = this.categories.filter(category => category.id !== id);
-            break;
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/categories/${id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.categories = this.categories.filter(category => category.id !== id);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Очистка формы добавления категории
+       */
       resetForm() {
         this.modal = false;
         this.$refs.form.reset();
       },
 
+      /**
+       * Обработчик события debounce-поиска категорий
+       */
       onSearch() {
         if (this.search.keyword.length < 3) {
           return ;
@@ -287,41 +293,29 @@
         this.searchData(this);
       },
 
+      /**
+       * Поиск по категориям
+       */
       searchData: debounce((vm) => {
         axios.get(`${vm.$attrs.apiRoute}/categories`, {
           params: {
             page: vm.pagination.page,
             keyword: vm.search.keyword
           }
-        })
-        .then(response => {
+        }).then(response => {
           vm.categories = response.data.categories;
           vm.pagination.last_page = response.data.categories.last_page;
-        })
-        .catch(error => {
+        }).catch(error => {
           vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
         });
       }, 300),
 
+      /**
+       * Закрытие формы
+       */
       close() {
         this.resetForm();
       },
-
-      toRoute(destination, id = null) {
-        switch (destination) {
-          case 'create':
-            this.$router.push({ path: this.createFormRoute});
-            break;
-
-          case 'update':
-            this.$router.push({ path: `${this.editFormRoute}/${id}`});
-            break;
-        }
-      },
-
-      switchPage(page) {
-        this.pagination.page = page;
-      }
     },
 
     watch: {
@@ -341,7 +335,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

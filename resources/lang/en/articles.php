@@ -9,19 +9,19 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Новость успешно создана!',
-            'updated' => 'Сведения о новости успешно обновлены!',
-            'deleted' => 'Новость успешно удалена!'
+            'created' => 'Article has been successfully created!',
+            'updated' => 'Article information has been successfully updated!',
+            'deleted' => 'Article has been successfully deleted!'
         ]
     ],
 
     'validation' => [
         'attributes' => [
-            'title' => 'Название',
-            'description' => 'Описание',
-            'is_publicated' => 'Опубликовать',
-            'publication_date' => 'Дата публикации',
-            'image' => 'Новостная картинка'
+            'title' => 'Title',
+            'description' => 'Description',
+            'is_publicated' => 'Publication',
+            'publication_date' => 'Publication Date',
+            'image' => 'Article Image'
         ]
     ]
 ];

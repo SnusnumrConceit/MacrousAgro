@@ -6,9 +6,10 @@
                     {{ video.title }}
                 </v-card-title>
                 <v-card-text>
+                    <errors :errors="errors"></errors>
                     <v-row>
                         <v-col>
-                            <video :src="video.src" controls></video>
+                            <video :src="video.src" controls width="520" height="380"></video>
                         </v-col>
                         <v-col>
                             <v-text-field v-model="video.title"
@@ -58,12 +59,14 @@
           title: {
             rules: [
               v => v !== '' || this.$t('videos.form.rules.title.required'),
-              v => (v !== undefined && v !== null && v.length <= 100) || this.$t('videos.form.rules.title.length', { length: 255})
+              v => (v !== undefined && v !== null && v.length <= 100) || this.$t('videos.form.rules.title.length', {length: 255})
             ]
           },
         },
 
-        loading: false
+        loading: false,
+
+        errors: []
       }
     },
 
@@ -77,54 +80,45 @@
       /**
        * Получение видео
        *
+       * @returns {Promise<void>}
        */
       async loadData() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/videos/${this.id}/edit`);
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/videos/${this.id}/edit`);
 
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
-          return false;
+          this.video = response.data.video;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error', e.response.data.msg, 'error'));
         }
-
-        this.video = response.data.video;
       },
 
       /**
        * Удаление видео
        *
+       * @returns {Promise<void>}
        */
       async remove() {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${this.id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${this.id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 
       /**
        * Сохранение видео
        *
+       * @returns {Promise<void>}
        */
       async save() {
-        this.modal = false;
-
-        const response = await axios.put(`${this.$attrs.apiRoute}/videos/${this.id}`, this.video);
-
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.goBack();
-            break;
-
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
+        try {
+          const response = await axios.put(`${this.$attrs.apiRoute}/videos/${this.id}`, this.video);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 

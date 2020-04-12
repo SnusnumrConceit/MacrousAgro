@@ -3,6 +3,7 @@
         <v-card v-show="! loading">
             <v-form v-model="form.valid">
                 <v-card-text>
+                    <errors :errors="errors"></errors>
                     <v-text-field v-model="category.name"
                                   label="Название*"
                                   required
@@ -47,7 +48,9 @@
           }
         },
 
-        loading: false
+        loading: false,
+
+        errors: []
       }
     },
 
@@ -58,53 +61,47 @@
     },
 
     methods: {
+      /**
+       * Загрузить категорию для редактирования
+       *
+       * @returns {Promise<void>}
+       */
       async loadData() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/categories/${this.id}/edit`);
-
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-          return false;
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/categories/${this.id}/edit`);
+          this.category = response.data.category;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
-
-        this.category = response.data.category;
       },
 
+      /**
+       * Сохранить изменения категории
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
-        if (this.id !== undefined) {
+        try {
           const response = await axios.put(`${this.$attrs.apiRoute}/categories/${this.id}`, { ...this.category});
-
-          switch (response.status) {
-            case 200:
-              this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-              this.goBack();
-              break;
-
-            case 500:
-              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-              return;
-          }
-        } else {
-          const response = await axios.post('/admin/categories/create', {
-            category: {...this.category}
-          });
-
-          switch (response.data.status) {
-            case 'success':
-              this.$swal(this.$t('swal.title.success', response.data.msg, 'success'));
-              this.$router.push({name: 'Categories'});
-              break;
-
-            default:
-              this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
-              return;
-          }
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.errors = e.response.data.errors;
         }
       },
 
+      /**
+       * Назад
+       */
       goBack() {
         this.$router.go(-1);
       },
 
+      /**
+       * Инициализация данных для компонента
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 

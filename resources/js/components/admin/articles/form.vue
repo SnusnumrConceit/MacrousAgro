@@ -6,6 +6,7 @@
                     {{ article.title}}
                 </v-card-title>
                 <v-card-text>
+                    <errors :errors="errors"></errors>
                     <v-row>
                         <v-col>
                             <preview-upload @uploaded="onUploadImage" :src="article.src" ref="previewUpload" v-if="! loading"></preview-upload>
@@ -137,7 +138,9 @@
         },
 
         loading: false,
-        menu: false
+        menu: false,
+
+        errors: []
       }
     },
 
@@ -148,11 +151,18 @@
     },
 
     methods: {
-      /** **/
+      /**
+       * Обработчик события загрузки картинки статьи
+       */
       onUploadImage(image) {
         this.article.image = image;
       },
 
+      /**
+       * Сохранение изменений статьи
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
         const formData = new FormData();
 
@@ -162,7 +172,7 @@
 
         formData.append('_method', 'PATCH');
 
-        if (this.id !== undefined) {
+        try {
           const response = await axios.post(
               `${this.$attrs.apiRoute}/articles/${this.id}`,
               formData, {
@@ -170,63 +180,54 @@
                   'Content-Type': 'multipart/form-data'
                 }
               });
-
-          switch (response.data.status) {
-            case 'error':
-              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-              return false;
-
-            case 'success':
-              console.log(response.data.msg);
-              this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-              this.$router.push({name: 'Articles'});
-              break;
-          }
-        } else {
-          const response = await axios.post(`${this.$attrs.apiRoute}/articles`, {...this.article});
-
-          switch (response.data.status) {
-            case 'error':
-              this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-              return false;
-
-            case 'success':
-              this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-              this.$router.push({name: 'Articles'});
-              break;
-          }
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.$router.push({name: 'Articles'});
+        } catch (e) {
+          this.errors = e.response.data.errors;
         }
       },
 
+      /**
+       * Удаление статьи
+       *
+       * @returns {Promise<void>}
+       */
       async remove() {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${this.id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            break;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.$router.go(-1);
-            break;
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${this.id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.goBack();
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Загрузка статьи для редактирования
+       *
+       * @returns {Promise<void>}
+       */
       async loadData() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/articles/${this.id}/edit`);
-
-        if (response.status === 200) {
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/articles/${this.id}/edit`);
           this.article = response.data.article;
-        } else {
-          console.error(response);
+        } catch (e) {
+          this.$swal('swal.title.error', e.response.data.msg);
         }
       },
 
+      /**
+       * Назад
+       */
       goBack() {
         this.$router.go(-1);
       },
 
+      /**
+       * Инициализация компонента
+       *
+       * @returns {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 

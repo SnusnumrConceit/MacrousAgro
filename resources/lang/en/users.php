@@ -9,17 +9,17 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Пользователь успешно создан!',
-            'updated' => 'Сведения о пользователе успешно обновлены!',
-            'deleted' => 'Пользователь успешно удален!'
+            'created' => 'User has been successfully created!',
+            'updated' => 'User information has been successfully updated!',
+            'deleted' => 'User has been successfully deleted!'
         ]
     ],
 
     'validation' => [
         'attributes' => [
-            'last_name' => 'Фамилия',
-            'first_name' => 'Имя',
-            'birthday' => 'Дата рождения'
+            'last_name' => 'Surname',
+            'first_name' => 'Name',
+            'birthday' => 'Birth Date'
         ]
     ]
 ];

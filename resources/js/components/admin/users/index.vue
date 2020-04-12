@@ -1,6 +1,7 @@
 <template>
     <div>
         <v-card>
+            <!-- TODO вынести в компонент users-search -->
             <v-toolbar color="white">
                 <v-toolbar-title>
                     Пользователи
@@ -58,6 +59,7 @@
 
                 <v-spacer></v-spacer>
 
+                <!-- TODO вынести в компонент users-create-form -->
                 <v-dialog v-model="modal" max-width="700px" max-height="1000px">
                     <template v-slot:activator="{on}">
                         <v-btn outlined color="success" class="" dark v-on="on">
@@ -73,6 +75,7 @@
 
                             <v-card-text>
                                 <v-container>
+                                    <errors :errors="errors"></errors>
                                     <v-row>
                                         <v-col cols="12" sm="12" md="12" lg="12">
                                             <v-text-field v-model="user.email"
@@ -136,7 +139,8 @@
                                                     <v-btn color="blue darken-1" @click="form_calendar = false" text>
                                                         {{ $t('users.btn.cancel') }}
                                                     </v-btn>
-                                                    <v-btn color="primary" outlined @click="form_calendar = false">OK</v-btn>
+                                                    <v-btn color="primary" outlined @click="form_calendar = false">OK
+                                                    </v-btn>
                                                 </v-date-picker>
                                             </v-menu>
                                         </v-col>
@@ -191,6 +195,7 @@
             </v-row>
 
             <v-card-text>
+                <!-- TODO вынести в компонент users-list -->
                 <v-simple-table :fixed-header="! calendar" :height="750" v-show="! loading && users.length">
                     <template v-slot:default>
                         <thead>
@@ -291,27 +296,38 @@
         search: {
           keyword: '',
           updated_at: null,
-          display_updated_at: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'})
+          display_updated_at: new Date().toLocaleString('ru', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            timezone: 'utc'
+          })
         },
 
         user: {
           email: '',
           first_name: '',
           last_name: '',
-          display_birthday: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'}),
+          display_birthday: new Date().toLocaleString('ru', {
+            year: 'numeric',
+            month: 'numeric',
+            day: 'numeric',
+            timezone: 'utc'
+          }),
           birthday: null,
           password: '',
           password_confirmation: ''
         },
 
         form: {
-          valid:false,
+          valid: false,
 
           email: {
             rules: [
               v => v !== '' || this.$t('users.form.rules.email.required'),
-              v => (v !== undefined && v !== null && v.length > 10) || this.$t('users.form.rules.email.min_length', {length:10}),
-              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('users.form.rules.email.max_length', {length: 255})
+              v => (v !== undefined && v !== null && v.length > 10) || this.$t('users.form.rules.email.min_length', {length: 10}),
+              v => (v !== undefined && v !== null && v.length <= 255) || this.$t('users.form.rules.email.max_length', {length: 255}),
+              v => /^([0-9a-z]{2,}[@][a-z]{2,10}[.][a-z]{2,3}){1,255}$/.test(v) || this.$t('users.form.rules.email.invalid_format')
             ]
           },
 
@@ -325,7 +341,7 @@
           first_name: {
             rules: [
               v => v !== '' || this.$t('users.form.rules.first_name.required'),
-              v => (v !== undefined && v !== null && v.length >= 2) || this.$t('users.form.rules.first_name.min_length', {length:2}),
+              v => (v !== undefined && v !== null && v.length >= 2) || this.$t('users.form.rules.first_name.min_length', {length: 2}),
               v => (v !== undefined && v !== null && v.length <= 60) || this.$t('users.form.rules.first_name.max_length', {length: 60})
             ]
           },
@@ -333,7 +349,7 @@
           last_name: {
             rules: [
               v => v !== '' || this.$t('users.form.rules.last_name.required'),
-              v => (v !== undefined && v !== null && v.length >= 2) || this.$t('users.form.rules.last_name.min_length', {length:2}),
+              v => (v !== undefined && v !== null && v.length >= 2) || this.$t('users.form.rules.last_name.min_length', {length: 2}),
               v => (v !== undefined && v !== null && v.length <= 100) || this.$t('users.form.rules.last_name.max_length', {length: 100})
             ]
           },
@@ -341,7 +357,7 @@
           password: {
             rules: [
               v => v !== '' || this.$t('users.form.rules.password.required'),
-              v => (v !== undefined && v !== null && v.length >= 8) || this.$t('users.form.rules.password.min_length', {length:8}),
+              v => (v !== undefined && v !== null && v.length >= 8) || this.$t('users.form.rules.password.min_length', {length: 8}),
               v => (v !== undefined && v !== null && v.length <= 60) || this.$t('users.form.rules.password.max_length', {length: 255})
             ]
           },
@@ -380,8 +396,9 @@
         },
 
         calendar: false,
+        loading: false,
 
-        loading: false
+        errors: []
       }
     },
 
@@ -400,82 +417,99 @@
     },
 
     methods: {
+      /**
+       * Загрузка списка пользователей
+       *
+       * @returns {Promise<boolean>}
+       */
       async loadData() {
         this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/users`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
 
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-          return false;
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/users`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
+
+          this.users = (this.pagination.page === 1)
+              ? response.data.users.data
+              : this.users.concat(response.data.users.data);
+          this.pagination.last_page = response.data.users.last_page;
+          this.pagination.total = response.data.users.total;
+
+          this.loading = false;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
-
-        this.users = (this.pagination.page === 1)
-            ? response.data.users.data
-            : this.users.concat(response.data.users.data);
-        this.pagination.last_page = response.data.users.last_page;
-        this.pagination.total = response.data.users.total;
-        this.loading = false;
       },
 
+      /**
+       * Удаление пользователя
+       *
+       * @param id
+       * @returns {Promise<boolean>}
+       */
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/users/${id}`);
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/users/${id}`);
 
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.users = this.users.filter((user) => user.id !== id);
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.users = this.users.filter((user) => user.id !== id);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Добавление пользователя
+       *
+       * @returns {Promise<boolean>}
+       */
       async save() {
-        const response = await axios.post(`${this.$attrs.apiRoute}/users`, this.user);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
-            this.close();
-            break;
+        try {
+          const response = await axios.post(`${this.$attrs.apiRoute}/users`, this.user);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.loadData();
+          this.close();
+        } catch (e) {
+          this.errors = e.response.data.error;
         }
       },
 
+      /**
+       * Закрыть модальное окно
+       */
       close() {
         this.modal = false;
         this.$refs.user_form.reset();
       },
 
-      edit(user) {
-        this.user = {...user};
-        this.modal = true;
-      },
+      // edit(user) {
+      //   this.user = {...user};
+      //   this.modal = true;
+      // },
 
+      /**
+       * Обработчик события debounce-поиска пользователей
+       */
       onSearch() {
         if (this.search.keyword.length < 3) {
-          return ;
+          return;
         }
 
         this.searchData(this);
       },
 
+      /**
+       * Поиск пользователей
+       */
       searchData: debounce((vm) => {
         vm.loading = true;
         axios.get(`${vm.$attrs.apiRoute}/users`, {
           params: {
             page: vm.pagination.page,
-              ...vm.search
+            ...vm.search
           }
         })
             .then(response => {
@@ -487,25 +521,15 @@
               vm.loading = false;
             })
             .catch(error => {
-              console.log(error);
               vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
             })
         ;
       }, 300),
 
-      toRoute(destination, id = null) {
-        switch (destination) {
-          case 'create':
-            this.$router.push({ path: this.createFormRoute});
-            break;
-
-          case 'update':
-            this.$router.push({ path: `${this.editFormRoute}/${id}`});
-            break;
-        }
-      },
-
-      onScroll: function() {
+      /**
+       * Обработчик события скролла в таблице
+       */
+      onScroll: function () {
         this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
       },
     },
@@ -520,7 +544,7 @@
             this.searchData(this);
           }
 
-          if (after.updated_at !== null && ! after.keyword.length) {
+          if (after.updated_at !== null && !after.keyword.length) {
             this.pagination.page = 1;
             this.searching = false;
 
@@ -571,7 +595,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

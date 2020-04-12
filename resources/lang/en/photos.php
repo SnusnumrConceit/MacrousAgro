@@ -9,15 +9,15 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Фотография успешно загружена!',
-            'updated' => 'Сведения о фотографии успешно обновлены!',
-            'deleted' => 'Фотография успешно удалена!'
+            'created' => 'Photo has been successfully uploaded!',
+            'updated' => 'Photo information has been successfully updated!',
+            'deleted' => 'Photo has been successfully deleted!'
         ]
     ],
 
     'validation' => [
         'attributes' => [
-            'image' => 'Фотография'
+            'image' => 'Photo'
         ]
     ]
 ];

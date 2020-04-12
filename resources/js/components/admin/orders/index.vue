@@ -18,7 +18,6 @@
 
                 <v-spacer></v-spacer>
 
-                <!-- TODO разобраться с переводами статусов-->
                 <v-select v-model="search.status"
                           clearable
                           :items="status_codes"
@@ -149,6 +148,7 @@
                         </v-card-title>
 
                         <v-card-text>
+                            <errors :errors="errors"></errors>
                             <v-row>
                                 <v-col cols="2">
                                     <v-avatar color="primary">
@@ -170,7 +170,7 @@
                                 </thead>
                                 <tbody>
                                     <tr v-for="position in modal.order.positions" :key="position.id">
-                                        <td>
+                                        <td v-if="position.product">
                                             {{ position.product.title }}
                                         </td>
                                         <td>
@@ -178,7 +178,7 @@
                                                 {{ $t(`orders.statuses.${position.order_item_status_code}`) }}
                                             </span>
                                         </td>
-                                        <td>
+                                        <td v-if="position.product">
                                             {{ position.product.price }}
                                         </td>
                                         <td>
@@ -321,7 +321,9 @@
           canceled: 'mdi-cancel',
           delivery: 'mdi-truck-delivery-outline',
           payed: 'mdi-cash',
-        }
+        },
+
+        errors: []
       }
     },
 
@@ -335,17 +337,7 @@
 
           this.$swal('Успешно!', response.data.msg, 'success');
         } catch (e) {
-          this.$swal('Ошибка!', e.message, 'error');
-        }
-      },
-
-      async remove(id) {
-        try {
-          const response = await axios.delete(`${this.$attrs.apiRoute}/orders/${id}`);
-
-          this.$swal('Успешно!', response.data.msg, 'success');
-        } catch (e) {
-          this.$swal('Ошибка!', e.message, 'error');
+          this.errors = e.response.data.error;
         }
       },
 
@@ -354,12 +346,12 @@
         this.$refs.form.reset();
       },
 
-      async loadStatusCodes() {
+      async getStatusCodes() {
         const response = await axios.get('/api/order_status_codes');
         this.status_codes = response.data;
       },
 
-      async loadData() {
+      async getOrders() {
         const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
           params: {
             page: this.pagination.page
@@ -393,9 +385,9 @@
       async initData() {
         this.loading = true;
 
-        await this.loadStatusCodes();
+        await this.getStatusCodes();
 
-        await this.loadData();
+        await this.getOrders();
 
         this.loading = false;
       },
@@ -445,7 +437,7 @@
        * @param id
        * @returns {Promise<void>}
        */
-      async loadOrderDetail(id) {
+      async getOrderDetail(id) {
         const response = await axios.get(`${this.$attrs.apiRoute}/orders/${id}`);
 
         this.modal.order = response.data.order;
@@ -479,18 +471,17 @@
        * @returns {Promise<void>}
        */
       async changeStatus(status, itemId = null) {
-        const route = itemId ? `${this.$attrs.apiRoute}/order_items/${itemId}`: `${this.$attrs.apiRoute}/orders/${this.modal.order.id}`;
-        // const response = await axios.put(`${this.$attrs.apiRoute}/orders/${this.modal.order.id}${itemId ? `/item/${itemId}` : ''}`, {
-        const response = await axios.patch(route, {
-           [`order_${itemId ? 'item_' : ''}status_code` ]: status
-        });
+        try {
+          const route = itemId ? `${this.$attrs.apiRoute}/order_items/${itemId}`: `${this.$attrs.apiRoute}/orders/${this.modal.order.id}`;
+          const response = await axios.patch(route, {
+            [`order_${itemId ? 'item_' : ''}status_code` ]: status
+          });
 
-        switch (response.status) {
-          case 200: this.$swal('Успешно!', 'Статус успешно изменён!', 'success'); break;
-          case 500: this.$swal('Ошибка!', `${response.data.msg}`, 'error'); return;
+          this.$swal('Успешно!', 'Статус успешно изменён!', 'success');
+          this.displayModal(false);
+        } catch (e) {
+          this.errors = e.response.data.errors;
         }
-
-        this.displayModal(false);
       }
 
     },
@@ -503,7 +494,7 @@
           if (after.status || after.created_at || after.keyword.length) {
             this.searchData(this);
           } else if (! after.status && ! after.created_at && ! after.keyword.length) {
-            this.loadData();
+            this.getOrders();
           }
         },
 
@@ -536,7 +527,7 @@
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
 
-      this.$on('fetch-order-detail', this.loadOrderDetail);
+      this.$on('fetch-order-detail', this.getOrderDetail);
 
       this.$on('clear-modal', this.clearOrderDetail);
     }

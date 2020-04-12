@@ -49,18 +49,13 @@ class ArticleStoreRequest extends FormRequest
 
     public function attributes()
     {
-        return parent::attributes();
-//        return [
-//            ''
-//        ];
-    }
-
-    public function messages()
-    {
-        return parent::messages();
-//        return [
-//            ''
-//        ];
+        return [
+            'title' => __('articles.validation.attributes.title'),
+            'description' => __('articles.validation.attributes.description'),
+            'is_publicated' => __('articles.validation.attributes.is_publicated'),
+            'publication_date' => __('articles.validation.attributes.publication_date'),
+            'image' => __('articles.validation.attributes.image'),
+        ];
     }
 
     protected function failedAuthorization()
@@ -73,7 +68,7 @@ class ArticleStoreRequest extends FormRequest
         throw (new ValidationException($validator, response()->json([
             'status' => 'error',
             'msg' => __('form_request_validation_failed_error'),
-            'error' => $validator->errors()
+            'errors' => $validator->errors()
         ], 500)));
     }
 }

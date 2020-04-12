@@ -1,6 +1,7 @@
 <template>
     <div>
         <v-card v-scroll="onScroll">
+            <!-- TODO вынести в компонент photos-search -->
             <v-toolbar>
                 <v-toolbar-title>
                     {{ $t('photos.header')}}
@@ -65,6 +66,8 @@
 
                 <v-spacer></v-spacer>
 
+                <!-- TODO вынести в компонент photos-create-form -->
+
                 <v-dialog v-model="modal" max-width="500px" persistent>
                     <template v-slot:activator="{on}">
                         <v-btn color="success" outlined v-on="on" @click="resetImage = false">
@@ -79,6 +82,8 @@
                             {{ $t('photos.form.header')}}
                         </v-card-title>
                         <v-card-text>
+                            <errors :errors="errors"></errors>
+
                             <v-text-field v-model="photo.title"
                                           :label="$t('photos.form.labels.title')"
                                           clearable
@@ -108,6 +113,7 @@
             </v-toolbar>
 
             <v-card-text>
+                <!-- TODO вынести в компонент photos-list -->
                 <v-row v-show="! loading && photos.length">
                     <v-col cols="4" v-for="photo in photos" :key="photo.id">
                         <v-card height="100%" class="flex-card-full-size">
@@ -135,7 +141,7 @@
                 <v-alert color="info" outlined v-if="! loading && ! photos.length">
                     <div class="">
                         <span v-show="! searching">
-                            Фотографии отсутствуют в системе
+                            Фотографии отсутствуют в фотогалерее
                         </span>
                         <span v-show="searching">
                             По Вашему запросу ничего не найдено
@@ -198,38 +204,52 @@
 
         searching: false,
         resetPreview: false,
-        loading: false
+        loading: false,
+
+        errors: []
       }
     },
 
     methods: {
+      /**
+       * Обработчик события в форме добавления - отслеживает загрузку фотографии
+       * @param image
+       */
       onUploadImage(image) {
         this.photo.image = image;
       },
 
+      /**
+       * Загрузка списка фотографий
+       *
+       * @returns {Promise<void>}
+       */
       async loadData() {
         this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/photos`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
 
-        if (response.data.status === 'error') {
-          this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/photos`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
+
+          this.photos = (this.pagination.page === 1)
+              ? response.data.photos.data
+              : this.photos.concat(response.data.photos.data);
+
+          this.pagination.last_page = response.data.photos.last_page;
           this.loading = false;
-          return false;
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.loading = false;
         }
-
-        this.photos = (this.pagination.page === 1)
-            ? response.data.photos.data
-            : this.photos.concat(response.data.photos.data);
-
-        console.log(this.photos);
-        this.pagination.last_page = response.data.photos.last_page;
-        this.loading = false;
       },
 
+      /**
+       * Обработчик события для debounce-поиска фотографий
+       *
+       */
       onSearch() {
         if (this.search.keyword.length < 3) {
           return ;
@@ -238,6 +258,9 @@
         this.searchData(this);
       },
 
+      /**
+       * Поиск фотографий
+       */
       searchData: debounce((vm) => {
         vm.loading = true;
         axios.get(`${vm.$attrs.apiRoute}/photos`, {
@@ -245,38 +268,42 @@
             page: vm.pagination.page,
             ...vm.search,
           }
-        })
-            .then(response => {
-              vm.photos = (vm.pagination.page === 1)
-                  ? response.data.photos.data
-                  : vm.photos.concat(response.data.photos.data);
+        }).then(response => {
+          vm.photos = (vm.pagination.page === 1)
+              ? response.data.photos.data
+              : vm.photos.concat(response.data.photos.data);
 
-              vm.pagination.last_page = response.data.photos.last_page;
-              vm.loading = false;
-            })
-            .catch(error => {
-              vm.loading = false;
-              console.log(error);
-              vm.$swal(vm.$t('swal.title.error'), error.data.msg, 'error');
-            })
+          vm.pagination.last_page = response.data.photos.last_page;
+          vm.loading = false;
+        }).catch(error => {
+          vm.loading = false;
+          console.log(error);
+          vm.$swal(vm.$t('swal.title.error'), error.data.msg, 'error');
+        })
         ;
       }, 300),
 
+      /**
+       * Удаление фотографии из списка
+       *
+       * @param id
+       * @returns {Promise<void>}
+       */
       async remove(id) {
-        const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${id}`);
-
-        switch (response.data.status) {
-          case 'error':
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return false;
-
-          case 'success':
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.photos = this.photos.filter(photo => photo.id !== id);
-            break;
+        try {
+          const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${id}`);
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.photos = this.photos.filter(photo => photo.id !== id);
+        } catch (e) {
+          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
         }
       },
 
+      /**
+       * Сохранение формы добавления фотографии
+       *
+       * @returns {Promise<void>}
+       */
       async save() {
         const formData = new FormData();
 
@@ -284,35 +311,38 @@
             formData.append(prop, this.photo[prop]);
         }
 
-        const response = await axios.post(
-            `${this.$attrs.apiRoute}/photos`,
-            formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data'
-              }
-            }
-        );
+        try {
+          const response = await axios.post(
+              `${this.$attrs.apiRoute}/photos`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              });
 
-        switch (response.status) {
-          case 200:
-            this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-            this.loadData();
-            break;
+          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.loadData();
 
-          case 500:
-            this.$swal(this.$t('swal.title.error'), response.data.msg, 'error');
-            return ;
+          this.resetForm();
+        } catch (e) {
+          console.log(e.response.data.error);
+          this.errors = e.response.data.error;
         }
-
-
-        this.resetForm();
       },
 
+      /**
+       * Закрытие формы создания фотографии
+       */
       cancel() {
         this.resetForm();
       },
 
+      /**
+       * Очистка формы создания фотографии
+       *
+       * @returns {Promise<void>}
+       */
       async resetForm() {
         this.modal = false;
         this.$refs.form.reset();
@@ -320,6 +350,9 @@
         this.resetPreview = true;
       },
 
+      /**
+       * Обработчик события скролла
+       */
       onScroll: function() {
         this.paginationScroll(this, document);
       },
@@ -373,10 +406,6 @@
 
     mounted() {
       document.addEventListener('scroll', this.onScroll);
-    },
-
-    beforeDestroy() {
-      this.isDestroying = true;
     }
   }
 </script>

@@ -50,7 +50,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('user_msg_success_create')
+            'msg' => __('users.response.messages.created')
         ]);
 
     }
@@ -95,7 +95,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('user_msg_success_update')
+            'msg' => __('users.response.messages.updated')
         ], 200);
     }
 
@@ -112,7 +112,7 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('user_msg_success_delete')
+            'msg' => __('users.response.messages.deleted')
         ], 200);
     }
 

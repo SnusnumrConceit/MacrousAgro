@@ -9,7 +9,7 @@
 return [
     'response' => [
         'messages' => [
-            'created' => 'Заказ успешно создан!',
+            'created' => 'Order has been successfully created!',
             'updated' => 'Сведения о заказе успешно обновлены!',
             'deleted' => 'Заказ успешно удален!'
         ]
@@ -17,15 +17,15 @@ return [
 
     'validation' => [
         'attributes' => [
-            'products' => 'Товары',
-            'customer' => 'Покупатель',
-            'order_status_code' => 'Статус'
+            'products' => 'Products',
+            'customer' => 'Customer',
+            'order_status_code' => 'Status'
         ],
 
         'messages' => [
-            'invalid_format' => 'Неверный формат',
-            'products_unique' => ' Товары не должны повторяться',
-            'invalid_status' => 'Неверный статус'
+            'invalid_format' => 'Invalid format',
+            'products_unique' => 'Product should not duplicates',
+            'invalid_status' => 'Wrong status'
         ]
     ]
 ];

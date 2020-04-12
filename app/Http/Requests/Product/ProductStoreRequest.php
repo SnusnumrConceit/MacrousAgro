@@ -46,6 +46,16 @@ class ProductStoreRequest extends FormRequest
         ];
     }
 
+    public function attributes()
+    {
+        return [
+            'title' => __('products.validation.attributes.title'),
+            'price' => __('products.validation.attributes.price'),
+            'category_id' => __('products.validation.attributes.category_id'),
+            'image' => __('products.validation.attributes.image'),
+        ];
+    }
+
     protected function failedAuthorization()
     {
         throw new AuthorizationException(__('form_request_authorization_error'), 403);
@@ -56,7 +66,7 @@ class ProductStoreRequest extends FormRequest
         throw (new ValidationException($validator, response()->json([
             'status' => 'error',
             'msg' => __('form_request_validation_failed_error'),
-            'error' => $validator->errors()
+            'errors' => $validator->errors()
         ], 500)));
     }
 }
