@@ -422,7 +422,7 @@
        *
        * @returns {Promise<boolean>}
        */
-      async loadData() {
+      async getUsers() {
         this.loading = true;
 
         try {
@@ -437,10 +437,10 @@
               : this.users.concat(response.data.users.data);
           this.pagination.last_page = response.data.users.last_page;
           this.pagination.total = response.data.users.total;
-
-          this.loading = false;
         } catch (e) {
           this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+        } finally {
+          this.loading = false;
         }
       },
 
@@ -470,7 +470,7 @@
         try {
           const response = await axios.post(`${this.$attrs.apiRoute}/users`, this.user);
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getUsers();
           this.close();
         } catch (e) {
           this.errors = e.response.data.error;
@@ -544,11 +544,11 @@
             this.searchData(this);
           }
 
-          if (after.updated_at !== null && !after.keyword.length) {
+          if (! after.updated_at && ! after.keyword.length) {
             this.pagination.page = 1;
             this.searching = false;
 
-            this.loadData();
+            this.getUsers();
           }
         },
 
@@ -587,7 +587,7 @@
     },
 
     created() {
-      this.loadData();
+      this.getUsers();
     },
 
     mounted() {

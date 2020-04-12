@@ -28,15 +28,11 @@ class Product extends Model
 
     public function getDisplayCreatedAtAttribute()
     {
-        return $this->created_at->toDateString() < now()->toDateString()
-            ? $this->created_at->format('d.m.Y H:i:s')
-            : $this->created_at->diffForHumans();
+        return $this->created_at->format('d.m.Y H:i:s');
     }
 
     public function getDisplayUpdatedAtAttribute()
     {
-        return $this->updated_at->toDateString() < now()->toDateString()
-            ? $this->updated_at->format('d.m.Y H:i:s')
-            : $this->updated_at->diffForHumans();
+        return $this->updated_at->format('d.m.Y H:i:s');
     }
 }

@@ -224,7 +224,7 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getPhotos() {
         this.loading = true;
 
         try {
@@ -322,7 +322,7 @@
               });
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getPhotos();
 
           this.resetForm();
         } catch (e) {
@@ -358,7 +358,7 @@
       },
 
       async initData() {
-        await this.loadData();
+        await this.getPhotos();
       }
     },
 
@@ -374,7 +374,7 @@
             this.pagination.page = 1;
             this.searching = false;
 
-            this.loadData();
+            this.getPhotos();
           }
         },
 

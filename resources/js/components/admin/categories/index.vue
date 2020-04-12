@@ -218,10 +218,10 @@
       /**
        * Загрузка списка категорий
        */
-      // async loadData() {
+      // async getCategories() {
       //   this.$store.dispatch('category/getCategories');
       // },
-      async loadData() {
+      async getCategories() {
         this.loading = true;
 
         try {
@@ -251,7 +251,7 @@
           });
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getCategories();
           this.resetForm();
         } catch (e) {
           this.errors = e.response.data.errors;
@@ -325,13 +325,13 @@
           this.onSearch();
         } else {
           this.pagination.page = 1;
-          this.loadData();
+          this.getCategories();
         }
       }
     },
 
     created() {
-      this.loadData();
+      this.getCategories();
     }
   }
 </script>

@@ -342,7 +342,7 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getProducts() {
         this.loading = true;
 
         try {
@@ -357,6 +357,8 @@
           this.pagination.total = response.data.products.total;
         } catch (e) {
           this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+        } finally {
+          this.loading = false;
         }
       },
 
@@ -441,7 +443,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getProducts();
 
           this.resetForm();
         } catch (e) {
@@ -478,7 +480,7 @@
 
         await this.loadCategories();
 
-        await this.loadData();
+        await this.getProducts();
 
         this.loading = false;
       },
@@ -503,7 +505,7 @@
               this.pagination.page = 1;
               this.searching = true;
 
-              this.loadData();
+              this.getProducts();
           }
         },
 

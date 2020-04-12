@@ -357,7 +357,7 @@
        *
        */
       async initData() {
-        await this.loadData();
+        await this.getArticles();
       },
 
       /**
@@ -365,7 +365,7 @@
        *
        * @returns {Promise<boolean>}
        */
-      async loadData() {
+      async getArticles() {
         this.loading = true;
 
         try {
@@ -447,7 +447,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getArticles();
 
           this.resetForm();
         } catch (e) {
@@ -506,7 +506,7 @@
             this.pagination.page = 1;
             this.searching = true;
 
-            this.loadData();
+            this.getArticles();
           }
         },
 
