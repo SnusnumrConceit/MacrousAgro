@@ -16,6 +16,7 @@ class CreatePhotosTable extends Migration
         Schema::create('photos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title')
+                ->index()
                 ->comment('Название фотографии');
 //            $table->string('path')
 //                ->comment('Путь к фотографии');

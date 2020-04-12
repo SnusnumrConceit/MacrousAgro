@@ -16,6 +16,7 @@ class CreateAttributesTable extends Migration
         Schema::create('attributes', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('name', 100)
+                ->index()
                 ->comment('наименование');
             $table->string('symbol', 20)
                 ->nullable()

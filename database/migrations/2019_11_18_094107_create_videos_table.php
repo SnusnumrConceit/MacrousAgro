@@ -16,6 +16,7 @@ class CreateVideosTable extends Migration
         Schema::create('videos', function (Blueprint $table) {
             $table->bigIncrements('id');
             $table->string('title')
+                ->unique()
                 ->comment('Название видеоролика');
 //            $table->string('path')
 //                ->comment('Путь к видео');
