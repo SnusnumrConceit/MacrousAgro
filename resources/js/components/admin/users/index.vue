@@ -127,7 +127,7 @@
                                                 </template>
 
                                                 <v-date-picker v-model="user.birthday"
-                                                               @input="form_calendar = true"
+                                                               @input="form_calendar = false"
                                                                :max="new Date().toISOString().substr(0,10)"
                                                                no-title
                                                                scrollable
@@ -422,7 +422,7 @@
        *
        * @returns {Promise<boolean>}
        */
-      async getUsers() {
+      async loadData() {
         this.loading = true;
 
         try {
@@ -470,10 +470,10 @@
         try {
           const response = await axios.post(`${this.$attrs.apiRoute}/users`, this.user);
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.getUsers();
+          this.loadData();
           this.close();
         } catch (e) {
-          this.errors = e.response.data.error;
+          this.errors = e.response.data.errors;
         }
       },
 
@@ -548,7 +548,7 @@
             this.pagination.page = 1;
             this.searching = false;
 
-            this.getUsers();
+            this.loadData();
           }
         },
 
@@ -587,7 +587,7 @@
     },
 
     created() {
-      this.getUsers();
+      this.loadData();
     },
 
     mounted() {

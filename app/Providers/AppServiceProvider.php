@@ -6,6 +6,7 @@ use App\Models\Product;
 use App\Observers\ProductObserver;
 use Illuminate\Support\ServiceProvider;
 use Laravel\Cashier\Cashier;
+use Illuminate\Database\Schema\Builder;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -16,7 +17,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        Cashier::ignoreMigrations();
+        // Cashier::ignoreMigrations();
     }
 
     /**
@@ -27,5 +28,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot()
     {
         Product::observe(ProductObserver::class);
+        Builder::defaultStringLength(191); // Update defaultStringLength
     }
 }

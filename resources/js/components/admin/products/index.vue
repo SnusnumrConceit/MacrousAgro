@@ -342,7 +342,7 @@
        *
        * @returns {Promise<void>}
        */
-      async getProducts() {
+      async loadData() {
         this.loading = true;
 
         try {
@@ -443,7 +443,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.getProducts();
+          this.loadData();
 
           this.resetForm();
         } catch (e) {
@@ -480,7 +480,7 @@
 
         await this.loadCategories();
 
-        await this.getProducts();
+        await this.loadData();
 
         this.loading = false;
       },
@@ -505,7 +505,7 @@
               this.pagination.page = 1;
               this.searching = true;
 
-              this.getProducts();
+              this.loadData();
           }
         },
 

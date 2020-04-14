@@ -30,7 +30,7 @@ class UserStoreRequest extends FormRequest
             'last_name' => 'required|between:2,100',
             'first_name' => 'required|between:2,60',
             'password' => 'required|between:8,60|confirmed',
-            'email' => 'required|email|between:10,100|exists:users,email',
+            'email' => 'required|email|between:10,100',
             'birthday' => 'required|date',
         ];
     }

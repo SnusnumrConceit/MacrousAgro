@@ -351,7 +351,7 @@
         this.status_codes = response.data;
       },
 
-      async getOrders() {
+      async loadData() {
         const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
           params: {
             page: this.pagination.page
@@ -387,7 +387,7 @@
 
         await this.getStatusCodes();
 
-        await this.getOrders();
+        await this.loadData();
 
         this.loading = false;
       },
@@ -494,7 +494,7 @@
           if (after.status || after.created_at || after.keyword.length) {
             this.searchData(this);
           } else if (! after.status && ! after.created_at && ! after.keyword.length) {
-            this.getOrders();
+            this.loadData();
           }
         },
 

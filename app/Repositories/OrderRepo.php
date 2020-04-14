@@ -27,7 +27,7 @@ class OrderRepo
         });
 
         $orders->when($request->created_at, function ($q, $created_at) {
-            return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . [' 23:59:59']]);
+            return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . ' 23:59:59']);
         });
 
         $orders = $orders->with('customer', 'invoice')->latest()->paginate();

@@ -241,7 +241,7 @@
        *
        * @returns {Promise<void>}
        */
-      async getVideos() {
+      async loadData() {
         this.loading = true;
 
         try {
@@ -333,7 +333,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.getVideos();
+          this.loadData();
 
           this.resetForm();
         } catch (e) {
@@ -361,7 +361,7 @@
       },
 
       async initData() {
-        await this.getVideos();
+        await this.loadData();
       }
     },
 
@@ -377,7 +377,7 @@
             this.pagination.page = 1;
             this.searching = false;
 
-            this.getVideos();
+            this.loadData();
           }
         },
 

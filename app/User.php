@@ -7,12 +7,12 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Kodeine\Acl\Models\Eloquent\Role;
 use Kodeine\Acl\Traits\HasRole;
-use Laravel\Cashier\Billable;
+// use Laravel\Cashier\Billable;
 use Route;
 
 class User extends Authenticatable
 {
-    use HasRole, Billable;
+    use HasRole;
 
     /**
      * The attributes that are mass assignable.
