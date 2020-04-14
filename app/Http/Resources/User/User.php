@@ -19,7 +19,7 @@ class User extends JsonResource
             'full_name'          => $this->full_name,
             'email'              => $this->email,
             'display_birthday'   => $this->display_birthday,
-            'birthday'           => $this->birthday,
+            'birthday'           => $this->birthday->format('Y-m-d'),
             'registration_date'  => $this->registration_date,
             'last_activity_date' => $this->last_activity_date,
             'last_name'          => $this->last_name,

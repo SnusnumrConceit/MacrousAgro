@@ -49,6 +49,7 @@
                                     min-width="200px">
                                 <template v-slot:activator="{ on }">
                                     <v-text-field v-model="user.display_birthday"
+                                                  v-on="on"
                                                   :label="$t('users.form.labels.birthday')"
                                                   prepend-icon="event"
                                                   :rules="form.birthday.rules"
@@ -60,7 +61,8 @@
                                                first-day-of-week="1"
                                                no-title
                                                scrollable
-                                               @input="form_calendar"
+                                               :max="new Date().toISOString().substr(0,10)"
+                                               @input="form_calendar = false"
                                                :locale="$i18n.locale">
                                     <v-spacer></v-spacer>
                                     <v-btn color="blue darken-1" @click="form_calendar = false" text>
@@ -177,7 +179,7 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getUser() {
         this.loading = true;
         const response = await axios.get(`${this.$attrs.apiRoute}/users/${this.id}/edit`);
 
@@ -204,7 +206,7 @@
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
           this.goBack();
         } catch (e) {
-          this.errors = e.response.data.error;
+          this.errors = e.response.data.errors;
         }
       },
 
@@ -236,13 +238,14 @@
        * @returns {Promise<void>}
        */
       async initData() {
-        await this.loadData();
+        await this.getUser();
       }
     },
     
     watch: {
       'user.birthday': function (after) {
         if (after !== null) {
+          console.log(this.user.birthday);
           this.user.display_birthday = after.split('-').reverse().join('.');
         }   
       },

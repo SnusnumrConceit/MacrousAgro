@@ -282,7 +282,7 @@
         search: {
           keyword: '',
           publication_date: null,
-          display_publication_date: new Date().toLocaleString('ru', {year: 'numeric', month: 'numeric', day: 'numeric', timezone: 'utc'}),
+          display_publication_date: null,
           is_publicated: Number(false)
         },
 
@@ -497,17 +497,20 @@
        */
       'search': {
         handler: function(after, before) {
+          if (! after.display_publication_date && after !== before) {
+            return ;
+          }
           if (after.keyword.length > 3 || after.publication_date || after.is_publicated) {
-            this.pagination.page = 1;
             this.searching = true;
 
             this.searchData(this);
-          } else if(! after.keyword.length || ! after.publication_date || ! after.is_publicated) {
+          } else if(! after.keyword.length && ! after.publication_date && ! after.is_publicated) {
             this.pagination.page = 1;
             this.searching = true;
-
-            this.loadData();
           }
+
+          this.pagination.page = 1;
+          this.searching ? this.onSearch() : this.loadData();
         },
 
         deep: true
