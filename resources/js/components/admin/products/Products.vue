@@ -345,7 +345,7 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getProducts() {
         this.loading = true;
 
         try {
@@ -446,7 +446,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getProducts();
 
           this.resetForm();
         } catch (e) {
@@ -483,7 +483,7 @@
 
         await this.loadCategories();
 
-        await this.loadData();
+        await this.getProducts();
 
         this.loading = false;
       },
@@ -492,7 +492,7 @@
        * Обработчик события скролла в таблице
        */
       onScroll: function() {
-        this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
+        this.paginationScroll(this, $('.v-data-table__wrapper')[0], 'getProducts');
       },
     },
 
@@ -508,7 +508,7 @@
               this.pagination.page = 1;
               this.searching = true;
 
-              this.loadData();
+              this.getProducts();
           }
         },
 

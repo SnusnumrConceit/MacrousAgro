@@ -53,11 +53,6 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
 
-/** Настройка авторизации **/
-import VueAuth from '@websanova/vue-auth'
-import auth from './auth'
-Vue.use(VueAuth, auth);
-
 let vuetify = new Vuetify({
    theme: {
        themes: {

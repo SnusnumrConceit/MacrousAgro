@@ -428,7 +428,7 @@
        *
        * @returns {Promise<boolean>}
        */
-      async loadData() {
+      async getUsers() {
         this.loading = true;
 
         try {
@@ -476,7 +476,7 @@
         try {
           const response = await axios.post(`${this.$attrs.apiRoute}/users`, this.user);
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getUsers();
           this.close();
         } catch (e) {
           this.setErrors(e.response.data.errors);
@@ -555,7 +555,7 @@
        * Обработчик события скролла в таблице
        */
       onScroll: function () {
-        this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
+        this.paginationScroll(this, $('.v-data-table__wrapper')[0], 'getUsers');
       },
     },
 
@@ -573,7 +573,7 @@
             this.pagination.page = 1;
             this.searching = false;
 
-            this.loadData();
+            this.getUsers();
           }
         },
 
@@ -612,7 +612,7 @@
     },
 
     created() {
-      this.loadData();
+      this.getUsers();
     },
 
     mounted() {

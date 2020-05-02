@@ -38,8 +38,6 @@ Vue.use(Vuetify);
 
 import i18n from "./i18n";
 
-// axios.defaults.baseURL = `${process.env.MIX_APP_URL}/api/v1`
-
 import 'vuetify/dist/vuetify.min.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
 
@@ -67,10 +65,6 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
 
-/** Настройка авторизации **/
-import auth from './auth';
-import VueAuth from '@websanova/vue-auth';
-Vue.use(VueAuth, auth);
 /**
  * Next, we will create a fresh Vue application instance and attach it to
  * the page. Then, you may begin adding components to this application

@@ -362,7 +362,7 @@
        *
        */
       async initData() {
-        await this.loadData();
+        await this.getArticles();
       },
 
       /**
@@ -370,7 +370,7 @@
        *
        * @returns {Promise<boolean>}
        */
-      async loadData() {
+      async getArticles() {
         this.loading = true;
 
         try {
@@ -452,7 +452,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getArticles();
 
           this.resetForm();
         } catch (e) {
@@ -485,7 +485,7 @@
        *
        */
       onScroll: function() {
-        this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
+        this.paginationScroll(this, $('.v-data-table__wrapper')[0], 'getArticles');
       },
     },
 
@@ -516,7 +516,7 @@
           }
 
           this.pagination.page = 1;
-          this.searching ? this.onSearch() : this.loadData();
+          this.searching ? this.onSearch() : this.getArticles();
         },
 
         deep: true

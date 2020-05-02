@@ -166,7 +166,7 @@
 <script>
   import previewUpload from '../../../custom_components/previewUploader';
 
-  import infinite_scroll_mixin from '../../../mixins/infinite_scroll';
+  import scroll from '../../../mixins/infinite_scroll';
   import debounce from '../../../debounce';
 
   import { mapActions } from 'vuex';
@@ -174,7 +174,7 @@
   export default {
     name: "index",
 
-    mixins: [infinite_scroll_mixin],
+    mixins: [scroll],
     components: {
       previewUpload
     },
@@ -245,19 +245,19 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getVideos() {
         this.loading = true;
 
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/videos`, {
             params: {
-              page: this.page
+              page: this.pagination.page
             }
           });
 
           this.videos = (this.pagination.page === 1)
               ? response.data.videos.data
-              : this.videos[response.data.videos.data];
+              : this.videos.concat(response.data.videos.data);
 
           this.pagination.last_page = response.data.videos.last_page;
 
@@ -305,7 +305,10 @@
             ...vm.search,
           }
         }).then(response => {
-          vm.videos = response.data.videos.data;
+          vm.videos = (vm.pagination.page === 1)
+              ? response.data.videos.data
+              : vm.videos.concat(response.data.videos.data);
+
           vm.pagination.last_page = response.data.videos.last_page;
           vm.loading = false;
         }).catch(error => {
@@ -337,7 +340,7 @@
           );
 
           this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
-          this.loadData();
+          this.getVideos();
 
           this.resetForm();
         } catch (e) {
@@ -365,8 +368,15 @@
       },
 
       async initData() {
-        await this.loadData();
-      }
+        await this.getVideos();
+      },
+
+      /**
+       * Обработчик события скролла в таблице
+       */
+      onScroll: function () {
+        this.paginationScroll(this, document, 'getVideos');
+      },
     },
 
     watch: {
@@ -381,7 +391,7 @@
             this.pagination.page = 1;
             this.searching = false;
 
-            this.loadData();
+            this.getVideos();
           }
         },
 

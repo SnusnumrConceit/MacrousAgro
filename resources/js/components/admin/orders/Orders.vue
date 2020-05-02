@@ -364,7 +364,7 @@
         this.status_codes = response.data;
       },
 
-      async loadData() {
+      async getOrders() {
         const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
           params: {
             page: this.pagination.page
@@ -419,13 +419,13 @@
 
         await this.getStatusCodes();
 
-        await this.loadData();
+        await this.getOrders();
 
         this.loading = false;
       },
 
       onScroll: function () {
-        this.paginationScroll(this, $('.v-data-table__wrapper')[0]);
+        this.paginationScroll(this, $('.v-data-table__wrapper')[0], 'getOrders');
       },
 
       /**
@@ -526,7 +526,7 @@
           if (after.status || after.created_at || after.keyword.length) {
             this.searchData(this);
           } else if (! after.status && ! after.created_at && ! after.keyword.length) {
-            this.loadData();
+            this.getOrders();
           }
         },
 
