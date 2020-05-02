@@ -12,7 +12,16 @@
 */
 
 Route::get('/', function () {
-    return view('layouts.admin');
+    return view('welcome');
+});
+
+Route::group(['namespace' => 'Api'], function () {
+    Route::post('/login', 'AuthController@login');
+    Route::post('/register', 'AuthController@register');
+    Route::post('/logout', 'AuthController@logout');
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        Route::get('/user', 'AuthController@user');
+    });
 });
 
 //Auth::routes();
@@ -22,9 +31,11 @@ Route::get('/', function () {
 
 /** Admin Routes */
 
-Route::get('admin/{any}', function () {
-    return view('layouts.admin');
-})->where('any', '.*');
+Route::group(['is' => 'admin|manager'], function () {
+    Route::get('admin/{any}', function () {
+        return view('layouts.admin');
+    })->where('any', '.*');
+});
 
 Route::get('{any}', function () {
     return view('welcome');

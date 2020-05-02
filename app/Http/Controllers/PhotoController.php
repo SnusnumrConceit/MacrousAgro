@@ -118,4 +118,19 @@ class PhotoController extends Controller
             'msg' => __('photos.response.messages.deleted')
         ], 200);
     }
+
+    /**
+     * Получение случайных фотографий для лэндинга
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function random(Request $request)
+    {
+        $photos = Photo::inRandomOrder()->paginate();
+
+        return response()->json([
+            'photos' => new PhotoCollection($photos)
+        ], 200);
+    }
 }

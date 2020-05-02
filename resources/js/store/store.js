@@ -11,12 +11,16 @@ import createPersistedState from "vuex-persistedstate";
 // database.register(Category);
 
 import category from './modules/categories/index';
-import cart from './modules/cart/index';
+import cart     from './modules/cart/index';
+import auth     from './modules/auth/index';
+import errors   from './modules/errors/index';
 
 export const store = new Vuex.Store({
   modules: {
     category,
-    cart
+    cart,
+    auth,
+    errors
   },
 
   plugins: [

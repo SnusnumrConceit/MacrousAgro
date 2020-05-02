@@ -24,8 +24,8 @@ import Vue from 'vue';
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
-Vue.component('errors', require('./components/common/errors.vue').default);
-import Admin from './components/admin/admin';
+Vue.component('errors', require('./components/common/Errors.vue').default);
+import Admin from './components/admin/Admin';
 // import Dashboard from './components/dashboard/dashboard';
 
 import VueSweetalert2 from "vue-sweetalert2";

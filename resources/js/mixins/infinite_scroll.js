@@ -2,7 +2,7 @@ import debounce from '../debounce';
 
 export default {
   methods: {
-    paginationScroll: debounce((vm, element) => {
+    paginationScroll: debounce((vm, element, callback = 'loadData') => {
       let atTheBottom = false;
       let isDocument = element === document;
       let scrollTop =  isDocument ? document.documentElement.scrollTop : element.scrollTop;
@@ -13,7 +13,7 @@ export default {
 
       if (atTheBottom && vm.pagination.page !== vm.pagination.last_page) {
         vm.pagination.page++;
-        vm.loadData();
+        vm[callback]();
       }
     }, 300)
   }

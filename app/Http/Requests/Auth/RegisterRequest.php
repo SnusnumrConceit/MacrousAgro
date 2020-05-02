@@ -26,12 +26,20 @@ class RegisterRequest extends FormRequest
     public function rules()
     {
         return [
-            'last_name' => 'required|between:2,100',
+            'last_name'  => 'required|between:2,100',
             'first_name' => 'required|between:2,60',
-            'password' => 'required|between:8,60|confirmed',
-            'email' => 'required|email|between:10,100',
-            'birthday' => 'required|date',
+            'password'   => 'required|between:8,60|confirmed',
+            'email'      => 'required|email|between:10,100',
+            'birthday'   => 'required|date',
         ];
+    }
+
+    public function attributes()
+    {
+        return array_merge(
+            parent::attributes(),
+            ['birthday' => __('users.validation.attributes.birthday')]
+        );
     }
 
     protected function failedValidation(Validator $validator)

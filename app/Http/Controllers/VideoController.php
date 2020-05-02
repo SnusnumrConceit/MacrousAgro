@@ -3,17 +3,17 @@ declare(strict_types=1);
 
 namespace App\Http\Controllers;
 
-use App\Http\Requests\Video\VideoUpdateRequest;
-use App\Http\Requests\Video\VideoStoreRequest;
-use App\Http\Resources\Video\VideoCollection;
 use App\Models\Video;
-use App\Repositories\VideoRepo;
-use App\Services\MediaService;
-use App\Services\VideoService;
 use App\Traits\Mediable;
+use App\Services\VideoService;
+use App\Services\MediaService;
+use App\Repositories\VideoRepo;
 use Illuminate\Http\JsonResponse;
-use Illuminate\Http\Request;
 use App\Http\Resources\Video\Video as VideoResource;
+use App\Http\Resources\Video\VideoCollection;
+use Illuminate\Http\Request;
+use App\Http\Requests\Video\VideoStoreRequest;
+use App\Http\Requests\Video\VideoUpdateRequest;
 
 class VideoController extends Controller
 {
@@ -130,6 +130,21 @@ class VideoController extends Controller
         return response()->json([
             'status' => 'success',
             'msg' => __('videos.response.messages.deleted')
+        ], 200);
+    }
+
+    /**
+     * Получение случайного списка видеороликов для лэндинга
+     *
+     * @param Request $request
+     * @return JsonResponse
+     */
+    public function random(Request $request)
+    {
+        $videos = Video::inRandomOrder()->paginate();
+
+        return response()->json([
+            'videos' => new VideoCollection($videos)
         ], 200);
     }
 }

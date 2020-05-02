@@ -15,6 +15,14 @@ return [
         ]
     ],
 
+    'export' => [
+        'headings' => [
+            'full_name' => 'FCS',
+            'email' => 'Email',
+            'birthday' => 'Birthday date'
+        ]
+    ],
+
     'validation' => [
         'attributes' => [
             'last_name' => 'Surname',

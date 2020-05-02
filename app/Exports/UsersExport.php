@@ -2,32 +2,28 @@
 
 namespace App\Exports;
 
-use App\User;
-use Illuminate\Contracts\Support\Responsable;
+use App\Exports\Sheets\UserSheet;
+use Kodeine\Acl\Models\Eloquent\Role;
 use Maatwebsite\Excel\Concerns\Exportable;
-use Maatwebsite\Excel\Concerns\FromCollection;
-use Maatwebsite\Excel\Concerns\WithMapping;
+use Illuminate\Contracts\Support\Responsable;
+use Maatwebsite\Excel\Concerns\WithMultipleSheets;
 
-class UsersExport implements FromCollection, Responsable, WithMapping
+class UsersExport implements Responsable, WithMultipleSheets
 {
     use Exportable;
 
     private $fileName = 'users.xlsx';
 
-    public function map($user) : array
+    public function sheets(): array
     {
-        return [
-            $user->last_name,
-            $user->first_name,
-            $user->birthday,
-            $user->email
-        ];
-    }
-    /**
-    * @return \Illuminate\Support\Collection
-    */
-    public function collection()
-    {
-        return User::all();
+        $sheets = [];
+
+        $headers = Role::all('name')->pluck('name')->toArray();
+
+        foreach ($headers as $header) {
+            $sheets[] = new UserSheet($header);
+        }
+
+        return $sheets;
     }
 }

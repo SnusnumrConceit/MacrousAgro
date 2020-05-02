@@ -13,31 +13,36 @@ use Illuminate\Http\Request;
 |
 */
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
-});
-
-Route::group(['prefix' => 'auth'], function () {
-    Route::post('logout', 'AuthController@logout');
-});
-
-\App\Models\Order::apiRoutes();
+//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+//return $request->user();
+//});
 
 Route::get('category/{category}/products', 'CategoryController@products');
 
 Route::resource('categories', 'CategoryController')->only(['index']);
 
+Route::get('photos/random', 'PhotoController@random');
 Route::resource('photos', 'PhotoController')->only(['index']);
 
+Route::get('videos/random', 'VideoController@random');
 Route::resource('videos', 'VideoController')->only(['index']);
 
+Route::resource('articles', 'ArticleController')->only(['index', 'show']);
+
+
+Route::post('logout', 'AuthController@logout');
+
+\App\Models\Order::apiRoutes();
+
 Route::get('products/search', 'ProductController@index');
+Route::get('products/random', 'ProductController@random');
 Route::resource('products', 'ProductController')->only(['show']);
 
 Route::resource('orders', 'OrderController');
 
 Route::group([
     'prefix' => 'admin',
+    'is' => 'administrator|manager'
 ], function () {
     Route::get('/', function () {
         return view('layouts.admin');
@@ -50,8 +55,10 @@ Route::group([
     Route::get('/articles/search', 'ArticleController@index');
     Route::resource('articles', 'ArticleController');
 
-    \App\User::apiRoutes();
-    Route::resource('users', 'UserController');
+    Route::group(['is' => 'administrator'], function () {
+        \App\User::apiRoutes();
+        Route::resource('users', 'UserController');
+    });
 
     Route::post('videos/upload', 'VideoController@upload');
     Route::post('videos/remove_tmp_video', 'VideoController@removeContent');
@@ -70,5 +77,6 @@ Route::group([
 
 //    Route::patch('/orders/{order_id}/items/{item_id}', 'OrderItemController@update')->name('orders.items.update');
     Route::patch('/order_items/{item_id}', 'OrderItemController@update')->name('orders.items.update');
+    Route::post('/orders/export', 'OrderController@export')->name('orders.export');
     Route::resource('orders', 'OrderController');
 });

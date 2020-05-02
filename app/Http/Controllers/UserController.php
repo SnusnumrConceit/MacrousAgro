@@ -12,12 +12,12 @@ use App\Http\Resources\User\User as UserResource;
 
 class UserController extends Controller
 {
-    public $service, $user;
+    public $userService, $user;
 
     public function __construct(UserService $userService, UserRepo $user)
     {
         $this->user = $user;
-        $this->service = $userService;
+        $this->userService = $userService;
 //        $this->authorizeResource(User::class, 'user');
     }
 
@@ -116,8 +116,14 @@ class UserController extends Controller
         ], 200);
     }
 
+    /**
+     * Экспорт пользователей
+     *
+     * @param Request $request
+     * @return \App\Exports\UsersExport
+     */
     public function export(Request $request)
     {
-        return ;
+        return $this->userService->export();
     }
 }

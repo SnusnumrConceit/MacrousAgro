@@ -7,7 +7,6 @@ use Faker\Generator as Faker;
 
 $factory->define(Video::class, function (Faker $faker) {
     return [
-        'title' => $faker->title,
-        'path' => $faker->url
+        'title' => $faker->firstName
     ];
 });

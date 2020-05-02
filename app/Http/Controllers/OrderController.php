@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Order;
+use App\Services\OrderService;
 use Illuminate\Http\Request;
 use App\Repositories\OrderRepo;
 use App\Http\Resources\Order\OrderDetail;
@@ -12,11 +13,12 @@ use App\Http\Requests\Order\OrderUpdateRequest;
 
 class OrderController extends Controller
 {
-    private $order;
+    private $order, $orderService;
 
-    public function __construct(OrderRepo $order)
+    public function __construct(OrderRepo $order, OrderService $orderService)
     {
         $this->order = $order;
+        $this->orderService = $orderService;
 //        $this->authorizeResource(Order::class, 'order');
     }
 
@@ -112,8 +114,25 @@ class OrderController extends Controller
         ], 200);
     }
 
+    /**
+     * Поиск по заказам
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function search(Request $request)
     {
         return $this->order->search($request);
+    }
+
+    /**
+     * Экспорт заказов
+     *
+     * @param Request $request
+     * @return \App\Exports\OrdersExport
+     */
+    public function export(Request $request)
+    {
+        return $this->orderService->export();
     }
 }

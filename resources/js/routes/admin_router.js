@@ -1,156 +1,197 @@
 import VueRouter from 'vue-router';
+import { store } from '../store/store';
 
-import Categories from '../components/admin/categories/index';
-import CategoryForm from '../components/admin/categories/form';
+import Categories       from '../components/admin/categories/Categories';
+import CategoryEditForm from '../components/admin/categories/CategoryEditForm';
 
-import Articles from '../components/admin/articles/index';
-import ArticleForm from '../components/admin/articles/form';
+import Articles         from '../components/admin/articles/Articles';
+import ArticleEditForm  from '../components/admin/articles/ArticleEditForm';
 
-import Photos from '../components/admin/photos/index';
-import PhotoForm from '../components/admin/photos/form';
+import Photos           from '../components/admin/photos/Photos';
+import PhotoEditForm    from '../components/admin/photos/PhotoEditForm';
 
-import Videos from '../components/admin/videos/index';
-import VideoForm from '../components/admin/videos/form';
+import Videos           from '../components/admin/videos/Videos';
+import VideoEditForm    from '../components/admin/videos/VideoEditForm';
 
-import Users from '../components/admin/users/index';
-import UserForm from '../components/admin/users/form';
+import Users            from '../components/admin/users/Users';
+import UserEditForm     from '../components/admin/users/UserEditForm';
 
-import Products from '../components/admin/products/index';
-import ProductForm from '../components/admin/products/form';
+import Products         from '../components/admin/products/Products';
+import ProductEditForm  from '../components/admin/products/ProductEditForm';
 
-import Order from '../components/admin/orders/index';
-import OrderForm from '../components/admin/orders/form';
+import Orders           from '../components/admin/orders/Orders';
+import OrderEditForm    from '../components/admin/orders/OrderEditForm';
+
+// import admin from '../middleware/admin';
+// import manager from '../middleware/manager';
+// import middlewarePipeline from '../middleware/middlewarePipeline';
 
 const routes = [
-  {
-    path: '/admin/products',
-    name: 'Products',
-    component: Products,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
-  {
-    path: '/admin/products/:id',
-    name: 'ProductForm',
-    component: ProductForm,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
-  {
-    path: '/admin/orders',
-    name: 'Order',
-    component: Order,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
-  {
-    path: '/admin/orders/:id',
-    name: 'OrderForm',
-    component: Order,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
-  {
-    path: '/admin/categories',
-    name: 'Categories',
-    component: Categories,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
-  {
-    path: '/admin/categories/:id',
-    name: 'CategoryForm',
-    component: CategoryForm,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
 
+  /** Articles routes **/
   {
     path: '/admin/articles',
     name: 'Articles',
     component: Articles,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
   },
   {
     path: '/admin/articles/:id',
-    name: 'ArticleForm',
-    component: ArticleForm,
+    name: 'ArticleEditForm',
+    component: ArticleEditForm,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
   },
 
+  /** Categories routes **/
+  {
+    path: '/admin/categories',
+    name: 'Categories',
+    component: Categories,
+    meta: {
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
+  },
+  {
+    path: '/admin/categories/:id',
+    name: 'CategoryEditForm',
+    component: CategoryEditForm,
+    meta: {
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
+  },
+
+  /** Orders routes **/
+  {
+    path: '/admin/orders',
+    name: 'Orders',
+    component: Orders,
+    meta: {
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
+  },
+  {
+    path: '/admin/orders/:id',
+    name: 'OrderEditForm',
+    component: OrderEditForm,
+    meta: {
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
+  },
+
+  /** Photos routes **/
   {
     path: '/admin/photos',
     name: 'Photos',
     component: Photos,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
   },
   {
     path: '/admin/photos/:id',
-    name: 'PhotoForm',
-    component: PhotoForm,
+    name: 'PhotoEditForm',
+    component: PhotoEditForm,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
   },
 
+  /** Products routes **/
+  {
+    path: '/admin/products',
+    name: 'Products',
+    component: Products,
+    meta: {
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
+  },
+  {
+    path: '/admin/products/:id',
+    name: 'ProductEditForm',
+    component: ProductEditForm,
+    meta: {
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
+  },
+
+  /** Videos routes **/
   {
     path: '/admin/videos',
     name: 'Videos',
     component: Videos,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
   },
   {
     path: '/admin/videos/:id',
-    name: 'VideoForm',
-    component: VideoForm,
+    name: 'VideoEditForm',
+    component: VideoEditForm,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator',
+        'manager'
+      ]
+    }
   },
 
+  /** Users routes **/
   {
     path: '/admin/users',
     name: 'Users',
     component: Users,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator'
+      ]
+    }
   },
   {
     path: '/admin/users/:id',
-    name: 'UserForm',
-    component: UserForm,
+    name: 'UserEditForm',
+    component: UserEditForm,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: [
+        'administrator'
+      ]
+    }
   },
 ];
 
@@ -158,6 +199,34 @@ const router = new VueRouter({
   history: true,
   mode: 'history',
   routes
+});
+
+/** Middleware Guard **/
+router.beforeEach((to, from, next) => {
+  if (! to.meta.middleware) {
+    document.location.href = '/';
+  }
+
+  if (to === from) {
+    return;
+  }
+
+  if (! to.meta.middleware.includes(store.state.auth.user.role)) {
+    next('/');
+  } else {
+    next();
+  }
+
+  // const middleware = to.meta.middleware;
+  //
+  // const context = {
+  //   to, from, next, store
+  // };
+  //
+  // return middleware[0]({
+  //   ...context,
+  //   nextMiddleware: middlewarePipeline(context, middleware, 1)
+  // });
 });
 
 export default router;

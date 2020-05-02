@@ -88,6 +88,7 @@ class User extends Authenticatable
     public static function apiRoutes()
     {
         Route::group(['prefix' => 'users'], function () {
+            Route::post('export', 'UserController@export')->name('users.export');
             Route::get('search', 'UserController@index');
             Route::get('customers', function () {
                 return self::all();

@@ -2,16 +2,16 @@
 
 namespace App\Http\Controllers;
 
-use App\Http\Resources\Product\ProductCollection;
 use App\Models\Product;
 use App\Models\Category;
+use App\Traits\Mediable;
 use App\Services\MediaService;
 use App\Repositories\ProductRepo;
-use App\Traits\Mediable;
 use Illuminate\Http\Request;
+use App\Http\Resources\Product\ProductDetail;
+use App\Http\Resources\Product\ProductCollection;
 use App\Http\Requests\Product\ProductStoreRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
-use App\Http\Resources\Product\ProductDetail;
 
 class ProductController extends Controller
 {
@@ -136,6 +136,21 @@ class ProductController extends Controller
         return response()->json([
             'status' => 'success',
             'msg' => __('products.response.messages.deleted')
+        ], 200);
+    }
+
+    /**
+     * Получение списка случайных товаров для лэндинга
+     *
+     * @param Request $request
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function random(Request $request)
+    {
+        $products = Product::inRandomOrder()->paginate();
+
+        return response()->json([
+            'products' => new ProductCollection($products)
         ], 200);
     }
 }

@@ -60,4 +60,16 @@ class Article extends Model
     {
         return $this->updated_at->format('d.m.Y H:i:s');
     }
+
+    /**
+     * Вывод опубликованных статей
+     *
+     * @param $query
+     * @return mixed
+     */
+    public function scopePublicated($query)
+    {
+        return $query->where('is_publicated', '=', 1)
+            ->where('publication_date', '<', now()->format('Y-m-d H:i:s'));
+    }
 }

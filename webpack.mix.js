@@ -15,3 +15,9 @@ mix.js('resources/js/app.js', 'public/js')
    .sass('resources/sass/app.scss', 'public/css');
 
 mix.js('resources/js/admin.js', 'public/js');
+
+if (mix.inProduction()) {
+  mix.version();
+}
+
+// mix.browserSync(process.env.APP_URL);

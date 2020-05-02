@@ -23,9 +23,9 @@ import Vue from 'vue';
 // const files = require.context('./', true, /\.vue$/i)
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
-Vue.component('example-component', require('./components/ExampleComponent.vue').default);
+Vue.component('errors', require('./components/common/Errors.vue').default);
 // import Admin from './components/admin/admin';
-import Dashboard from './components/dashboard/dashboard';
+import Dashboard from './components/dashboard/Dashboard';
 
 import VueSweetalert2 from "vue-sweetalert2";
 import 'sweetalert2/dist/sweetalert2.min.css';

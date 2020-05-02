@@ -15,6 +15,14 @@ return [
         ]
     ],
 
+    'export' => [
+        'headings' => [
+            'full_name' => 'ФИО',
+            'email' => 'Email',
+            'birthday' => 'Дата рождения'
+        ]
+    ],
+
     'validation' => [
         'attributes' => [
             'last_name' => 'Фамилия',

@@ -18,7 +18,7 @@ class Photo extends Model
         'max_height' => 1024
     ];
 
-    protected $perPage = 7;
+    protected $perPage = 15;
 
     protected $fillable = ['title'];
 }

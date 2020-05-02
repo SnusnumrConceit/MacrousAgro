@@ -15,6 +15,24 @@ return [
         ]
     ],
 
+    'statuses' => [
+        'created' => 'создан',
+        'canceled' => 'отменён',
+        'payed' => 'оплачен',
+        'delivery' => 'отправлен',
+        'completed' => 'завершён'
+    ],
+
+    'export' => [
+        'headings' => [
+            'id' => '№',
+            'customer' => 'Покупатель',
+            'status' => 'Статус',
+            'price' => 'Стоимость',
+            'created_at' => 'Дата заказа'
+        ]
+    ],
+
     'validation' => [
         'attributes' => [
             'products' => 'Товары',

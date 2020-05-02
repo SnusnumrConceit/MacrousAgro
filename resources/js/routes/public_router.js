@@ -1,71 +1,98 @@
 /** Dashboard Routes **/
 import VueRouter from 'vue-router';
 
-import Dashboard from '../components/dashboard/dashboard';
-import Cabinet from '../components/dashboard/cabinet';
-import ProductDetail from '../components/dashboard/product/detail';
-import CategoryProducts from '../components/dashboard/product/products';
-import DashboardPhotos from '../components/dashboard/photos';
-import DashboardVideos from '../components/dashboard/videos';
+import Landing from '../components/dashboard/Landing';
+import Cabinet from '../components/dashboard/Cabinet';
 
-import Login from '../components/auth/login';
-import Registration from '../components/auth/registration';
+import CategoryProducts from '../components/dashboard/product/Products';
+import ProductDetail from '../components/dashboard/product/ProductDetail';
+
+import DashboardPhotos from '../components/dashboard/Photos';
+import DashboardVideos from '../components/dashboard/Videos';
+
+import DashboardArticles from '../components/dashboard/articles/Articles';
+import DashboardArticle from '../components/dashboard/articles/Article';
+
+import {store} from "../store/store";
+
+// import customer from '../middleware/customer';
+import middlewarePipeline from '../middleware/middlewarePipeline';
 
 const routes = [
   {
-    path: '/login',
-    name: 'Login',
-    component: Login
+    path: '/',
+    name: 'Landing',
+    component: Landing,
+    beforeEnter: null
   },
-  // {
-  //   path: '/',
-  //   name: 'Dashboard',
-  //   component: Dashboard,
-  //   beforeEnter: null
-  // },
+  /** Articles routes **/
+  {
+    path: '/articles',
+    name: 'DashboardArticles',
+    component: DashboardArticles,
+    meta: {
+      middleware: null
+    }
+  },
+  {
+    path: '/articles/:id',
+    name: 'DashboardArticle',
+    component: DashboardArticle,
+    meta: {
+      middleware: null
+    }
+  },
+
+  /** Cabinet routes **/
   {
     path: '/cabinet',
     name: 'Cabinet',
     component: Cabinet,
     meta: {
-      auth: undefined // true
+      middleware: [
+        'customer'
+      ]
     },
-    beforeEnter: null
   },
-  {
-    path: '/products/:id',
-    name: 'ProductDetail',
-    component: ProductDetail,
-    meta: {
-      auth: undefined
-    },
-    beforeEnter: null
-  },
+
+  /** Categories routes **/
   {
     path: '/categories/:category_id/products',
     name: 'CategoryProducts',
     component: CategoryProducts,
     meta: {
-      auth: undefined
-    },
+      middleware: null
+    }
   },
+
+  /** Photos routes **/
   {
     path: '/photos',
     name: 'DashboardPhotos',
     component: DashboardPhotos,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: null
+    }
   },
+
+  /** Products routes **/
+  {
+    path: '/products/:id',
+    name: 'ProductDetail',
+    component: ProductDetail,
+    meta: {
+      middleware: null
+    }
+  },
+
+  /** Videos routes **/
   {
     path: '/videos',
     name: 'DashboardVideos',
     component: DashboardVideos,
     meta: {
-      auth: undefined
-    },
-    beforeEnter: null
+      middleware: null
+    }
   }
 ];
 
@@ -73,6 +100,34 @@ const router = new VueRouter({
   history: true,
   mode: 'history',
   routes
+});
+
+/** Middleware Guard **/
+router.beforeEach((to, from, next) => {
+  if (!to.meta.middleware) {
+    return next();
+  }
+
+  if (to === from) {
+    return;
+  }
+
+  if (! store.state.auth.user || ! to.meta.middleware.includes(store.state.auth.user.role)) {
+    next('/');
+  } else {
+    next();
+  }
+
+  // const middleware = to.meta.middleware;
+  //
+  // const context = {
+  //   to, from, next, store
+  // };
+  //
+  // return middleware[0]({
+  //   ...context,
+  //   nextMiddleware: middlewarePipeline(context, middleware, 1)
+  // });
 });
 
 export default router;
