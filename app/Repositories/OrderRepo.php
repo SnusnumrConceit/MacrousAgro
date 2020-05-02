@@ -5,10 +5,18 @@ namespace App\Repositories;
 
 use App\Models\Order;
 use Illuminate\Http\Request;
+use App\Services\OrderService;
 
 
 class OrderRepo
 {
+    private $orderService;
+
+    public function __construct(OrderService $orderService)
+    {
+        $this->orderService = $orderService;
+    }
+
     /**
      * List of orders in storage
      *
@@ -43,21 +51,14 @@ class OrderRepo
      */
     public function store(array $orderData) : void
     {
-        $amountPrice = $this->countOrderPrice($orderData['products']);
+        $amountPrice = $this->orderService->countOrderPrice($orderData['products']);
 
         $order = Order::create([
-            'user_id' => 36, // TODO убрать хардкод и добавить auth()->id()
+            'user_id' => auth()->id,
             'order_status_code' => Order::STATUS_CREATED
         ]);
 
-        // TODO нарушение SPR - вынести в OrderService
-        $products = array_map(function ($product) use ($order) {
-            return [
-                'product_id' => $product['id'],
-                'order_id' => $order->id,
-                'order_item_status_code' => $order->order_status_code
-            ];
-        }, $orderData['products']);
+        $products = $this->orderService->prepareOrderPositions($orderData['products'], $order);
 
         $order->positions()->createMany($products);
 
@@ -65,23 +66,6 @@ class OrderRepo
             'payment_amount' => $amountPrice,
             'invoice_status_code' => 1
         ]);
-    }
-
-    /**
-     * Get total price of order
-     *
-     * @param array $products
-     * @return int
-     */
-    private function countOrderPrice(array $products) // TODO нарушение SPR - вынести в OrderService
-    {
-        $summa = 0;
-
-        foreach ($products as $product) {
-            $summa += $product['price'];
-        }
-
-        return $summa;
     }
 
     /**

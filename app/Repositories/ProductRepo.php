@@ -40,28 +40,6 @@ class ProductRepo
         });
 
         return $products->latest()->paginate();
-
-//        return response()->json([
-//            'products' => Product::paginate(15)
-//        ], 200);
-    }
-
-    // TODO нужно ли оно? мб объединить с Index
-    public function search(Request $request)
-    {
-        $products = Product::query();
-
-        $products->when('title', function ($q) use ($request) {
-            return $q->where('name', 'LIKE', '%' . $request->title . '%');
-        });
-
-        $products->when('created_at', function ($q) use ($request) {
-            return $q->whereBetween('created_at', [$request->created_at . ' 00:00', $request->created_at . ' 23:59']);
-        });
-
-        return response()->json([
-            'products' => new ProductCollection($products->paginate(15))
-        ], 200);
     }
 
     /**
