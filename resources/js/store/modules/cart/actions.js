@@ -1,4 +1,4 @@
-import axios from 'axios';
+const translate = (string) => app[0].__vue__.$t(string);
 
 /**
  * Получение списка заказов
@@ -7,21 +7,21 @@ import axios from 'axios';
  * @param commit
  * @returns {Promise<void>}
  */
-
-// TODO передавать параметр status, чтобы можно было фильтровать заказы - одна переменная на обработку и завершённые
-const getOrders = async ({state, commit}) => {
+const getOrders = async ({state, commit, dispatch}) => {
   try {
-    commit('SET_CART_LOADING', true);
-    const response = await axios.get(`/api/cart/orders`, {
+    commit('SET_CART_ORDERS_LOADING', true);
+
+    dispatch('auth/getCSRFCookies', null, {root: true});
+
+    const response = await axios.get(`/cart/orders`, {
       page: state.pagination.page
     });
 
-    commit('SET_CARD_ORDERS', response.data.orders);
-    commit('SET_CARD_ORDERS_LAST_PAGE', response.data.orders.last_page);
+    commit('SET_CART_ORDERS', response.data);
   } catch (e) {
 
   } finally {
-    commit('SET_CART_LOADING', false);
+    commit('SET_CART_ORDERS_LOADING', false);
   }
 };
 
@@ -51,16 +51,19 @@ const addToCart = ({state, commit}, product) => {
 
   order.title = crypto.getRandomValues(new Uint8Array(12)).toString();
 
+  console.log(order, product);
   if (validateOrderExisting(order, product)) {
     return false;
   }
 
-  order.products.push(product);
+  order.positions.push({product: product});
   order.price += parseInt(product.price);
 
   updateLocalStorageOrder(order);
 
   commit('SET_CART_ORDER', order);
+
+  commit('notifications/SHOW_NOTIFICATION', {type: 'success', message: translate('orders.added')}, {root: true})
 };
 
 /**
@@ -71,14 +74,16 @@ const addToCart = ({state, commit}, product) => {
  * @param product
  * @param total
  */
-const removeFromCart = ({state, commit}, product, total = false) => {
+const removeFromCart = ({state, commit}, {product, total = false}) => {
   let order = state.order;
 
-  order.products = total ? order.products.filter(orderProduct => orderProduct.id !== product.id) : [];
+  order.positions = total ? order.positions.filter(position => position.product.id !== product.id) : [];
 
-  order.price = order.products.length  ? order.price - parseInt(product.price) : 0;
+  order.price = order.positions.length  ? order.price - parseInt(product.price) : 0;
 
   commit('SET_CART_ORDER', order);
+
+  commit('notifications/SHOW_NOTIFICATION', {type: 'success', message: translate('orders.removed')}, {root: true})
 };
 
 /**
@@ -88,17 +93,22 @@ const removeFromCart = ({state, commit}, product, total = false) => {
  * @param commit
  * @returns {Promise<void>}
  */
-const createOrder = async ({state, commit}) => {
+const createOrder = async ({state, commit, dispatch}) => {
   try {
     commit('SET_CART_ORDERS_LOADING', true);
-    console.log(state.order);
-    const response = await axios.post('/api/orders', {...state.order});
-    console.log('i m here');
-    console.log(response);
 
-    // removeOrder({commit});
+    console.log(state.order.positions);
+    let products = state.order.positions.map(position => position.product.id);
+    console.log(products, 'products');
+    const response = await axios.post('/orders', {products: products});
+
+    commit('notifications/SHOW_NOTIFICATION', {type: 'success', message: response.data.message}, {root: true})
+    dispatch('removeOrder');
+
+    dispatch('getOrders');
 
   } catch (e) {
+    commit('errors/SET_ERRORS', e.response.data.message, {root:true});
     console.error(e.message);
   } finally {
     commit('SET_CART_ORDERS_LOADING', false);
@@ -114,7 +124,7 @@ const removeOrder = ({commit}) => {
  commit('SET_CART_ORDER', {
    price: 0,
    title: '',
-   products: []
+   positions: []
  });
 };
 
@@ -146,7 +156,7 @@ const cancelOrder = async ({state, commit}, id) => {
  * @returns {*}
  */
 const validateOrderExisting = (order, product) => {
-  return order.products.some(orderProduct => orderProduct.name === product.name);
+  return order.positions.some(orderProduct => orderProduct.name === product.name);
 };
 
 /**

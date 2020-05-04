@@ -32,9 +32,11 @@ const logout = async ({commit}) => {
 
     commit('LOGOUT');
 
+    commit('cart/SET_CART_ORDER', {positions: [], price: 0}, {root: true});
+
     document.location.href = '/';
   } catch (e) {
-    commit('errors/SET_ERRORS', e.response.data.errors || e.response.data.message, {root: true});
+    commit('errors/SET_ERRORS', e.message || e.response.data.errors || e.response.data.message, {root: true});
   }
 };
 
@@ -59,5 +61,6 @@ const getUser = async () => {
 export default {
   login,
   logout,
-  register
+  register,
+  getCSRFCookies
 }

@@ -38,8 +38,6 @@ Route::get('products/search', 'ProductController@index');
 Route::get('products/random', 'ProductController@random');
 Route::resource('products', 'ProductController')->only(['show']);
 
-Route::resource('orders', 'OrderController');
-
 Route::group([
     'prefix' => 'admin',
     'is' => 'administrator|manager'

@@ -6,7 +6,7 @@ const state = {
   orders: [],
 
   order: {
-    products: [],
+    positions: [],
     price: 0,
     title: ''
   },

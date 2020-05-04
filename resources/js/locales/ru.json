@@ -104,9 +104,27 @@
     }
   },
   "orders": {
+    "orders": "Заказы",
+    "no_orders": "Заказы отсутствуют",
+    "no_products": "Товары в заказе отсутствуют",
+    "amount_price": "Итого: {price} ₽",
+    "number": "Заказ #{id}",
+
+    "added": "Товар успешно добавлен",
+    "removed": "Товар успешно удалён",
+
     "table": {
-      "header": "Заказы"
+      "headers": {
+        "title": "Наименование",
+        "price": "Стоимость"
+      }
     },
+
+    "buttons": {
+      "pay": "Оплатить",
+      "cancel": "Отменить"
+    },
+
     "form": {
       "header": "Создание заказа",
       "labels": {
@@ -116,12 +134,19 @@
         "product":     "Товар"
       }
     },
+
     "statuses": {
-      "created": "Создан",
-      "canceled": "Отменён",
-      "payed": "Оплачен",
-      "delivery": "Отправлен",
+      "created":   "Создан",
+      "canceled":  "Отменён",
+      "payed":     "Оплачен",
+      "delivery":  "Отправлен",
       "completed": "Завершён"
+    },
+
+    "tabs": {
+      "pre_order": "На оформлении",
+      "active":    "Активные",
+      "completed": "Завершённые"
     }
   },
   "videos": {

@@ -25,6 +25,8 @@ class Order extends Model
     /**
      * Покупатель заказа
      *
+     * Customer
+     *
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
     public function customer()
@@ -34,6 +36,8 @@ class Order extends Model
 
     /**
      * Позиции заказа
+     *
+     * Positions
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
@@ -45,6 +49,8 @@ class Order extends Model
     /**
      * Счёт-наряд
      *
+     * Invoice
+     *
      * @return \Illuminate\Database\Eloquent\Relations\HasOne
      */
     public function invoice()
@@ -53,9 +59,56 @@ class Order extends Model
     }
 
     /**
+     * Активные заказы
+     *
+     * Active orders
+     *
+     * @param $q
+     * @return mixed
+     */
+    public function scopeActive($q)
+    {
+        return $q->where(function($q) {
+            return $q->where(['order_status_code' => self::STATUS_CREATED])
+                ->orWhere(['order_status_code' => self::STATUS_PAYED])
+                ->orWhere(['order_status_code' => self::STATUS_DELIVERY]);
+        });
+    }
+
+    /**
+     * Завершённые заказы
+     *
+     * Completed orders
+     *
+     * @param $q
+     * @return mixed
+     */
+    public function scopeCompleted($q)
+    {
+        return $q->where(['order_status_code' => self::STATUS_COMPLETED])
+            ->orWhere(['order_status_code' => self::STATUS_CANCELED]);
+    }
+
+    /**
+     * Отменённые заказы
+     *
+     * Canceled orders
+     *
+     * @param $q
+     * @return mixed
+     */
+    public function scopeCanceled($q)
+    {
+        return $q->where(['order_status_code' => self::STATUS_CANCELED]);
+    }
+
+    /**
      * Получение статусов
      *
+     * Get list of the order statuses
+     *
      * @return array
+     * @throws \ReflectionException
      */
     public static function getStatuses()
     {
@@ -63,7 +116,9 @@ class Order extends Model
     }
 
     /**
-     * Получение списка констант
+     * Получение списка констант по префиксу
+     *
+     * Get list of the constants by prefix
      *
      * @param string $prefix
      * @return array
@@ -81,6 +136,8 @@ class Order extends Model
     /**
      * Дата создания заказа для отображения
      *
+     * Display created_at date in not UTC format
+     *
      * @return string in date format: d.m.Y H:i:s
      */
     public function getDisplayCreatedAtAttribute()
@@ -91,6 +148,8 @@ class Order extends Model
     /**
      * Дата обновления заказа для отображения
      *
+     * Display updated_at date in not UTC format
+     *
      * @return string in date format: d.m.Y H:i:s
      */
     public function getDisplayUpdatedAtAttribute()
@@ -100,6 +159,8 @@ class Order extends Model
 
     /**
      * Список API-маршрутов
+     *
+     * API-routes
      *
      * @return \Route
      */

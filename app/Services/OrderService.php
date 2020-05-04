@@ -5,6 +5,7 @@ namespace App\Services;
 
 use App\Models\Order;
 use App\Exports\OrdersExport;
+use App\Models\Product;
 
 class OrderService
 {
@@ -26,13 +27,7 @@ class OrderService
      */
     public function countOrderPrice(array $products)
     {
-        $summa = 0;
-
-        foreach ($products as $product) {
-            $summa += $product['price'];
-        }
-
-        return $summa;
+        return Product::whereIn('id', $products)->sum('price');
     }
 
     /**
@@ -44,9 +39,9 @@ class OrderService
      */
     public function prepareOrderPositions(array $products, Order $order)
     {
-        return array_map(function ($product) use ($order) {
+        return array_map(function ($product_id) use ($order) {
             return [
-                'product_id' => $product['id'],
+                'product_id' => $product_id,
                 'order_id' => $order->id,
                 'order_item_status_code' => $order->order_status_code
             ];

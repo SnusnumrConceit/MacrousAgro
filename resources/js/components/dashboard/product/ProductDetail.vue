@@ -17,7 +17,7 @@
                         {{ product.price }} руб.
                     </h3>
                     <v-card-actions>
-                        <v-btn outlined color="success" @click="addToCart(product)">
+                        <v-btn outlined color="success" @click="addToCart(product)" v-if="isCustomer">
                             В корзину
                         </v-btn>
                         <v-btn outlined color="default" @click="$router.go(-1)">
@@ -46,6 +46,10 @@
     },
 
     computed: {
+      ...mapGetters('auth', {
+        'isCustomer': 'isCustomer'
+      }),
+
       ID() {
         return this.$route.params.id;
       }

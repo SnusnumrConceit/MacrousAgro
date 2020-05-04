@@ -15,6 +15,13 @@ Route::get('/', function () {
     return view('welcome');
 });
 
+Route::get('/uo', 'OrderController@getUserOrders');
+
+Route::group(['is' => 'customer'], function () {
+    Route::get('/cart/orders', 'OrderController@getUserOrders');
+    Route::resource('orders', 'OrderController')->only('store');
+});
+
 Route::group(['namespace' => 'Api'], function () {
     Route::post('/login', 'AuthController@login');
     Route::post('/register', 'AuthController@register');
