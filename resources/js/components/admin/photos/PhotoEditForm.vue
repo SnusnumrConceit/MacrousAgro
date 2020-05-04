@@ -75,8 +75,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -84,12 +96,12 @@
        *
        * @returns {Promise<boolean>}
        */
-      async loadData() {
+      async getPhoto() {
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/photos/${this.id}/edit`);
           this.photo = response.data.photo;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error', e.response.data.msg, 'error'));
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -101,8 +113,8 @@
       async remove() {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${this.id}`);
-          this.loadData();
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.getPhoto();
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
           this.setErrors( e.response.data.error);
@@ -117,7 +129,7 @@
       async save() {
         try {
           const response = await axios.put(`${this.$attrs.apiRoute}/photos/${this.id}`, this.photo);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
           this.setErrors(e.response.data.error);
@@ -138,7 +150,7 @@
       async initData() {
         this.loading = true;
 
-        await this.loadData();
+        await this.getPhoto();
 
         this.loading = false;
       }
@@ -148,6 +160,10 @@
       if (this.id) {
         this.initData();
       }
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

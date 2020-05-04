@@ -10,7 +10,7 @@ class ApiErrorMessageException extends Exception
     {
         return response()->json([
             'status' => 'error',
-            'msg'    => $exception->getMessage()
+            'message'    => $exception->getMessage()
         ]);
     }
 }

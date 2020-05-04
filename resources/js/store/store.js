@@ -10,17 +10,19 @@ import createPersistedState from "vuex-persistedstate";
 // const database = new VuexORM.Database;
 // database.register(Category);
 
-import category from './modules/categories/index';
-import cart     from './modules/cart/index';
-import auth     from './modules/auth/index';
-import errors   from './modules/errors/index';
+import auth          from './modules/auth/index';
+import cart          from './modules/cart/index';
+import category      from './modules/categories/index';
+import errors        from './modules/errors/index';
+import notifications from './modules/notifications/index';
 
 export const store = new Vuex.Store({
   modules: {
-    category,
-    cart,
     auth,
-    errors
+    cart,
+    category,
+    errors,
+    notifications
   },
 
   plugins: [

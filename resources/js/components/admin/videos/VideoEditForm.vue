@@ -77,8 +77,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -92,7 +104,7 @@
 
           this.video = response.data.video;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error', e.response.data.msg, 'error'));
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -104,7 +116,8 @@
       async remove() {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${this.id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
           this.setErrors(e.response.data.error);
@@ -119,10 +132,11 @@
       async save() {
         try {
           const response = await axios.put(`${this.$attrs.apiRoute}/videos/${this.id}`, this.video);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.errors = e.response.data.error;
+          this.setErrors(e.response.data.error);
         }
       },
 
@@ -152,6 +166,10 @@
       if (this.id !== undefined) {
         this.initData();
       }
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

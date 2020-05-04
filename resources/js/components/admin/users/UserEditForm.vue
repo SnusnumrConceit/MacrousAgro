@@ -175,8 +175,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -185,17 +197,12 @@
        * @returns {Promise<void>}
        */
       async getUser() {
-        this.loading = true;
-        const response = await axios.get(`${this.$attrs.apiRoute}/users/${this.id}/edit`);
-
-        if (response.data.status === 'error' || response.status !== 200) {
-          this.$swal(this.$t('swal.title.error', response.data.msg, 'error'));
-          this.loading = false;
-          return false;
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/users/${this.id}/edit`);
+          this.user = response.data.user;
+        } catch (e) {
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
-
-        this.user = response.data.user;
-        this.loading = false;
       },
 
       /**
@@ -208,7 +215,8 @@
           const response = await axios.put(`${this.$attrs.apiRoute}/users/${this.id}`, {
             ...this.user
           });
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
           this.setErrors(e.response.data.errors);
@@ -223,10 +231,11 @@
       async remove() {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/users/${this.id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -243,7 +252,11 @@
        * @returns {Promise<void>}
        */
       async initData() {
+        this.loading = true;
+
         await this.getUser();
+
+        this.loading = false;
       }
     },
     
@@ -266,6 +279,10 @@
       if (this.id) {
         this.initData();
       }
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

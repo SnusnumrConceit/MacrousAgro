@@ -22,6 +22,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Список категорий
+     *
      * Get list of categories from storage
      *
      * @param Request $request
@@ -39,6 +41,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Сохранение категории
+     *
      * Store a newly created category in storage.
      *
      * @param CategoryStoreRequest $request
@@ -51,11 +55,13 @@ class CategoryController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('categories.response.messages.created')
+            'message' => __('categories.response.messages.created')
         ], 200);
     }
 
     /**
+     * Информация о категории
+     *
      * Display the category.
      *
      * @param  \App\Models\Category  $category
@@ -69,6 +75,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Форма редактироания категории
+     *
      * Show the form for editing the category.
      *
      * @param  \App\Models\Category  $category
@@ -82,6 +90,8 @@ class CategoryController extends Controller
     }
 
     /**
+     * Обновление категории
+     *
      * Update the category in storage.
      *
      * @param CategoryStoreRequest $request
@@ -95,11 +105,13 @@ class CategoryController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('categories.response.messages.updated')
+            'message' => __('categories.response.messages.updated')
         ], 200);
     }
 
     /**
+     * Удаление категории
+     *
      * Remove the category from storage.
      *
      * @param Category $category
@@ -112,11 +124,13 @@ class CategoryController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('categories.response.messages.deleted')
+            'message' => __('categories.response.messages.deleted')
         ], 200);
     }
 
     /**
+     * Получить товары категорий
+     *
      * Get products of category
      *
      * @param Category $category

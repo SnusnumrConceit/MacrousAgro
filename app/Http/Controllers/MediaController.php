@@ -92,7 +92,7 @@ class MediaController extends Controller
         (new $model)->remove($media, $request->path);
 
         return response()->json([
-            'msg' => "Медиа-объект $media->filename успешно удалён"
+            'message' => "Медиа-объект $media->filename успешно удалён"
         ], 200);
     }
 }

@@ -22,6 +22,8 @@ class UserController extends Controller
     }
 
     /**
+     * Список пользователей
+     *
      * Display a listing of the users.
      *
      * @param Request $request
@@ -38,6 +40,8 @@ class UserController extends Controller
     }
 
     /**
+     * Сохранение пользователя
+     *
      * Store a newly created user in storage.
      *
      * @param UserStoreRequest $request
@@ -50,12 +54,14 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('users.response.messages.created')
+            'message' => __('users.response.messages.created')
         ]);
 
     }
 
     /**
+     * Информация о пользователе
+     *
      * Display the specified user.
      *
      * @param User $user
@@ -69,6 +75,8 @@ class UserController extends Controller
     }
 
     /**
+     * Форма редактирования пользователя
+     *
      * Show the form for editing the user.
      *
      * @param User $user
@@ -95,11 +103,13 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('users.response.messages.updated')
+            'message' => __('users.response.messages.updated')
         ], 200);
     }
 
     /**
+     * Удаление пользователя
+     *
      * Remove the user from storage.
      *
      * @param User $user
@@ -112,12 +122,14 @@ class UserController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('users.response.messages.deleted')
+            'message' => __('users.response.messages.deleted')
         ], 200);
     }
 
     /**
      * Экспорт пользователей
+     *
+     * Export listing of the users
      *
      * @param Request $request
      * @return \App\Exports\UsersExport

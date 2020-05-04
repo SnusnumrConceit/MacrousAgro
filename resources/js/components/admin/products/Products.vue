@@ -329,8 +329,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -355,11 +367,14 @@
             }
           });
 
-          this.products = (this.pagination.page === 1) ? response.data.products.data : this.products.concat(response.data.products.data);
+          this.products = (this.pagination.page === 1)
+              ? response.data.products.data
+              : this.products.concat(response.data.products.data);
+
           this.pagination.last_page = response.data.products.last_page;
           this.pagination.total = response.data.products.total;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         } finally {
           this.loading = false;
         }
@@ -376,7 +391,7 @@
 
           this.categories = response.data.categories;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -399,7 +414,10 @@
             category: vm.search.category
           }
         }).then(response => {
-          vm.products = (vm.pagination.page === 1) ? response.data.products.data : vm.products.concat(response.data.products.data);
+          vm.products = (vm.pagination.page === 1)
+              ? response.data.products.data
+              : vm.products.concat(response.data.products.data);
+
           vm.pagination.last_page = response.data.products.last_page;
           vm.pagination.total = response.data.products.total;
         }).catch(error => console.error(error));
@@ -415,10 +433,10 @@
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/products/${id}`);
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.products = this.products.filter(product => product.id !== id);
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -445,7 +463,7 @@
               }
           );
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.getProducts();
 
           this.resetForm();

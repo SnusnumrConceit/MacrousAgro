@@ -336,10 +336,21 @@
     },
 
     methods: {
-        ...mapActions('errors', {
-          'setErrors': 'setErrors',
-          'resetErrors': 'resetErrors'
-        }),
+      /**
+       * Показ ошибок в форме
+       */
+      ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
+        'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
+      }),
 
       async save() {
         try {
@@ -347,7 +358,7 @@
             order: this.order
           });
 
-          this.$swal('Успешно!', response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
         } catch (e) {
           this.setErrors(e.response.data.error);
         }
@@ -359,21 +370,39 @@
         this.resetErrors();
       },
 
+      /**
+       * Получить список статус кодов
+       */
       async getStatusCodes() {
-        const response = await axios.get('/api/order_status_codes');
-        this.status_codes = response.data;
+        try {
+          const response = await axios.get('/api/order_status_codes');
+          this.status_codes = response.data;
+        } catch (e) {
+          this.showNotification({ type: 'error', message: e.data.message});
+        }
       },
 
+      /**
+       * Получить список заказов
+       *
+       */
       async getOrders() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/orders`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
 
-        this.orders = (this.pagination.page === 1) ? response.data.orders.data : this.orders.concat(response.data.orders.data);
-        this.pagination.last_page = response.data.orders.last_page;
-        this.pagination.total = response.data.orders.total;
+          this.orders = (this.pagination.page === 1)
+              ? response.data.orders.data
+              : this.orders.concat(response.data.orders.data);
+
+          this.pagination.last_page = response.data.orders.last_page;
+          this.pagination.total = response.data.orders.total;
+        } catch (e) {
+          this.showNotification({ type: 'error', message: e.data.message});
+        }
       },
 
       /**
@@ -392,6 +421,8 @@
           link.setAttribute('download', 'orders.xlsx');
           document.body.appendChild(link);
           link.click();
+        }).catch(e => {
+          this.showNotification({ type: 'error', message: e.data.message});
         });
       },
 
@@ -562,9 +593,11 @@
       this.$on('fetch-order-detail', this.getOrderDetail);
 
       this.$on('clear-modal', this.clearOrderDetail);
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
-
-
   }
 </script>
 

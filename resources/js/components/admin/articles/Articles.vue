@@ -344,9 +344,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
-        'setErrors': 'setErrors',
-        'resetErrors': 'resetErrors'
+        'resetErrors': 'resetErrors',
+        'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -355,7 +366,6 @@
       onUploadImage(image) {
         this.article.image = image;
       },
-
 
       /**
        * Инициализация данных для компонента
@@ -380,12 +390,16 @@
             }
           });
 
-          this.articles = (this.pagination.page === 1) ? response.data.articles.data : this.articles.concat(response.data.articles.data);
+          this.articles = (this.pagination.page === 1)
+              ? response.data.articles.data
+              : this.articles.concat(response.data.articles.data);
+
           this.pagination.total = response.data.articles.total;
           this.pagination.last_page = response.data.articles.last_page;
+
           this.loading = false;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -398,10 +412,11 @@
       async remove(id) {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.articles = this.articles.filter((article) => article.id !== id);
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -451,7 +466,7 @@
               }
           );
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.getArticles();
 
           this.resetForm();
@@ -559,7 +574,7 @@
     },
 
     beforeDestroy() {
-      this.isDestroying = true;
+      this.hideNotification();
     }
   }
 </script>

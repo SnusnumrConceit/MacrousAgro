@@ -1,5 +1,6 @@
 <template>
     <v-app dark>
+        <notification></notification>
         <navigation></navigation>
         <v-content fluid>
             <v-container fluid cols="12">

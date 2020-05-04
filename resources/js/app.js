@@ -24,6 +24,7 @@ import Vue from 'vue';
 // files.keys().map(key => Vue.component(key.split('/').pop().split('.')[0], files(key).default))
 
 Vue.component('errors', require('./components/common/Errors.vue').default);
+Vue.component('notification', require('./components/common/Notification.vue').default);
 // import Admin from './components/admin/admin';
 import Dashboard from './components/dashboard/Dashboard';
 

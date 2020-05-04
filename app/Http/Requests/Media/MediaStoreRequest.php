@@ -98,7 +98,7 @@ class MediaStoreRequest extends FormRequest
     {
         throw (new ValidationException($validator, response()->json([
             'status' => 'error',
-            'msg' => __('form_request_validation_failed_error'),
+            'message' => __('form_request_validation_failed_error'),
             'error' => $validator->errors()
         ], 500)));
     }

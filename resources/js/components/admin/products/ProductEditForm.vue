@@ -137,8 +137,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -155,12 +167,12 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getProduct() {
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/products/${this.ID}/edit`);
           this.product = response.data.product;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -175,7 +187,7 @@
 
           this.categories = response.data.categories;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -188,10 +200,10 @@
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/products/${this.ID}`);
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -220,7 +232,7 @@
               }
           );
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
           this.setErrors(e.response.data.error);
@@ -244,7 +256,7 @@
 
         await this.loadCategories();
 
-        await this.loadData();
+        await this.getProduct();
 
         this.loading = false;
       }
@@ -252,6 +264,10 @@
 
     created() {
       this.initData();
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
 
   }

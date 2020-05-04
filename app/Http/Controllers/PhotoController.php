@@ -23,6 +23,8 @@ class PhotoController extends Controller
     }
 
     /**
+     * Список фотографий
+     *
      * Display a listing of the photos.
      *
      * @param Request $request
@@ -38,6 +40,8 @@ class PhotoController extends Controller
     }
 
     /**
+     * СОздание фотографии
+     *
      * Store a newly created photo in storage.
      *
      * @param PhotoStoreRequest $request
@@ -53,11 +57,13 @@ class PhotoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('photos.response.messages.created')
+            'message' => __('photos.response.messages.created')
         ], 200);
     }
 
     /**
+     * Информация о фотографии
+     *
      * Display the photo.
      *
      * @param  \App\Models\Photo  $photo
@@ -71,6 +77,8 @@ class PhotoController extends Controller
     }
 
     /**
+     * Форма редактирование фотографии
+     *
      * Show the form for editing the photo.
      *
      * @param  \App\Models\Photo  $photo
@@ -84,6 +92,8 @@ class PhotoController extends Controller
     }
 
     /**
+     * Обновление фотографии
+     *
      * Update the photo in storage.
      *
      * @param  PhotoUpdateRequest  $request
@@ -96,12 +106,12 @@ class PhotoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('photos.response.messages.updated')
+            'message' => __('photos.response.messages.updated')
         ], 200);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Удаление фотографии
      *
      * @param Photo $photo
      * @return JsonResponse
@@ -115,12 +125,14 @@ class PhotoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('photos.response.messages.deleted')
+            'message' => __('photos.response.messages.deleted')
         ], 200);
     }
 
     /**
      * Получение случайных фотографий для лэндинга
+     *
+     * Display a random listing of the photos for landing page.
      *
      * @param Request $request
      * @return JsonResponse

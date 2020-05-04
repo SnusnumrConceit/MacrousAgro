@@ -12,7 +12,7 @@ use Route;
 
 class User extends Authenticatable
 {
-    use HasRole;
+    use HasRole, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -83,6 +83,13 @@ class User extends Authenticatable
     public function getLastActivityDateAttribute()
     {
         return $this->updated_at->format('d.m.Y H:i:s');
+    }
+
+    public function scopeAdmins()
+    {
+        return User::whereHas('roles', function($q) {
+            return $q->whereName('administrator');
+        })->get();
     }
 
     public static function apiRoutes()

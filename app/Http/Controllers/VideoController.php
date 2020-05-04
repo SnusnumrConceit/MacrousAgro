@@ -27,6 +27,8 @@ class VideoController extends Controller
     }
 
     /**
+     * Список видео
+     *
      * Display a listing of the videos.
      *
      * @param Request $request
@@ -42,6 +44,8 @@ class VideoController extends Controller
     }
 
     /**
+     * Форма создания видео
+     *
      * Show the form for creating a new resource.
      *
      * @return \Illuminate\Http\Response
@@ -52,6 +56,8 @@ class VideoController extends Controller
     }
 
     /**
+     * Сохранение видео
+     *
      * Store a newly created video in storage.
      *
      * @param VideoStoreRequest $request
@@ -67,11 +73,13 @@ class VideoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('videos.response.messages.created')
+            'message' => __('videos.response.messages.created')
         ], 200);
     }
 
     /**
+     * Информация о видео
+     *
      * Display the video.
      *
      * @param  \App\Models\Video  $video
@@ -85,6 +93,8 @@ class VideoController extends Controller
     }
 
     /**
+     * Форма редактирования видео
+     *
      * Show the form for editing the video.
      *
      * @param  \App\Models\Video  $video
@@ -98,6 +108,8 @@ class VideoController extends Controller
     }
 
     /**
+     * Обновление видео
+     *
      * Update the video in storage.
      *
      * @param VideoUpdateRequest $request
@@ -110,11 +122,13 @@ class VideoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('videos.response.messages.updated')
+            'message' => __('videos.response.messages.updated')
         ], 200);
     }
 
     /**
+     * Удаление видео
+     *
      * Remove the video from storage.
      *
      * @param Video $video
@@ -129,12 +143,14 @@ class VideoController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('videos.response.messages.deleted')
+            'message' => __('videos.response.messages.deleted')
         ], 200);
     }
 
     /**
      * Получение случайного списка видеороликов для лэндинга
+     *
+     * Display a random listing of the videos for landing page.
      *
      * @param Request $request
      * @return JsonResponse

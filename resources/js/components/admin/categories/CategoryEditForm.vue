@@ -61,9 +61,19 @@
     },
 
     methods: {
-
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -71,12 +81,12 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getCategory() {
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/categories/${this.id}/edit`);
           this.category = response.data.category;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({type: 'error', message: e.response.data.message});
         }
       },
 
@@ -88,7 +98,8 @@
       async save() {
         try {
           const response = await axios.put(`${this.$attrs.apiRoute}/categories/${this.id}`, { ...this.category});
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({type: 'success', message: response.data.message });
           this.goBack();
         } catch (e) {
           this.setErrors(e.response.data.errors);
@@ -110,7 +121,7 @@
       async initData() {
         this.loading = true;
 
-        await this.loadData();
+        await this.getCategory();
 
         this.loading = false;
       }
@@ -120,6 +131,10 @@
       if (this.id) {
         this.initData();
       }
+    },
+
+    destroyed() {
+      this.hideNotification();
     }
   }
 </script>

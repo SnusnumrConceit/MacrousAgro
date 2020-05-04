@@ -25,6 +25,8 @@ import Vue from 'vue';
 
 // Vue.component('example-component', require('./components/ExampleComponent.vue').default);
 Vue.component('errors', require('./components/common/Errors.vue').default);
+Vue.component('notification', require('./components/common/Notification.vue').default);
+
 import Admin from './components/admin/Admin';
 // import Dashboard from './components/dashboard/dashboard';
 

@@ -211,8 +211,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -243,9 +255,9 @@
               : this.photos.concat(response.data.photos.data);
 
           this.pagination.last_page = response.data.photos.last_page;
-          this.loading = false;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
+        } finally {
           this.loading = false;
         }
       },
@@ -282,7 +294,7 @@
         }).catch(error => {
           vm.loading = false;
           console.log(error);
-          vm.$swal(vm.$t('swal.title.error'), error.data.msg, 'error');
+          vm.showNotification({ type: 'error', message: error.data.message});
         })
         ;
       }, 300),
@@ -296,10 +308,11 @@
       async remove(id) {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/photos/${id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.photos = this.photos.filter(photo => photo.id !== id);
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -325,12 +338,11 @@
                 }
               });
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.getPhotos();
 
           this.resetForm();
         } catch (e) {
-          console.log(e.response.data.error);
           this.setErrors(e.response.data.error);
         }
       },
@@ -410,6 +422,10 @@
 
     mounted() {
       document.addEventListener('scroll', this.onScroll);
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

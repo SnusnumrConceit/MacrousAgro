@@ -260,10 +260,10 @@
               : this.videos.concat(response.data.videos.data);
 
           this.pagination.last_page = response.data.videos.last_page;
-
-          this.loading = false;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
+        } finally {
+          this.loading = false;
         }
       },
 
@@ -275,10 +275,11 @@
       async remove(id) {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/videos/${id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.videos = this.videos.filter(video => video.id !== id);
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -312,7 +313,7 @@
           vm.pagination.last_page = response.data.videos.last_page;
           vm.loading = false;
         }).catch(error => {
-          vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
+          vm.showNotification({ type: 'error', message: error.data.message});
         });
       }, 300),
 
@@ -339,7 +340,7 @@
               }
           );
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.getVideos();
 
           this.resetForm();
@@ -426,7 +427,7 @@
     },
 
     beforeDestroy() {
-      this.isDestroying = true;
+      this.hideNotification();
     }
   }
 </script>

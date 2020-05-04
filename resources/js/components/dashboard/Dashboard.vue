@@ -1,5 +1,6 @@
 <template>
     <v-app dark>
+        <notification></notification>
         <v-card height="100%">
             <navigation api-route="/api" :display="displayNavbar" @hide-navigation-drawer="displayNavbar = false">
 
@@ -14,7 +15,7 @@
                 <v-spacer></v-spacer>
 
                 <v-toolbar-title @click="$router.push('/')" style="cursor: pointer">
-                    <h2 class="display-1">МакроусАгро</h2>
+                    <h2 class="display-1">МокроусАгро</h2>
                     <h6>АгроБиржа #1</h6>
                 </v-toolbar-title>
 

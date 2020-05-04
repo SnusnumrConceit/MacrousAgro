@@ -65,7 +65,7 @@ class ProductStoreRequest extends FormRequest
     {
         throw (new ValidationException($validator, response()->json([
             'status' => 'error',
-            'msg' => __('form_request_validation_failed_error'),
+            'message' => __('form_request_validation_failed_error'),
             'errors' => $validator->errors()
         ], 500)));
     }

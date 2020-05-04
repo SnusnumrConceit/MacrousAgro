@@ -419,8 +419,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -441,10 +453,11 @@
           this.users = (this.pagination.page === 1)
               ? response.data.users.data
               : this.users.concat(response.data.users.data);
+
           this.pagination.last_page = response.data.users.last_page;
           this.pagination.total = response.data.users.total;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type:'error', message: e.response.data.message});
         } finally {
           this.loading = false;
         }
@@ -460,10 +473,10 @@
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/users/${id}`);
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.users = this.users.filter((user) => user.id !== id);
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -475,7 +488,8 @@
       async save() {
         try {
           const response = await axios.post(`${this.$attrs.apiRoute}/users`, this.user);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.getUsers();
           this.close();
         } catch (e) {
@@ -499,6 +513,8 @@
           link.setAttribute('download', 'users.xlsx');
           document.body.appendChild(link);
           link.click();
+        }).catch(e => {
+          this.showNotification({ type: 'error', message: e.response.data.message});
         });
       },
 
@@ -546,7 +562,7 @@
               vm.loading = false;
             })
             .catch(error => {
-              vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
+              vm.showNotification({ type: 'error', message: error.data.message });
             })
         ;
       }, 300),
@@ -617,6 +633,10 @@
 
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

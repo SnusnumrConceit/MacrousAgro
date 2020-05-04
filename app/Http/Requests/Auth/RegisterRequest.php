@@ -41,13 +41,4 @@ class RegisterRequest extends FormRequest
             ['birthday' => __('users.validation.attributes.birthday')]
         );
     }
-
-    protected function failedValidation(Validator $validator)
-    {
-        throw (new ValidationException($validator, response()->json([
-            'status' => 'error',
-            'msg' => __('form_request_validation_failed_error'),
-            'errors' => $validator->errors()
-        ], 500)));
-    }
 }

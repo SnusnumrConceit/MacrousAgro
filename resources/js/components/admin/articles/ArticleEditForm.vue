@@ -150,8 +150,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**
@@ -183,7 +195,7 @@
                   'Content-Type': 'multipart/form-data'
                 }
               });
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({ type: 'success', message: response.data.message});
           this.$router.push({name: 'Articles'});
         } catch (e) {
           this.setErrors(e.response.data.errors);
@@ -198,10 +210,11 @@
       async remove() {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${this.id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -210,12 +223,12 @@
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getArticle() {
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/articles/${this.id}/edit`);
           this.article = response.data.article;
         } catch (e) {
-          this.$swal('swal.title.error', e.response.data.msg);
+          this.showNotification({ type: 'error', message: e.response.data.message});
         }
       },
 
@@ -234,7 +247,7 @@
       async initData() {
         this.loading = true;
 
-        await this.loadData();
+        await this.getArticle();
 
         this.loading = false;
       }
@@ -248,6 +261,10 @@
 
     created() {
       this.initData();
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

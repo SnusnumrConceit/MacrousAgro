@@ -25,6 +25,8 @@ class ProductController extends Controller
     }
 
     /**
+     * Список товаров
+     *
      * Display a listing of the products.
      *
      * @param Request $request
@@ -41,6 +43,8 @@ class ProductController extends Controller
     }
 
     /**
+     * Сохранение товара
+     *
      * Store a newly created product in storage.
      *
      * @param ProductStoreRequest $request
@@ -59,11 +63,13 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('products.response.messages.created')
+            'message' => __('products.response.messages.created')
         ], 200);
     }
 
     /**
+     * Информация о товаре
+     *
      * Display the specified product.
      *
      * @param  \App\Models\Product  $product
@@ -77,6 +83,8 @@ class ProductController extends Controller
     }
 
     /**
+     * Форма редактирования товара
+     *
      * Show the form for editing the product.
      *
      * @param  \App\Models\Product  $product
@@ -91,6 +99,8 @@ class ProductController extends Controller
     }
 
     /**
+     * Обновление товара
+     *
      * Update the product in storage.
      *
      * @param ProductUpdateRequest $request
@@ -114,11 +124,13 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('products.response.messages.updated')
+            'message' => __('products.response.messages.updated')
         ], 200);
     }
 
     /**
+     * Удаление товара
+     *
      * Remove the product from storage.
      *
      * @param Product $product
@@ -135,12 +147,14 @@ class ProductController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('products.response.messages.deleted')
+            'message' => __('products.response.messages.deleted')
         ], 200);
     }
 
     /**
      * Получение списка случайных товаров для лэндинга
+     *
+     * Display a random listing of the products for landing page.
      *
      * @param Request $request
      * @return \Illuminate\Http\JsonResponse

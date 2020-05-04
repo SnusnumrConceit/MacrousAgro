@@ -23,6 +23,7 @@
 <script>
   import debounce from '../../debounce';
   import scroll from '../../mixins/infinite_scroll';
+  import {mapActions} from 'vuex';
 
   export default {
     name: "videos",
@@ -41,18 +42,38 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
+      ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
+        'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
+      }),
+
       async getVideos() {
-        const response = await axios.get(`${this.$attrs.apiRoute}/videos`, {
-          params: {
-            page: this.pagination.page
-          }
-        });
+        try {
+          const response = await axios.get(`${this.$attrs.apiRoute}/videos`, {
+            params: {
+              page: this.pagination.page
+            }
+          });
 
-        this.videos = (this.pagination.page === 1)
-            ? response.data.videos.data
-            : this.videos.concat(response.data.videos.data);
+          this.videos = (this.pagination.page === 1)
+              ? response.data.videos.data
+              : this.videos.concat(response.data.videos.data);
 
-        this.pagination.last_page = response.data.videos.last_page;
+          this.pagination.last_page = response.data.videos.last_page;
+        } catch (e) {
+          this.showNotification({ type: 'error', message: e.response.data.message});
+        }
       },
 
       onSearch() {
@@ -74,7 +95,7 @@
               vm.pagination.last_page = response.data.videos.last_page;
             })
             .catch(error => {
-              vm.$swal(vm.$t('swal.title.error'), error.data.msg, 'error');
+              vm.showNotification({ type: 'error', message: error.data.message});
             })
         ;
       }, 300),

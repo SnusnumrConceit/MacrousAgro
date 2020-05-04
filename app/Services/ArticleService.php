@@ -29,7 +29,7 @@ class ArticleService
         } catch (\Exception $error) {
             return response()->json([
                 'status' => 'error',
-                'msg' => $error->getMessage()
+                'message' => $error->getMessage()
             ]);
         }
     }

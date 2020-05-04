@@ -214,10 +214,22 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
         'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
       }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
+      }),
+
       /**
        * Загрузка списка категорий
        */
@@ -236,7 +248,7 @@
 
           this.categories = response.data.categories;
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({type: 'error', message: e.response.data.message});
         } finally {
           this.loading = false;
         }
@@ -253,7 +265,7 @@
             ...this.category
           });
 
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+          this.showNotification({type: 'success', message: response.data.message });
           this.getCategories();
           this.resetForm();
         } catch (e) {
@@ -270,10 +282,11 @@
       async remove(id) {
         try {
           const response = await axios.delete(`${this.$attrs.apiRoute}/categories/${id}`);
-          this.$swal(this.$t('swal.title.success'), response.data.msg, 'success');
+
+          this.showNotification({type: 'success', message: response.data.message });
           this.categories = this.categories.filter(category => category.id !== id);
         } catch (e) {
-          this.$swal(this.$t('swal.title.error'), e.response.data.msg, 'error');
+          this.showNotification({type: 'error', message: e.response.data.message});
         }
       },
 
@@ -310,7 +323,7 @@
           vm.categories = response.data.categories;
           vm.pagination.last_page = response.data.categories.last_page;
         }).catch(error => {
-          vm.$swal(vm.$t('swal,title.error'), error.data.msg, 'error');
+          vm.showNotification({ type: 'error', message: e.data.message });
         });
       }, 300),
 
@@ -336,6 +349,10 @@
 
     created() {
       this.getCategories();
+    },
+
+    beforeDestroy() {
+      this.hideNotification();
     }
   }
 </script>

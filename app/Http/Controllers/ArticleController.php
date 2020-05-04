@@ -26,6 +26,8 @@ class ArticleController extends Controller
     }
 
     /**
+     * Список статей
+     *
      * List of articles in storage
      *
      * @param Request $request
@@ -44,6 +46,8 @@ class ArticleController extends Controller
     }
 
     /**
+     * Создание статьи
+     *
      * Store a newly created article in storage.
      *
      * @param ArticleStoreRequest $request
@@ -62,11 +66,13 @@ class ArticleController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg'    => __('articles.response.messages.created')
+            'message'    => __('articles.response.messages.created')
         ], 200);
     }
 
     /**
+     * Показ информации о статье
+     *
      * Display the article.
      *
      * @param  \App\Models\Article  $article
@@ -82,6 +88,8 @@ class ArticleController extends Controller
     }
 
     /**
+     * Информация для формы редактирования стотьи
+     *
      * Show the form for editing the article.
      *
      * @param  \App\Models\Article  $article
@@ -97,6 +105,8 @@ class ArticleController extends Controller
     }
 
     /**
+     * Обновление статьи
+     *
      * Update the article in storage.
      *
      * @param ArticleUpdateRequest $request
@@ -121,11 +131,13 @@ class ArticleController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg'    => __('articles.response.messages.updated')
+            'message'    => __('articles.response.messages.updated')
         ], 200);
     }
 
     /**
+     * Удаление статьи
+     *
      * Remove the article from storage.
      *
      * @param Article $article
@@ -142,10 +154,16 @@ class ArticleController extends Controller
 
         return response()->json([
             'status' => 'success',
-            'msg' => __('articles.response.messages.deleted')
+            'message' => __('articles.response.messages.deleted')
         ], 200);
     }
 
+    /**
+     * Экспорт статей
+     *
+     * @param Request $request
+     * @return mixed
+     */
     public function export(Request $request)
     {
         return $this->article->export($request);

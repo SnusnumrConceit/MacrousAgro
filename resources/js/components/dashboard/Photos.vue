@@ -75,7 +75,7 @@
               vm.pagination.last_page = response.data.photos.last_page;
             })
             .catch(error => {
-              vm.$swal(vm.$t('swal.title.error'), error.data.msg, 'error');
+              vm.showNotification({ type: 'error', message: error.data.message});
             })
         ;
       }, 300),
