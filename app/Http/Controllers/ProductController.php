@@ -5,8 +5,6 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Traits\Mediable;
-use App\Services\MediaService;
-use App\Repositories\ProductRepo;
 use Illuminate\Http\Request;
 use App\Http\Resources\Product\ProductDetail;
 use App\Http\Resources\Product\ProductCollection;
@@ -15,12 +13,8 @@ use App\Http\Requests\Product\ProductUpdateRequest;
 
 class ProductController extends Controller
 {
-    private $product, $media;
-
-    public function __construct(ProductRepo $product, MediaService $media)
+    public function __construct()
     {
-        $this->product = $product;
-        $this->media = $media;
 //        $this->authorizeResource(Product::class, 'product');
     }
 
@@ -35,7 +29,21 @@ class ProductController extends Controller
      */
     public function index(Request $request)
     {
-        $products = $this->product->index($request);
+        $products = Product::query();
+
+        $products->when($request->keyword, function ($q, $keyword) {
+            return $q->where('title', 'LIKE', '%' . $keyword . '%');
+        });
+
+        $products->when($request->created_at, function ($q, $created_at) {
+            return $q->whereBetween('created_at', [$created_at . ' 00:00', $created_at . ' 23:59']);
+        });
+
+        $products->when($request->category, function ($q, $category) {
+            return $q->where('category_id', $category);
+        });
+
+        $products = $products->latest()->paginate();
 
         return response()->json([
             'products' => new ProductCollection($products)
@@ -53,13 +61,7 @@ class ProductController extends Controller
      */
     public function store(ProductStoreRequest $request)
     {
-        $product = $this->product->store($request->validated());
-
-        if ($request->image) {
-            $media = Mediable::upload(Product::MEDIA_PATH, $request->image, 'products');
-
-            $product->medias()->sync($media->id);
-        }
+        $product = Product::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -110,7 +112,7 @@ class ProductController extends Controller
      */
     public function update(ProductUpdateRequest $request, Product $product)
     {
-        $this->product->update($request->validated(), $product);
+        $product->update($request->validated());
 
         if (! empty($request->image)) {
             if ($product->medias()->exists()) {
@@ -139,11 +141,7 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $this->product->destroy($product);
-
-        if ($product->medias()->exists()) {
-            $product->remove($product->medias()->first());
-        }
+        $product->delete();
 
         return response()->json([
             'status' => 'success',

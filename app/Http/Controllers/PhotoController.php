@@ -3,8 +3,6 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
-use App\Traits\Mediable;
-use App\Repositories\PhotoRepo;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Requests\Photo\PhotoStoreRequest;
@@ -14,11 +12,8 @@ use App\Http\Resources\Photo\Photo as PhotoResource;
 
 class PhotoController extends Controller
 {
-    private $photo, $media;
-
-    public function __construct(PhotoRepo $photo)
+    public function __construct()
     {
-        $this->photo = $photo;
 //        $this->authorizeResource(Photo::class, 'photo');
     }
 
@@ -32,7 +27,17 @@ class PhotoController extends Controller
      */
     public function index(Request $request)
     {
-        $photos = $this->photo->index($request);
+        $photos = Photo::query();
+
+        $photos->when(isset($request->keyword), function ($q, $keyword) {
+            return $q->where('title', 'LIKE', '%' . $keyword . '%');
+        });
+
+        $photos->when($request->created_at, function ($q, $created_at) {
+            return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . ' 23:59:59']);
+        });
+
+        $photos = $photos->latest('created_at')->paginate();
 
         return response()->json([
             'photos' => new PhotoCollection($photos)
@@ -49,11 +54,7 @@ class PhotoController extends Controller
      */
     public function store(PhotoStoreRequest $request)
     {
-        $media = Mediable::upload(Photo::MEDIA_PATH, $request->image, 'photos');
-
-        $photo = $this->photo->store($request->validated());
-
-        $photo->medias()->sync($media->id);
+        $photo = Photo::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -102,7 +103,7 @@ class PhotoController extends Controller
      */
     public function update(PhotoUpdateRequest $request, Photo $photo)
     {
-        $this->photo->update($request->validated(), $photo);
+        $photo->update($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -119,9 +120,7 @@ class PhotoController extends Controller
      */
     public function destroy(Photo $photo)
     {
-        $this->photo->destroy($photo);
-
-        $photo->remove($photo->medias()->first());
+        $photo->delete();
 
         return response()->json([
             'status' => 'success',

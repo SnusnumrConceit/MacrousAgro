@@ -4,19 +4,18 @@ namespace App\Http\Controllers;
 
 use App\User;
 use App\Services\UserService;
-use App\Repositories\UserRepo;
+use App\Http\Resources\User\User as UserResource;
+
 use Illuminate\Http\Request;
 use App\Http\Requests\User\UserStoreRequest;
 use App\Http\Requests\User\UserUpdateRequest;
-use App\Http\Resources\User\User as UserResource;
 
 class UserController extends Controller
 {
     public $userService, $user;
 
-    public function __construct(UserService $userService, UserRepo $user)
+    public function __construct(UserService $userService)
     {
-        $this->user = $user;
         $this->userService = $userService;
 //        $this->authorizeResource(User::class, 'user');
     }
@@ -32,7 +31,19 @@ class UserController extends Controller
      */
     public function index(Request $request)
     {
-        $users = $this->user->index($request);
+        $users = User::query();
+
+        $users->when($request->keyword, function ($q, $keyword) {
+            return $q->where('last_name', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('first_name', 'LIKE', '%' . $keyword . '%')
+                ->orWhere('email', 'LIKE', '%' . $keyword . '%');
+        });
+
+        $users->when($request->updated_at, function ($q, $updated_at) {
+            return $q->whereBetween('updated_at', [$updated_at . ' 00:00:00', $updated_at . ' 23:59:59']);
+        });
+
+        $users = $users->with('roles')->latest('created_at')->paginate();
 
         return response()->json([
             'users' => $users
@@ -50,7 +61,7 @@ class UserController extends Controller
      */
     public function store(UserStoreRequest $request)
     {
-       $this->user->store($request->validated());
+        $user = User::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -99,7 +110,7 @@ class UserController extends Controller
      */
     public function update(UserUpdateRequest $request, User $user)
     {
-        $this->user->update($request->validated(), $user);
+        $user->update($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -118,7 +129,7 @@ class UserController extends Controller
      */
     public function destroy(User $user)
     {
-        $this->user->destroy($user);
+        $user->delete();
 
         return response()->json([
             'status' => 'success',

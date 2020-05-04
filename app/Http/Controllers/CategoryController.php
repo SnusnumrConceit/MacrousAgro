@@ -6,18 +6,14 @@ namespace App\Http\Controllers;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Repositories\CategoryRepo;
 use App\Http\Requests\Category\CategoryStoreRequest;
 use App\Http\Resources\Category\CategoryCollection;
 
 class CategoryController extends Controller
 {
     // TODO добавить политики
-    private $category;
-
-    public function __construct(CategoryRepo $category)
+    public function __construct()
     {
-        $this->category = $category;
 //        $this->authorizeResource(Category::class, 'category');
     }
 
@@ -32,7 +28,13 @@ class CategoryController extends Controller
      */
     public function index(Request $request) : JsonResponse
     {
-        $categories = $this->category->index($request);
+        $categories = Category::query();
+
+        $categories->when(!empty($request->keyword), function ($q) use ($request) {
+            return $q->where('name', 'LIKE', $request->keyword . '%');
+        });
+
+        $categories = $categories->orderBy('name')->paginate();
 
         return response()->json([
             'categories' => new CategoryCollection($categories),
@@ -51,7 +53,7 @@ class CategoryController extends Controller
      */
     public function store(CategoryStoreRequest $request) : JsonResponse
     {
-        $this->category->store($request->validated());
+        $category = Category::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -101,7 +103,7 @@ class CategoryController extends Controller
      */
     public function update(CategoryStoreRequest $request, Category $category) : JsonResponse
     {
-        $this->category->update($request->validated(), $category);
+        $category->update($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -120,7 +122,7 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category) : JsonResponse
     {
-        $this->category->destroy($category);
+        $category->delete();
 
         return response()->json([
             'status' => 'success',

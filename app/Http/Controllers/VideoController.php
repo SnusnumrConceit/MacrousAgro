@@ -4,25 +4,18 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Video;
-use App\Traits\Mediable;
-use App\Services\VideoService;
-use App\Services\MediaService;
-use App\Repositories\VideoRepo;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\Video\Video as VideoResource;
 use App\Http\Resources\Video\VideoCollection;
+
 use Illuminate\Http\Request;
 use App\Http\Requests\Video\VideoStoreRequest;
 use App\Http\Requests\Video\VideoUpdateRequest;
 
 class VideoController extends Controller
 {
-    private $video, $media;
-
-    public function __construct(VideoRepo $video, MediaService $media)
+    public function __construct()
     {
-        $this->video = $video;
-        $this->media = $media;
 //        $this->authorizeResource(Video::class, 'video');
     }
 
@@ -36,7 +29,17 @@ class VideoController extends Controller
      */
     public function index(Request $request)
     {
-        $videos = $this->video->index($request);
+        $video = Video::query();
+
+        $video->when($request->keyword, function ($q, $keyword) {
+            return $q->where('title', 'LIKE', '%' . $keyword . '%');
+        });
+
+        $video->when($request->created_at, function ($q, $created_at) {
+            return $q->whereBetween('created_at', [$created_at . ' 00:00:00', $created_at . ' 23:59:59']);
+        });
+
+        $videos = $video->latest('created_at')->paginate();
 
         return response()->json([
             'videos' => new VideoCollection($videos)
@@ -65,11 +68,7 @@ class VideoController extends Controller
      */
     public function store(VideoStoreRequest $request)
     {
-        $media = Mediable::upload(Video::MEDIA_PATH, $request->video, 'videos');
-
-        $video = $this->video->store($request->validated());
-
-        $video->medias()->sync($media->id);
+        $video = Video::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -118,7 +117,7 @@ class VideoController extends Controller
      */
     public function update(VideoUpdateRequest $request, Video $video)
     {
-        $this->video->update($request->validated(), $video);
+        $video->update($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -137,9 +136,7 @@ class VideoController extends Controller
      */
     public function destroy(Video $video)
     {
-        $this->video->destroy($video);
-
-        $video->remove($video->medias()->first());
+        $video->delete();
 
         return response()->json([
             'status' => 'success',

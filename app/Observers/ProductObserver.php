@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Product;
+use App\Traits\Mediable;
 
 class ProductObserver
 {
@@ -14,54 +15,43 @@ class ProductObserver
      */
     public function created(Product $product)
     {
-        //
-    }
+        if (request()->hasFile('image')) {
+            $media = Mediable::upload(Product::MEDIA_PATH, request()->file('image'), 'products');
 
-    /**
-     * Handle the product "updated" event.
-     *
-     * @param  \App\Models\Product  $product
-     * @return void
-     */
-    public function updated(Product $product)
-    {
-        //
-    }
-
-    /**
-     * Handle the product "deleted" event.
-     *
-     * @param  \App\Models\Product  $product
-     * @return void
-     */
-    public function deleted(Product $product)
-    {
-        if ($product->content) {
-            $product->remove($product->content, Product::MEDIA_PATH . '/' . $product->content->filename);
-
-            $product->media->delete();
+            $product->medias()->sync($media->id);
         }
     }
 
-    /**
-     * Handle the product "restored" event.
-     *
-     * @param  \App\Models\Product  $product
-     * @return void
-     */
-    public function restored(Product $product)
-    {
-        //
-    }
+    //    /** TODO узнать можно ли тригерить событие, без изменения полей */
+//    /**
+//     * Handle the product "updated" event.
+//     *
+//     * @param Product $product
+//     * @throws \Exception
+//     */
+//    public function updated(Product $product)
+//    {
+//        if (request()->hasFile('image')) {
+//            if ($product->medias()->exists()) {
+//                $product->remove($product->medias()->first());
+//            }
+//
+//            $media = Mediable::upload(Product::MEDIA_PATH, request()->file('image'), 'products');
+//
+//            $product->medias()->sync($media->id);
+//        }
+//    }
 
     /**
-     * Handle the product "force deleted" event.
+     * Handle the product "deleting" event.
      *
-     * @param  \App\Models\Product  $product
-     * @return void
+     * @param Product $product
+     * @throws \Exception
      */
-    public function forceDeleted(Product $product)
+    public function deleting(Product $product)
     {
-        //
+        if ($product->medias()->exists()) {
+            $product->remove($product->medias()->first());
+        }
     }
 }

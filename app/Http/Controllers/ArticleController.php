@@ -4,11 +4,10 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Article;
-use App\Services\MediaService;
+//use App\Services\ArticleService;
 use App\Traits\Mediable;
 use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Repositories\ArticleRepo;
 use App\Http\Resources\Article\ArticleCollection;
 use App\Http\Requests\Article\ArticleStoreRequest;
 use App\Http\Requests\Article\ArticleUpdateRequest;
@@ -16,14 +15,13 @@ use App\Http\Requests\Article\ArticleUpdateRequest;
 class ArticleController extends Controller
 {
     // TODO добавить политики
-    private $article, $mediaService;
+//    private $articleService;
 
-    public function __construct(ArticleRepo $article, MediaService $mediaService)
-    {
-        $this->article = $article;
-        $this->mediaService = $mediaService;
+//    public function __construct(ArticleService $articleService)
+//    {
 //        $this->authorizeResource(Article::class, 'article');
-    }
+//        $this->articleService = $articleService;
+//    }
 
     /**
      * Список статей
@@ -38,7 +36,21 @@ class ArticleController extends Controller
     {
 //        $this->authorize('index', Article::class);
 
-        $articles = $this->article->index($request);
+        $articles = Article::query();
+
+        $articles->when($request->keyword, function ($q, $keyword) {
+            return $q->where('title', 'LIKE', '%' . $keyword . '%');
+        });
+
+        $articles->when($request->is_publicated, function ($q, $is_publicated) {
+            return $q->where('is_publicated', $is_publicated);
+        });
+
+        $articles->when($request->publication_date, function ($q, $publication_date) {
+            return $q->whereBetween('publication_date', [$publication_date . ' 00:00', $publication_date . ' 23:59']);
+        });
+
+        $articles = $articles->latest('publication_date', 'is_publicated')->paginate();
 
         return response()->json([
             'articles' => new ArticleCollection($articles)
@@ -58,11 +70,7 @@ class ArticleController extends Controller
     {
 //        $this->authorize('create', Article::class);
 
-        $media = Mediable::upload(Article::MEDIA_PATH, $request->image, 'articles');
-
-        $article = $this->article->store($request->validated());
-
-        $article->medias()->sync($media->id);
+        $article = Article::create($request->validated());
 
         return response()->json([
             'status' => 'success',
@@ -117,14 +125,14 @@ class ArticleController extends Controller
     {
 //        $this->authorize('update', Article::class);
 
-        $this->article->update($request->validated(), $article);
+        $article->update($request->validated());
 
-        if (! empty($request->validated()['image'])) {
+        if (! empty($request->hasFile('image'))) {
             if ($article->medias()->count()) {
                 $article->remove($article->medias()->first());
             }
 
-            $media = Mediable::upload(Article::MEDIA_PATH, $request->image, 'articles');
+            $media = Mediable::upload(Article::MEDIA_PATH, $request->file('image'), 'articles');
 
             $article->medias()->sync($media->id);
         }
@@ -148,9 +156,7 @@ class ArticleController extends Controller
     {
 //        $this->authorize('delete', Article::class);
 
-        $this->article->destroy($article);
-
-        $article->remove($article->medias()->first());
+        $article->delete();
 
         return response()->json([
             'status' => 'success',
@@ -158,14 +164,14 @@ class ArticleController extends Controller
         ], 200);
     }
 
-    /**
-     * Экспорт статей
-     *
-     * @param Request $request
-     * @return mixed
-     */
-    public function export(Request $request)
-    {
-        return $this->article->export($request);
-    }
+//    /**
+//     * Экспорт статей
+//     *
+//     * @param Request $request
+//     * @return mixed
+//     */
+//    public function export(Request $request)
+//    {
+//        return $this->articleService->export($request);
+//    }
 }

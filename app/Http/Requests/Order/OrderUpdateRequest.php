@@ -18,7 +18,7 @@ class OrderUpdateRequest extends FormRequest
     public function rules()
     {
         return [
-            'order_status_code' => 'required|boolean|in_statuses_array'
+            'order_status_code' => 'required|in_statuses_array'
         ];
     }
 
