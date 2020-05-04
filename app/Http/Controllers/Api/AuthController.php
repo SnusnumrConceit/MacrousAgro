@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Api;
 
 use App\User;
+use App\Events\User\Registered;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\Auth\LoginRequest;
 use App\Http\Requests\Auth\RegisterRequest;
@@ -20,11 +21,13 @@ class AuthController extends Controller
         $user = User::create($request->validated());
         $user->assignRole('customer');
 
+        event(new Registered($user));
+
         auth()->guard()->login($user);
 
         return response()->json([
             'user' => $user,
-            'msg' => 'Пользователь успешно зарегистрирован'
+            'message' => 'Пользователь успешно зарегистрирован'
         ], 200);
     }
 
@@ -44,7 +47,7 @@ class AuthController extends Controller
         }
 
         return response()->json([
-            'msg' => 'success'
+            'message' => 'success'
         ], 200);
     }
 
@@ -58,20 +61,20 @@ class AuthController extends Controller
         auth()->logout();
 
         return response()->json([
-            'msg' => 'success'
+            'message' => 'success'
         ], 200);
     }
 
-//    /**
-//     * Получение зарегистрированного пользователя
-//     *
-//     * @return \Illuminate\Http\JsonResponse
-//     */
-//    public function user()
-//    {
-//        return response()->json([
-//            'user' => auth()->user(),
-//            'msg' => 'success'
-//        ]);
-//    }
+    /**
+     * Получение зарегистрированного пользователя
+     *
+     * @return \Illuminate\Http\JsonResponse
+     */
+    public function user()
+    {
+        return response()->json([
+            'user' => auth()->user(),
+            'message' => 'success'
+        ]);
+    }
 }
