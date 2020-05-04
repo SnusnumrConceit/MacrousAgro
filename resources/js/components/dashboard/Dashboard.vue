@@ -79,7 +79,7 @@
       },
 
       initials() {
-        return `${this.user.first_name[0]} ${this.user.last_name[0]}`;
+        return `${this.user.first_name[0]}${this.user.last_name[0]}`;
       }
     },
 

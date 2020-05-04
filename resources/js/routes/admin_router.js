@@ -203,7 +203,7 @@ const router = new VueRouter({
 
 /** Middleware Guard **/
 router.beforeEach((to, from, next) => {
-  if (! to.meta.middleware) {
+  if (! store.state.auth.user || ! to.meta.middleware) {
     document.location.href = '/';
   }
 

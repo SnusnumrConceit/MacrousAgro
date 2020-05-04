@@ -112,7 +112,7 @@ router.beforeEach((to, from, next) => {
     return;
   }
 
-  if (! store.state.auth.user || ! to.meta.middleware.includes(store.state.auth.user.role)) {
+  if (! to.meta.middleware.includes(store.state.auth.user.role)) {
     next('/');
   } else {
     next();

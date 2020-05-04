@@ -46,6 +46,8 @@ class AuthController extends Controller
             throw new \Exception('Неверные данные', 500);
         }
 
+        auth()->user()->createToken(md5(now()));
+
         return response()->json([
             'message' => 'success'
         ], 200);
@@ -58,6 +60,7 @@ class AuthController extends Controller
      */
     public function logout()
     {
+        auth()->user()->tokens()->delete();
         auth()->logout();
 
         return response()->json([
