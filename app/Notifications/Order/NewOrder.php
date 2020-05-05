@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Notifications\Register;
+namespace App\Notifications\Order;
 
+use App\Models\Order;
 use App\User;
 use Illuminate\Bus\Queueable;
 //use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class Welcome extends Notification
+class NewOrder extends Notification
 {
     use Queueable;
 
-
-    private $greetings;
+    private $order, $user;
     /**
      * Create a new notification instance.
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(Order $order, User $user)
     {
-        $this->greetings = __('mail.greetings.welcome');
+        $this->order = $order;
+        $this->user = $user;
     }
 
     /**
@@ -44,9 +45,8 @@ class Welcome extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->greeting($this->greetings)
-            ->subject(__('mail.subjects.welcome'))
-            ->markdown('mail.user.register.welcome', ['user' => $notifiable]);
+            ->subject(__('mail.subjects.new_order'))
+            ->markdown('mail.order.new_order', ['user' => $this->user, 'order' => $this->order]);
     }
 
 //    /**

@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\Order;
+use App\Events\Order\Created;
 use App\Services\OrderService;
 
 class OrderObserver
@@ -34,6 +35,8 @@ class OrderObserver
             'payment_amount' => $amountPrice,
             'invoice_status_code' => 1
         ]);
+
+        event(new Created($order));
     }
 
     /**

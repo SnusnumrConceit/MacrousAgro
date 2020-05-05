@@ -156,6 +156,20 @@ class User extends Authenticatable
     }
 
     /**
+     * Получить список менеджеров
+     *
+     * Get listing of the manager users
+     *
+     * @return mixed
+     */
+    public static function scopeManagers()
+    {
+        return User::whereHas('roles', function($q) {
+            return $q->whereName('manager');
+        })->get();
+    }
+
+    /**
      * API-маршруты
      *
      * API-routes

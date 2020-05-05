@@ -31,7 +31,7 @@ class RegisteredListener
      */
     public function handle(Registered $event)
     {
-        $event->user->notify(new Welcome($event->user));
+        $event->user->notify(new Welcome());
 
         Notification::send($this->admins, new NewUser($event->user));
     }

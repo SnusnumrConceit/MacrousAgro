@@ -1,27 +1,28 @@
 <?php
 
-namespace App\Notifications\Register;
+namespace App\Notifications\Order;
 
+use App\Models\Order;
 use App\User;
 use Illuminate\Bus\Queueable;
 //use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
 
-class Welcome extends Notification
+class OrderCreated extends Notification
 {
     use Queueable;
 
-
-    private $greetings;
+    protected $order;
     /**
      * Create a new notification instance.
      *
+     * @param Order $order
      * @return void
      */
-    public function __construct()
+    public function __construct(Order $order)
     {
-        $this->greetings = __('mail.greetings.welcome');
+        $this->order = $order;
     }
 
     /**
@@ -44,21 +45,20 @@ class Welcome extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
-            ->greeting($this->greetings)
-            ->subject(__('mail.subjects.welcome'))
-            ->markdown('mail.user.register.welcome', ['user' => $notifiable]);
+            ->subject(__('mail.subjects.order_created'))
+            ->markdown('mail.order.created', ['user' => $notifiable, 'order' => $this->order]);
     }
 
-//    /**
-//     * Get the array representation of the notification.
-//     *
-//     * @param  mixed  $notifiable
-//     * @return array
-//     */
-//    public function toArray($notifiable)
-//    {
-//        return [
-//            //
-//        ];
-//    }
+    /**
+     * Get the array representation of the notification.
+     *
+     * @param  mixed  $notifiable
+     * @return array
+     */
+    public function toArray($notifiable)
+    {
+        return [
+            //
+        ];
+    }
 }

@@ -30,7 +30,7 @@ Route::resource('videos', 'VideoController')->only(['index']);
 Route::resource('articles', 'ArticleController')->only(['index', 'show']);
 
 
-Route::post('logout', 'AuthController@logout');
+Route::post('logout', 'Api\AuthController@logout');
 
 \App\Models\Order::apiRoutes();
 

@@ -15,8 +15,6 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/uo', 'OrderController@getUserOrders');
-
 Route::group(['is' => 'customer'], function () {
     Route::get('/cart/orders', 'OrderController@getUserOrders');
     Route::resource('orders', 'OrderController')->only('store');

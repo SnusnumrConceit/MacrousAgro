@@ -5,6 +5,8 @@ const translate = (string) => app[0].__vue__.$t(string);
  *
  * @param state
  * @param commit
+ * @param dispatch
+ *
  * @returns {Promise<void>}
  */
 const getOrders = async ({state, commit, dispatch}) => {
@@ -51,7 +53,6 @@ const addToCart = ({state, commit}, product) => {
 
   order.title = crypto.getRandomValues(new Uint8Array(12)).toString();
 
-  console.log(order, product);
   if (validateOrderExisting(order, product)) {
     return false;
   }
@@ -77,7 +78,7 @@ const addToCart = ({state, commit}, product) => {
 const removeFromCart = ({state, commit}, {product, total = false}) => {
   let order = state.order;
 
-  order.positions = total ? order.positions.filter(position => position.product.id !== product.id) : [];
+  order.positions = ! total ? order.positions.filter(position => position.product.id !== product.id) : [];
 
   order.price = order.positions.length  ? order.price - parseInt(product.price) : 0;
 
@@ -91,6 +92,8 @@ const removeFromCart = ({state, commit}, {product, total = false}) => {
  *
  * @param state
  * @param commit
+ * @param dispatch
+ *
  * @returns {Promise<void>}
  */
 const createOrder = async ({state, commit, dispatch}) => {
@@ -156,7 +159,7 @@ const cancelOrder = async ({state, commit}, id) => {
  * @returns {*}
  */
 const validateOrderExisting = (order, product) => {
-  return order.positions.some(orderProduct => orderProduct.name === product.name);
+  return order.positions.some(position => position.product.title === product.title)
 };
 
 /**
