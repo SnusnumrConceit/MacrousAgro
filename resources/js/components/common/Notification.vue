@@ -1,11 +1,11 @@
 <template>
-    <v-snackbar v-model="notification.show" :color="notification.type" :timer="notification.timer" multiline>
+    <v-snackbar v-model="notification.show" :color="notification.type" :timer="notification.timer" multi-line>
         <v-icon>
             {{ notification.icon }}
         </v-icon>
         <h3>{{ notification.message }}</h3>
         <v-btn dark text @click="hideNotification">
-            Закрыть
+            {{ $t('buttons.close') }}
         </v-btn>
     </v-snackbar>
 </template>

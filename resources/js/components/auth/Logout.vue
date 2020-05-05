@@ -4,7 +4,7 @@
            :text="text"
            :outlined="outlined"
            :color="color">
-        Выйти
+        {{ $t('buttons.logout') }}
     </v-btn>
 </template>
 

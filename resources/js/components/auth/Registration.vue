@@ -2,16 +2,19 @@
     <v-dialog  width="500" @click:outside="resetForm">
         <template v-slot:activator="{ on }">
             <v-btn outlined text color="white" v-on="on">
-                Регистрация
+                {{ $t('auth.registration') }}
             </v-btn>
         </template>
 
         <v-card>
             <v-form>
-                <v-card-title>Регистрация</v-card-title>
+                <v-card-title>
+                    {{ $t('auth.registration') }}
+                </v-card-title>
                 <v-card-text>
                     <v-container>
-                        <errors></errors>
+                        <errors />
+
                         <v-row>
                             <v-col cols="12" sm="12" md="12" lg="12">
                                 <v-text-field v-model="user.email"
@@ -73,7 +76,7 @@
                                         <v-spacer></v-spacer>
 
                                         <v-btn color="blue darken-1" @click="birthdayCalendar = false" text>
-                                            {{ $t('users.btn.cancel') }}
+                                            {{ $t('buttons.cancel') }}
                                         </v-btn>
                                         <v-btn color="primary" outlined @click="birthdayCalendar = false">OK
                                         </v-btn>
@@ -114,7 +117,9 @@
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn outlined @click="register(user)" color="primary">Зарегистрироваться</v-btn>
+                    <v-btn outlined @click="register(user)" color="primary">
+                        {{ $t('buttons.sign_up') }}
+                    </v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>

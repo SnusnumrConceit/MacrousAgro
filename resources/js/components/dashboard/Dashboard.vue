@@ -15,16 +15,20 @@
                 <v-spacer></v-spacer>
 
                 <v-toolbar-title @click="$router.push('/')" style="cursor: pointer">
-                    <h2 class="display-1">МокроусАгро</h2>
-                    <h6>АгроБиржа #1</h6>
+                    <h2 class="display-1">
+                        {{ $t('app_name')}}
+                    </h2>
+                    <h6>
+                        {{ $t('app_subtitle')}}
+                    </h6>
                 </v-toolbar-title>
 
                 <v-spacer></v-spacer>
 
                 <div v-if="! user">
-                    <login></login>
+                    <login />
 
-                    <registration></registration>
+                    <registration />
                 </div>
 
                 <div v-else-if="user" class="d-flex align-center">
@@ -38,10 +42,10 @@
 
                     <v-spacer></v-spacer>
 
-                    <logout :text="true" :outlined="true" :block="false"></logout>
+                    <logout :text="true" :outlined="true" :block="false" />
                 </div>
             </v-toolbar>
-            <router-view apiRoute="/api"></router-view>
+            <router-view apiRoute="/api" />
         </v-card>
     </v-app>
 </template>

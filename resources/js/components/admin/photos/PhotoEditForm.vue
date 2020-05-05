@@ -6,7 +6,7 @@
                     {{ photo.title }}
                 </v-card-title>
                 <v-card-text>
-                    <errors></errors>
+                    <errors />
 
                     <v-row>
                         <v-col>
@@ -21,23 +21,23 @@
                                           maxlength="100">
                             </v-text-field>
                             <v-btn color="success" :disabled="! form.valid" outlined @click="save">
-                                Изменить
+                                {{ $t('buttons.edit')}}
                             </v-btn>
                         </v-col>
                     </v-row>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn color="error" outlined @click="remove">
-                        {{ $t('photos.btn.delete')}}
+                        {{ $t('buttons.delete')}}
                     </v-btn>
                     <v-btn color="default" outlined @click="goBack">
-                        {{ $t('photos.btn.back')}}
+                        {{ $t('buttons.back')}}
                     </v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>
 
-        <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+        <v-skeleton-loader type="card" v-show="loading" />
     </div>
 </template>
 

@@ -4,7 +4,7 @@
             <v-card>
                 <v-toolbar>
                     <v-toolbar-title>
-                        {{ $t('products.table.header')}}
+                        {{ $t('products.products')}}
                     </v-toolbar-title>
 
                     <v-divider class="mx-4" vertical inset></v-divider>
@@ -13,7 +13,7 @@
                     <v-text-field v-model="search.keyword"
                                   @keyup.enter="onSearch"
                                   append-icon="search"
-                                  label="Поиск"
+                                  :label="$t('placeholders.search')"
                                   single-line>
                     </v-text-field>
 
@@ -21,7 +21,7 @@
 
                     <v-select :items="categories"
                               v-model="search.category"
-                              label="Категория"
+                              :label="$t('products.placeholders.category')"
                               single-line
                               item-text="name"
                               item-value="id"
@@ -42,12 +42,12 @@
                                     v-on="on"
                                     v-model="search.display_created_at"
                                     @input="calendar = false"
-                                    label="Дата создания"
+                                    :label="$t('placeholders.created_at')"
                                     prepend-icon="event"
                                     dense
                                     readonly
                                     clearable
-                                    hint="Дата создания"
+                                    :hint="$t('placeholders.created_at')"
                                     persistent-hint
                                     single-line
 
@@ -64,7 +64,7 @@
                                        v-model="search.created_at">
                             <v-spacer></v-spacer>
                             <v-btn color="blue darken-1" @click="calendar = false" text>
-                                {{ $t('users.btn.cancel') }}
+                                {{ $t('buttons.cancel') }}
                             </v-btn>
                             <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
                         </v-date-picker>
@@ -79,7 +79,7 @@
                                    v-on="on"
                                    @click="resetPreview">
                                 <i class="pe-7s-plus"></i>
-                                {{ $t('products.btn.add')}}
+                                {{ $t('buttons.add')}}
                             </v-btn>
                         </template>
 
@@ -126,7 +126,7 @@
                                               :rules="form.price.rules">
                                 </v-text-field>
 
-                                <preview-upload @uploaded="onUploadImage" ref="previewUpload" :reset="resetPreview"></preview-upload>
+                                <preview-upload @uploaded="onUploadImage" ref="previewUpload" :reset="resetPreview" />
 
                             </v-card-text>
 
@@ -134,10 +134,10 @@
                                 <v-spacer></v-spacer>
 
                                 <v-btn color="success" :disabled="! form.valid" @click="save()">
-                                    {{ $t('products.btn.save')}}
+                                    {{ $t('buttons.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1" text @click="cancel()">
-                                    {{ $t('products.btn.cancel')}}
+                                    {{ $t('buttons.cancel')}}
                                 </v-btn>
                             </v-card-actions>
                             </v-form>
@@ -189,7 +189,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                    Править
+                                    {{ $t('tooltips.edit') }}
                                 </span>
                                 </v-tooltip>
 
@@ -204,7 +204,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                    Удалить
+                                    {{ $t('tooltips.delete') }}
                                 </span>
                                 </v-tooltip>
                             </td>
@@ -212,18 +212,18 @@
                         </tbody>
                     </v-simple-table>
                     <span v-show="! loading && products.length" class="d-flex flex-row-reverse">
-                        Всего: {{ pagination.total }}
+                        {{ $t('total', {total: pagination.total}) }}
                     </span>
 
-                    <v-skeleton-loader type="table-row-divider@6" v-show="loading"></v-skeleton-loader>
+                    <v-skeleton-loader type="table-row-divider@6" v-show="loading" />
 
                     <v-alert color="info" outlined v-if="! loading && ! products.length">
                         <div class="">
                             <span v-show="! searching">
-                                Товары отсутствуют в системе
+                                {{ $('products.no_products') }}
                             </span>
                                 <span v-show="searching">
-                                По Вашему запросу ничего не найдено
+                                {{ $('no_results') }}
                             </span>
                         </div>
                     </v-alert>
@@ -294,10 +294,10 @@
 
         table: {
           headers: [
-            'Наименование',
-            'Стоимость',
-            'Создан',
-            'Последнее изменение',
+            this.$t('products.table.headers.title'),
+            this.$t('products.table.headers.price'),
+            this.$t('products.table.headers.created_at'),
+            this.$t('products.table.headers.updated_at'),
             ''
           ]
         },

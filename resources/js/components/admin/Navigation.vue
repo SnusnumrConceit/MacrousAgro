@@ -6,7 +6,7 @@
         <v-list-item>
             <v-list-item-content>
                 <v-list-item-title>
-                    Мокроус Агро
+                    {{ $t('app_name')}}
                 </v-list-item-title>
                 <v-list-item-subtitle>
                     {{ $t('nav.subtitle') }}
@@ -55,7 +55,7 @@
                         </v-list-item-content>
                     </v-list-item>
                 </v-list>
-                <logout></logout>
+                <logout />
             </div>
         </template>
     </v-navigation-drawer>

@@ -64,9 +64,8 @@
           let reader = new FileReader();
 
           reader.onload = (e) => {
-            console.log(e.target.result);
             this.dataSrc = e.target.result;
-            console.log(e.target.result);
+
             switch (files[0].type) {
               case 'video/mp4':
                 this.previewElemId = '#videoPreview';
@@ -90,7 +89,6 @@
 
     watch: {
       'reset': function (after, before) {
-        console.log(after);
         if (this.reset) {
           this.dataSrc = '';
           $('#imageUpload').val('');

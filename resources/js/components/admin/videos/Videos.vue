@@ -4,7 +4,7 @@
             <!-- TODO вынести в компонент videos-search -->
             <v-toolbar>
                 <v-toolbar-title>
-                    {{ $t('videos.header')}}
+                    {{ $t('videos.videos')}}
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
@@ -14,7 +14,7 @@
                         v-model="search.keyword"
                         @keyup.enter="onSearch"
                         append-icon="search"
-                        label="Поиск"
+                        :label="$t('placeholders.search')"
                         single-line>
                 </v-text-field>
 
@@ -31,9 +31,9 @@
                         <v-text-field
                                 v-on="on"
                                 v-model="search.display_created_at"
-                                label="Дата загрузки"
+                                :label="$t('placeholders.uploaded_at')"
                                 prepend-icon="event"
-                                hint="Дата загрузки"
+                                :hint="$t('placeholders.uploaded_at')"
                                 dense
                                 readonly
                                 clearable
@@ -55,7 +55,7 @@
                         <v-spacer></v-spacer>
 
                         <v-btn color="blue darken-1" @click="calendar = false" text>
-                            {{ $t('users.btn.cancel') }}
+                            {{ $t('buttons.cancel') }}
                         </v-btn>
 
                         <v-btn color="primary" outlined @click="calendar = false">
@@ -74,16 +74,17 @@
                                v-on="on"
                                @click="resetPreview = false">
                             <i class="pe-7s-plus"></i>
-                            {{ $t('videos.btn.add')}}
+                            {{ $t('buttons.add')}}
                         </v-btn>
                     </template>
                     <v-card>
                         <v-form v-model="form.valid" ref="form">
                             <v-card-title>
-                                Видео
+                                {{ $t('videos.form.header')}}
                             </v-card-title>
                             <v-card-text>
-                                <errors></errors>
+                                <errors />
+
                                 <v-text-field v-model="video.title"
                                               :label="$t('videos.form.labels.title')"
                                               counter
@@ -96,8 +97,7 @@
                                 <preview-upload @uploaded="onUpload" ref="previewUpload"
                                                 :extensions="extensions.join(',')"
                                                 type="video"
-                                                :reset="resetPreview">
-                                </preview-upload>
+                                                :reset="resetPreview" />
 
                             </v-card-text>
 
@@ -108,10 +108,10 @@
                                        outlined
                                        :disabled="!form.valid || ! video.video"
                                        @click="save()">
-                                    {{ $t('videos.btn.save')}}
+                                    {{ $t('buttons.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1" @click="cancel()" text>
-                                    {{ $t('videos.btn.cancel')}}
+                                    {{ $t('buttons.cancel')}}
                                 </v-btn>
                             </v-card-actions>
 
@@ -134,31 +134,29 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn color="error" outlined @click="remove(video.id)">
-                                    {{ $t('videos.btn.delete' )}}
+                                    {{ $t('buttons.delete' )}}
                                 </v-btn>
                                 <v-btn color="warning" outlined @click="$router.push('/admin/videos/' + video.id)">
-                                    {{ $t('videos.btn.edit' )}}
+                                    {{ $t('buttons.edit' )}}
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
                 </v-row>
 
-                <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+                <v-skeleton-loader type="card" v-show="loading" />
 
                 <v-alert color="info" outlined v-if="! loading && ! videos.length">
                     <div class="">
                         <span v-show="! searching">
-                            Видеоролики отсутствуют в видеогалерее
+                            {{ $t('videos.no_videos') }}
                         </span>
                         <span v-show="searching">
-                            По Вашему запросу ничего не найдено
+                            {{ $t('no_results') }}
                         </span>
                     </div>
                 </v-alert>
             </v-card-text>
-
-
         </v-card>
     </div>
 </template>
@@ -228,8 +226,20 @@
     },
 
     methods: {
+      /**
+       * Показ ошибок в форме
+       */
       ...mapActions('errors', {
+        'resetErrors': 'resetErrors',
         'setErrors': 'setErrors'
+      }),
+
+      /**
+       * Показ / обнуление уведомлений
+       */
+      ...mapActions('notifications', {
+        'showNotification': 'showNotification',
+        'hideNotification': 'hideNotification'
       }),
 
       /**

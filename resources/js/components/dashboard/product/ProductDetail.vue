@@ -18,16 +18,16 @@
                     </h3>
                     <v-card-actions>
                         <v-btn outlined color="success" @click="addToCart(product)" v-if="isCustomer">
-                            В корзину
+                            {{ $t('buttons.to_cart') }}
                         </v-btn>
                         <v-btn outlined color="default" @click="$router.go(-1)">
-                            Назад
+                            {{ $t('buttons.back') }}
                         </v-btn>
                     </v-card-actions>
                 </v-col>
             </v-row>
         </v-card>
-        <v-skeleton-loader v-show="loading" type="card"></v-skeleton-loader>
+        <v-skeleton-loader v-show="loading" type="card" />
     </div>
 </template>
 
@@ -56,7 +56,12 @@
     },
 
     methods: {
-      async loadData() {
+      /**
+       * Получить детальную информацию о товаре
+       *
+       * @return {Promise<void>}
+       */
+      async getProduct() {
         const response = await axios.get(`${this.$attrs.apiRoute}/products/${this.ID}`);
 
         this.product = response.data.product;
@@ -66,10 +71,15 @@
         'addToCart'
       ]),
 
+      /**
+       * Инициализация данных компонента
+       *
+       * @return {Promise<void>}
+       */
       async initData() {
         this.loading = true;
 
-        await this.loadData();
+        await this.getProduct();
 
         this.loading = false;
       }

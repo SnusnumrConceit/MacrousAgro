@@ -13,7 +13,7 @@
                 {{ article.description }}
             </v-card-text>
         </v-card>
-        <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+        <v-skeleton-loader type="card" v-show="loading" />
     </div>
 </template>
 

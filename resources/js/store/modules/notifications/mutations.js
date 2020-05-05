@@ -1,5 +1,5 @@
 const SHOW_NOTIFICATION = (state, {type, message, timer = null}) => {
-  console.log(type, message, `notify.mutations`)
+  console.log(type, message, `notify.mutations`);
   state.notification.type = type;
   state.notification.message = message;
   if (timer) {

@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <v-card-title>
-            Сводки
+            {{ $t('nav.links.resumes') }}
         </v-card-title>
         <v-card-text v-if="! loading" class="d-flex flex-wrap">
             <v-card
@@ -27,12 +27,12 @@
                            color="primary"
                            text
                            @click="$router.push(`/articles/${article.id}`)">
-                        Читать
+                        {{ $t('buttons.read') }}
                     </v-btn>
                 </v-card-actions>
             </v-card>
         </v-card-text>
-        <v-skeleton-loader type="card" v-else></v-skeleton-loader>
+        <v-skeleton-loader type="card" v-else />
     </v-card>
 </template>
 

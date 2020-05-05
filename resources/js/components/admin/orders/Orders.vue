@@ -3,7 +3,7 @@
         <v-card>
             <v-toolbar>
                 <v-toolbar-title>
-                    {{ $t('orders.table.header')}}
+                    {{ $t('orders.orders')}}
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
@@ -12,7 +12,7 @@
                 <v-text-field v-model="search.keyword"
                               @keyup.enter="onSearch"
                               append-icon="search"
-                              label="Поиск"
+                              :label="$t('placeholders.search')"
                               single-line>
                 </v-text-field>
 
@@ -21,7 +21,7 @@
                 <v-select v-model="search.status"
                           clearable
                           :items="status_codes"
-                          label="Статус">
+                          :label="$t('orders.placeholders.status')">
                     <template v-slot:item="{item}">
                         <v-list>
                         <v-list-item>
@@ -48,9 +48,9 @@
                         <v-text-field
                                 v-on="on"
                                 v-model="search.display_created_at"
-                                label="Дата создания"
+                                :label="$t('placeholders.created_at')"
                                 prepend-icon="event"
-                                hint="Дата создания"
+                                :hint="$t('placeholders.created_at')"
                                 dense
                                 readonly
                                 clearable
@@ -70,7 +70,7 @@
                                    v-model="search.created_at">
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" @click="calendar = false" text>
-                            {{ $t('users.btn.cancel') }}
+                            {{ $t('buttons.cancel') }}
                         </v-btn>
                         <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
                     </v-date-picker>
@@ -81,7 +81,7 @@
                 <v-btn color="success"
                        outlined
                        @click="exportOrders">
-                    Экспорт
+                    {{ $t('buttons.export') }}
                 </v-btn>
 
             </v-toolbar>
@@ -97,7 +97,7 @@
                     <tr v-for="order in orders" :key="order.id">
                         <td>
                             <v-btn text @click="displayModal(true, order.id)">
-                                Заказ #{{order.id}}
+                                {{ $t('orders.number', {id: order.id}) }}
                             </v-btn>
                         </td>
                         <td>
@@ -126,7 +126,7 @@
                                     </v-icon>
                                 </template>
                                 <span>
-                                    Править
+                                    {{ $t('tooltip.edit') }}
                                 </span>
                             </v-tooltip>
                         </td>
@@ -134,17 +134,17 @@
                     </tbody>
                 </v-simple-table>
                 <span v-show="! loading && orders.length" class="d-flex flex-row-reverse">
-                    Всего: {{ pagination.total }}
+                    {{ $t('total', {total: pagination.total}) }}
                 </span>
 
                 <v-dialog v-model="modal" max-width="850px" v-if="modal.display" scrollable persistent>
-                    <v-skeleton-loader type="card" v-show="modal.loading"></v-skeleton-loader>>
+                    <v-skeleton-loader type="card" v-show="modal.loading" />>
 
                     <v-card v-if="! modal.loading">
                         <v-card-title>
                             <v-row>
                                 <v-col cols="6" class="text-left">
-                                    Заказ #{{ modal.order.id }}
+                                    {{ $t('orders.number',{id: modal.order.id})}}
                                 </v-col>
 
                                 <v-col>
@@ -215,7 +215,7 @@
                             </v-simple-table>
 
                             <v-alert color="primary" outlined v-else>
-                                Позиции по заказу отсутствуют
+                                {{ $t('orders.no_products') }}
                             </v-alert>
                         </v-card-text>
 
@@ -234,7 +234,7 @@
                             <v-spacer></v-spacer>
 
                             <v-btn outlined color="default" @click="displayModal(false)">
-                                Закрыть
+                                {{ $t('buttons.close') }}
                             </v-btn>
                         </v-card-actions>
                     </v-card>
@@ -244,15 +244,15 @@
                 <!--Всего {{ pagination.total }}-->
                 <!--</span>-->
 
-                <v-skeleton-loader type="table-row-divider@6" v-show="loading"></v-skeleton-loader>
+                <v-skeleton-loader type="table-row-divider@6" v-show="loading" />
 
                 <v-alert color="info" outlined v-if="! orders.length && ! loading">
                     <div class="">
                         <span v-show="! searching">
-                            Заказы отсутствуют в системе
+                            {{ $t('orders.no_orders') }}
                         </span>
                         <span v-show="searching">
-                            По Вашему запросу ничего не найдено
+                            {{ $t('no_results') }}
                         </span>
                     </div>
                 </v-alert>
@@ -300,18 +300,18 @@
 
         table: {
           headers: [
-            'Идентификатор заказа',
-            'Покупатель',
-            'Статус',
-            'Стоимость',
-            'Дата заказа',
+            this.$t('orders.table.labels.id'),
+            this.$t('orders.table.labels.customer'),
+            this.$t('orders.table.labels.status'),
+            this.$t('orders.table.labels.price'),
+            this.$t('orders.table.labels.created_at'),
             ''
           ],
 
           detailHeaders: [
-            'Наименование товара',
-            'Статус',
-            'Стоимость',
+            this.$t('orders.table.labels.product_name'),
+            this.$t('orders.table.labels.status'),
+            this.$t('orders.table.labels.price'),
             ''
           ]
         },

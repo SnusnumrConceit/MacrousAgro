@@ -6,7 +6,8 @@
                     {{ video.title }}
                 </v-card-title>
                 <v-card-text>
-                    <errors></errors>
+                    <errors />
+
                     <v-row>
                         <v-col>
                             <video :src="video.src" controls width="520" height="380"></video>
@@ -23,23 +24,23 @@
                                    :disabled="! form.valid"
                                    outlined
                                    @click="save">
-                                Изменить
+                                {{ $t('buttons.edit')}}
                             </v-btn>
                         </v-col>
                     </v-row>
                 </v-card-text>
                 <v-card-actions>
                     <v-btn color="error" outlined @click="remove">
-                        {{ $t('videos.btn.delete')}}
+                        {{ $t('buttons.delete')}}
                     </v-btn>
                     <v-btn color="default" outlined @click="goBack">
-                        {{ $t('videos.btn.back')}}
+                        {{ $t('buttons.back')}}
                     </v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>
 
-        <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+        <v-skeleton-loader type="card" v-show="loading" />
     </div>
 </template>
 

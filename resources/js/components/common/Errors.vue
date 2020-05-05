@@ -39,8 +39,6 @@
 
     methods: {
       isObject(obj) {
-        console.log(this.errors);
-        console.log(obj.length);
         return typeof obj === 'object';
       }
     }

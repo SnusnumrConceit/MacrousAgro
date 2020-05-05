@@ -4,7 +4,7 @@
             <!-- TODO вынести в компонент photos-search -->
             <v-toolbar>
                 <v-toolbar-title>
-                    {{ $t('photos.header')}}
+                    {{ $t('photos.photos')}}
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
@@ -14,7 +14,7 @@
                 <v-text-field v-model="search.keyword"
                               @keyup.enter="onSearch"
                               append-icon="search"
-                              label="Поиск"
+                              :label="$t('placeholders.search')"
                               single-line></v-text-field>
 
                 <v-spacer></v-spacer>
@@ -30,9 +30,9 @@
                         <v-text-field
                                 v-on="on"
                                 v-model="search.display_created_at"
-                                label="Дата загрузки"
+                                :label="$t('placeholders.uploaded_at')"
                                 prepend-icon="event"
-                                hint="Дата загрузки"
+                                :hint="$t('placeholders.uploaded_at')"
                                 dense
                                 readonly
                                 clearable
@@ -55,7 +55,7 @@
                         <v-spacer></v-spacer>
 
                         <v-btn color="blue darken-1" @click="calendar = false" text>
-                            {{ $t('users.btn.cancel') }}
+                            {{ $t('buttons.cancel') }}
                         </v-btn>
 
                         <v-btn color="primary" outlined @click="calendar = false">
@@ -72,7 +72,7 @@
                     <template v-slot:activator="{on}">
                         <v-btn color="success" outlined v-on="on" @click="resetImage = false">
                             <i class="pe-7s-plus"></i>
-                            {{ $t('photos.btn.add')}}
+                            {{ $t('buttons.add')}}
                         </v-btn>
                     </template>
 
@@ -93,7 +93,7 @@
 
                             </v-text-field>
 
-                            <preview-upload @uploaded="onUploadImage" :reset="resetPreview"></preview-upload>
+                            <preview-upload @uploaded="onUploadImage" :reset="resetPreview" />
 
                         </v-card-text>
 
@@ -101,10 +101,10 @@
                             <v-spacer></v-spacer>
 
                             <v-btn color="success" :disabled="! form.valid || ! photo.image" @click="save()">
-                                {{ $t('photos.btn.save')}}
+                                {{ $t('buttons.save')}}
                             </v-btn>
                             <v-btn color="blue darken-1" text @click="cancel()">
-                                {{ $t('photos.btn.cancel')}}
+                                {{ $t('buttons.cancel')}}
                             </v-btn>
                         </v-card-actions>
                         </v-form>
@@ -126,25 +126,25 @@
 
                             <v-card-actions class="mt-auto">
                                 <v-btn color="error" outlined @click="remove(photo.id)">
-                                    {{ $t('photos.btn.delete')}}
+                                    {{ $t('buttons.delete')}}
                                 </v-btn>
                                 <v-btn color="warning" outlined @click="$router.push('/admin/photos/' + photo.id)">
-                                    {{ $t('photos.btn.edit')}}
+                                    {{ $t('buttons.edit')}}
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
                     </v-col>
                 </v-row>
 
-                <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+                <v-skeleton-loader type="card" v-show="loading" />
 
                 <v-alert color="info" outlined v-if="! loading && ! photos.length">
                     <div class="">
                         <span v-show="! searching">
-                            Фотографии отсутствуют в фотогалерее
+                            {{ $t('photos.no_photos') }}
                         </span>
                         <span v-show="searching">
-                            По Вашему запросу ничего не найдено
+                            {{ $t('no_results') }}
                         </span>
                     </div>
                 </v-alert>

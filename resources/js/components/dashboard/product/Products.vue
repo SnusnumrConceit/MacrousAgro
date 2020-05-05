@@ -18,7 +18,7 @@
                             </v-card-text>
                             <v-card-actions>
                                 <v-btn outlined color="primary" @click="toDetail(product.id)">
-                                    Подробнее
+                                    {{ $t('buttons.details') }}
                                 </v-btn>
                             </v-card-actions>
                         </v-card>
@@ -69,6 +69,11 @@
         this.$router.push(`/products/${id}`);
       },
 
+      /**
+       * Получить список товаров
+       *
+       * @return {Promise<void>}
+       */
       async getProducts() {
         const response = await axios.get(`${this.$attrs.apiRoute}/category/${this.categoryID}/products`, {
           params: {
@@ -84,6 +89,11 @@
         this.category_name = response.data.category_name;
       },
 
+      /**
+       * Поиск товаров
+       *
+       * @return {Promise<void>}
+       */
       async searchData() {
         const response = await axios.get(`${this.$attrs.apiRoute}/category/${this.categoryID}/products`, {
           params: {
@@ -93,6 +103,9 @@
         });
       },
 
+      /**
+       * Слушатель на скролле
+       */
       onScroll() {
         this.paginationScroll(this, document, 'getProducts');
       }

@@ -21,8 +21,7 @@
                                     </thead>
                                     <order-products-list :positions="order.positions"
                                                          :can-edit="true"
-                                                         @order-position-removed="removeFromCart">
-                                    </order-products-list>
+                                                         @order-position-removed="removeFromCart" />
                                 </template>
 
                                 <template v-slot:no-data>
@@ -35,10 +34,10 @@
 
                             <v-card-actions>
                                 <v-btn outlined color="success" @click="createOrder">
-                                    {{ $t('orders.buttons.pay') }}
+                                    {{ $t('buttons.pay') }}
                                 </v-btn>
                                 <v-btn outlined color="error" @click="removeOrder">
-                                    {{ $t('orders.buttons.cancel') }}
+                                    {{ $t('buttons.cancel') }}
                                 </v-btn>
                             </v-card-actions>
                         </div>
@@ -48,11 +47,11 @@
                     </v-tab-item>
 
                     <v-tab-item>
-                        <order-list :orders="orders.active.data" :headers="table.headers"></order-list>
+                        <order-list :orders="orders.active.data" :headers="table.headers" />
                     </v-tab-item>
 
                     <v-tab-item>
-                        <order-list :orders="orders.completed.data" :headers="table.headers"></order-list>
+                        <order-list :orders="orders.completed.data" :headers="table.headers" />
                     </v-tab-item>
                 </v-tabs>
 
@@ -60,15 +59,7 @@
             </v-card-text>
         </v-card>
 
-        <v-skeleton-loader type="card" v-else></v-skeleton-loader>
-
-
-        <!--<v-parallax-->
-        <!--dark-->
-        <!--src="https://cdn.vuetifyjs.com/images/backgrounds/vbanner.jpg"-->
-        <!--&gt;-->
-
-        <!--</v-parallax>-->
+        <v-skeleton-loader type="card" v-else />
     </div>
 </template>
 
@@ -91,8 +82,8 @@
         table: {
           header: this.$t('orders.table.header'),
           headers: [
-            this.$t('orders.table.headers.title'),
-            this.$t('orders.table.headers.price'),
+            this.$t('cart.table.headers.title'),
+            this.$t('cart.table.headers.price'),
             ''
           ],
         },
@@ -109,7 +100,7 @@
           }
         ],
 
-        selectedTab: 'На оформлении',
+        selectedTab: this.$t('orders.tabs.pre_order'),
       }
     },
 

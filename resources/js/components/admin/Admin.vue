@@ -1,10 +1,12 @@
 <template>
     <v-app dark>
-        <notification></notification>
-        <navigation></navigation>
+        <notification />
+
+        <navigation />
+
         <v-content fluid>
             <v-container fluid cols="12">
-                <router-view apiRoute="/api/admin"></router-view>
+                <router-view apiRoute="/api/admin" />
             </v-container>
         </v-content>
         <v-footer app></v-footer>

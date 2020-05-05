@@ -3,10 +3,10 @@
         <v-card v-show="! loading">
             <v-form v-model="form.valid" ref="user_form">
                 <v-card-title>
-                    Редактирование пользователя
+                    {{ $t('users.edit_user') }}
                 </v-card-title>
                 <v-card-text>
-                    <errors></errors>
+                    <errors />
                     <v-row>
                         <v-col cols="12" sm="12" md="4">
                             <v-text-field v-model="user.email"
@@ -66,7 +66,7 @@
                                                :locale="$i18n.locale">
                                     <v-spacer></v-spacer>
                                     <v-btn color="blue darken-1" @click="form_calendar = false" text>
-                                        {{ $t('users.btn.cancel') }}
+                                        {{ $t('buttons.cancel') }}
                                     </v-btn>
                                     <v-btn text color="primary" @click="form_calendar = false">OK</v-btn>
                                 </v-date-picker>
@@ -76,10 +76,10 @@
                 </v-card-text>
                 <v-card-actions>
                     <v-btn color="success" outlined @click="save" :disabled="! form.valid">
-                        {{ $t('users.btn.edit')}}
+                        {{ $t('buttons.edit')}}
                     </v-btn>
                     <v-btn @click="goBack" color="default" outlined>
-                        {{ $t('users.btn.back')}}
+                        {{ $t('buttons.back')}}
                     </v-btn>
                 </v-card-actions>
             </v-form>

@@ -4,7 +4,7 @@
             <v-toolbar>
                 <!-- TODO вынести в компонент articles-search -->
                 <v-toolbar-title>
-                    {{ $t('articles.table.header') }}
+                    {{ $t('articles.articles') }}
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
@@ -12,7 +12,7 @@
                 <v-spacer></v-spacer>
 
                 <v-text-field v-model="search.keyword" append-icon="search"
-                              label="Поиск"
+                              :label="$t('placeholders.search')"
                               single-line>
                 </v-text-field>
 
@@ -29,9 +29,9 @@
                         <v-text-field
                                 @click="calendar = true"
                                 v-model="search.display_publication_date"
-                                label="Дата публикации"
+                                :label="$t('placeholders.publication_date')"
                                 prepend-icon="event"
-                                hint="Дата публикации"
+                                :hint="$t('placeholders.publication_date')"
                                 dense
                                 readonly
                                 clearable
@@ -52,7 +52,7 @@
                                    v-model="search.publication_date">
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" @click="calendar = false" text>
-                            {{ $t('users.btn.cancel') }}
+                            {{ $t('buttons.cancel') }}
                         </v-btn>
                         <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
                     </v-date-picker>
@@ -60,7 +60,7 @@
 
                 <v-spacer></v-spacer>
 
-                <v-checkbox v-model="search.is_publicated" label="Публикация"></v-checkbox>
+                <v-checkbox v-model="search.is_publicated" :label="$t('articles.checkboxes.publication')"></v-checkbox>
 
                 <v-spacer></v-spacer>
 
@@ -68,7 +68,7 @@
                 <v-dialog v-model="modal" max-width="1000px" persistent>
                     <template v-slot:activator="{on}">
                         <v-btn color="success" outlined v-on="on" @click="resetPreview = false">
-                            <i class="pe-7s-plus"></i> {{ $t('articles.btn.add') }}
+                            <i class="pe-7s-plus"></i> {{ $t('buttons.add') }}
                         </v-btn>
                     </template>
 
@@ -78,7 +78,7 @@
                                 {{ $t('articles.form.header')}}
                             </v-card-title>
                             <v-card-text>
-                                <errors></errors>
+                                <errors />
                                 <v-row>
                                     <v-col cols="6">
                                         <v-text-field v-model="article.title"
@@ -149,7 +149,7 @@
                                 <v-row>
                                     <v-col>
                                         <!--<vue-dropzone ref="article_dropzone" id="dropzone" :options="dropzone_options"></vue-dropzone>-->
-                                        <preview-upload @uploaded="onUploadImage" :reset="resetPreview"></preview-upload>
+                                        <preview-upload @uploaded="onUploadImage" :reset="resetPreview" />
                                     </v-col>
                                 </v-row>
 
@@ -162,12 +162,12 @@
                                        :disabled="! form.valid || ! article.image"
                                        outlined
                                        @click="save()">
-                                    {{ $t('articles.btn.save') }}
+                                    {{ $t('buttons.save') }}
                                 </v-btn>
                                 <v-btn color="blue darken-1"
                                        text
                                        @click="cancel()">
-                                    {{ $t('articles.btn.cancel') }}
+                                    {{ $t('buttons.cancel') }}
                                 </v-btn>
                             </v-card-actions>
 
@@ -209,7 +209,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                    Править
+                                    {{ $t('tooltips.edit')}}
                                 </span>
                                 </v-tooltip>
 
@@ -224,7 +224,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                    Удалить
+                                    {{ $t('tooltips.delete')}}
                                 </span>
                                 </v-tooltip>
                             </td>
@@ -234,7 +234,7 @@
 
                 </v-simple-table>
                 <span v-show="! loading" class="d-flex flex-row-reverse">
-                    Всего: {{ pagination.total }}
+                    {{ $t('total', {total: pagination.total}) }}
                 </span>
 
                 <v-skeleton-loader type="table-row-divider@6" v-show="loading">
@@ -244,10 +244,10 @@
                 <v-alert color="info" outlined v-if="! loading && ! articles.length">
                     <div class="">
                         <span v-show="! searching">
-                            Новости отсутствуют в системе
+                            {{ $t('articles.no_articles') }}
                         </span>
                         <span v-show="searching">
-                            По Вашему запросу ничего не найдено
+                            {{ $t('no_results') }}
                         </span>
                     </div>
                 </v-alert>
@@ -323,9 +323,9 @@
 
         table: {
           headers: [
-            'Заголовок',
-            'Опубликована',
-            'Последнее изменение',
+            this.$t('articles.table.headers.title'),
+            this.$t('articles.table.headers.is_publicated'),
+            this.$t('articles.table.headers.updated_at'),
             ''
           ]
         },

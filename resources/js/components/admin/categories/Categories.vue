@@ -12,7 +12,7 @@
                 <v-text-field v-model="search.keyword"
                               @keyup.enter="onSearch"
                               append-icon="search"
-                              label="Поиск"
+                              :label="$t('placeholders.search')"
                               single-line>
                 </v-text-field>
 
@@ -21,7 +21,7 @@
                 <v-dialog v-model="modal" max-width="500px" @click:outside="resetForm">
                     <template v-slot:activator="{on}">
                         <v-btn outlined color="success" class="" dark v-on="on">
-                            <i class="pe-7s-plus"></i> {{ $t('categories.btn.add')}}
+                            <i class="pe-7s-plus"></i> {{ $t('buttons.add')}}
                         </v-btn>
                     </template>
 
@@ -33,7 +33,7 @@
 
                             <v-card-text>
                                 <errors></errors>
-                                <v-text-field label="Название*"
+                                <v-text-field :label="$t('categories.form.labels.title')"
                                               required
                                               v-model="category.name"
                                               clearable
@@ -50,12 +50,12 @@
                                 <v-btn color="success"
                                        :disabled="! form.valid"
                                        @click="save()">
-                                    {{ $t('categories.btn.save')}}
+                                    {{ $t('buttons.save')}}
                                 </v-btn>
                                 <v-btn color="blue darken-1"
                                        text
                                        @click="close()">
-                                    {{ $t('categories.btn.cancel') }}
+                                    {{ $t('buttons.cancel') }}
                                 </v-btn>
                             </v-card-actions>
                         </v-form>
@@ -88,7 +88,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                        Править
+                                        {{ $t('buttons.edit') }}
                                     </span>
                                 </v-tooltip>
 
@@ -103,7 +103,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                        Удалить
+                                        {{ $t('buttons.delete') }}
                                     </span>
                                 </v-tooltip>
                             </td>
@@ -113,7 +113,7 @@
                         <tr>
                             <td></td>
                             <td class="text-right">
-                                Всего: {{ categories.length }}
+                                {{ $t('total', {total: categories.length}) }}
                             </td>
                         </tr>
                         </tfoot>
@@ -127,10 +127,10 @@
                 <v-alert color="info" outlined v-if="! loading && ! categories.length">
                     <div class="">
                         <span v-show="! searching">
-                            Категории отсутствуют в системе
+                            {{ $t('categories.no_categories') }}
                         </span>
                         <span v-show="searching">
-                            По Вашему запросу ничего не найдено
+                            {{ $t('no_results') }}
                         </span>
                     </div>
                 </v-alert>
@@ -168,8 +168,8 @@
           valid: false,
           name: {
             rules: [
-              v => (v !== undefined && v.length <= 25) || 'Длина не может превышать 25 символов',
-              v => v !== '' || 'Поле обязательное к заполнению'
+              v => (v !== undefined && v.length <= 25) || this.$t('categories.rules.title.max_length', {max_length: 25}),
+              v => v !== '' || this.$t('categories.rules.title.required')
             ]
           }
         },
@@ -177,7 +177,7 @@
          table: {
             headers:[
               {
-                text: ' Название',
+                text: this.$t('categories.table.headers.title'),
                 align: 'left',
                 sortable: true,
                 value: 'name'

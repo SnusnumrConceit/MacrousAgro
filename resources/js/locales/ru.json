@@ -1,27 +1,72 @@
 {
-  "categories": {
+  "app_name": "МокроусАгро",
+  "app_subtitle": "Агробиржа #1",
+
+  "buttons": {
+    "export": "Экспорт",
+    "search": "Поиск",
+    "save":   "Сохранить",
+    "cancel": "Отмена",
+    "add":    "Добавить",
+    "delete": "Удалить",
+    "back":   "Назад",
+    "edit":   "Изменить",
+    "details": "Подробнее",
+    "close":  "Закрыть",
+    "pay":    "Оплатить",
+    "to_cart": "В корзину",
+    "read": "Читать",
+
+    "sign_in": "Войти",
+    "logout": "Выйти",
+    "sign_up": "Регистрация"
+  },
+
+  "placeholders": {
+    "search": "Поиск",
+    "publication_date": "Дата публикации",
+    "created_at": "Дата создания",
+    "uploaded_at": "Дата загрузки",
+    "last_activity": "Последнее действие"
+  },
+
+  "tooltips": {
+    "edit":   "Править",
+    "delete": "Удалить"
+  },
+
+  "total": "Всего: {total}",
+  "no_results": "По Вашему запросу ничего не найдено",
+
+
+  "auth": {
+    "authorization": "Авторизация",
+    "registration": "Регистрация"
+  },
+
+
+  "cart": {
     "table": {
-      "header": "Категории"
-    },
-    "form": {
-      "header": "Категория",
-      "labels": {
-        "title": "Название"
+      "headers": {
+        "title": "Наименование",
+        "price": "Стоимость"
       }
-    },
-    "btn": {
-      "add": "Добавить",
-      "save": "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "edit": "Изменить",
-      "back": "Назад"
     }
   },
+
+
   "articles": {
+    "articles": "Новости",
+    "no_articles": "Новости отсутствуют в системе",
+
     "table": {
-      "header": "Новости"
+      "headers": {
+        "title": "Заголовок",
+        "is_publicated": "Опубликована",
+        "updated_at": "Последнее изменение"
+      }
     },
+
     "form": {
       "header": "Новость",
       "labels": {
@@ -45,19 +90,69 @@
         }
       }
     },
-    "btn": {
-      "add": "Добавить",
-      "save": "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "edit": "Изменить",
-      "back": "Назад"
+
+    "checkboxes": {
+      "publication": "Публикация"
     }
   },
-  "products": {
+
+
+  "categories": {
+    "categories": "Категории",
+    "no_categories": "Категории отсутствуют в системе",
+
     "table": {
-      "header": " Товары"
+      "headers": {
+        "title": "Название"
+      }
     },
+
+    "form": {
+      "header": "Категория",
+      "labels": {
+        "title": "Название*"
+      }
+    },
+    "rules": {
+      "title": {
+        "required": "Вы не указали название категории",
+        "max_length": "Длина не может превышать {max_length} символов"
+      }
+    }
+  },
+
+  "photos": {
+    "photos": "Фото",
+    "no_photos": "Фотографии отсутствуют в фотогалерее",
+
+    "form": {
+      "header": "Фото",
+      "labels": {
+        "title": "Название*"
+      },
+      "rules": {
+        "title": {
+          "required": "Вы не указали название фотографии",
+          "length": "Название не может превышать более {length} символов"
+        }
+      }
+    }
+  },
+
+
+  "products": {
+    "products": "Товары",
+    "no_products": "Товары отсутствуют",
+
+    "table": {
+      "headers": {
+        "title": "Наименование",
+        "price": "Стоимость",
+        "created_at": "Создан",
+        "updated_at": "Последнее изменение"
+      }
+    },
+
     "form": {
       "header": "Товар",
       "labels": {
@@ -65,7 +160,8 @@
         "url": "Эскиз*",
         "price": "Цена",
         "description": "Описание",
-        "category": "Категория"
+        "category": "Категория*",
+        "created_at": "Дата создания"
       },
       "rules": {
         "title": {
@@ -89,24 +185,23 @@
         },
         "category": {
           "required": "Вы не указали Категорию",
-          "min_length": "Пароль не может быть менее {length} символов",
-          "max_length": "Пароль не может превышать более {length} символов"
+          "min_length": "Категория не может быть менее {length} символов",
+          "max_length": "Категория не может превышать более {length} символов"
         }
       }
     },
-    "btn": {
-      "add": "Добавить",
-      "save": "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "edit": "Изменить",
-      "back": "Назад"
+
+    "placeholders": {
+      "category": "Категория"
     }
   },
+
+
   "orders": {
     "orders": "Заказы",
     "no_orders": "Заказы отсутствуют",
     "no_products": "Товары в заказе отсутствуют",
+
     "amount_price": "Итого: {price} ₽",
     "number": "Заказ #{id}",
 
@@ -114,15 +209,14 @@
     "removed": "Товар успешно удалён",
 
     "table": {
-      "headers": {
-        "title": "Наименование",
-        "price": "Стоимость"
+      "labels": {
+        "id": "Идентификатор заказа",
+        "customer": "Покупатель",
+        "price": "Стоимость",
+        "status": "Статус",
+        "created_at": "Дата заказа",
+        "product_name": "Наименование товара"
       }
-    },
-
-    "buttons": {
-      "pay": "Оплатить",
-      "cancel": "Отменить"
     },
 
     "form": {
@@ -147,58 +241,29 @@
       "pre_order": "На оформлении",
       "active":    "Активные",
       "completed": "Завершённые"
-    }
-  },
-  "videos": {
-    "header": "Видео",
-    "form": {
-      "header": "Видео",
-      "labels": {
-        "title": "Название*"
-      },
-      "rules": {
-        "title": {
-          "required": "Вы не указали название",
-          "length": "Название не может превышать более {length} символов"
-        }
-      }
     },
-    "btn": {
-      "add": "Добавить",
-      "save": "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "edit": "Изменить",
-      "back": "Назад"
+
+    "placeholders": {
+      "status": "Статус"
     }
   },
-  "photos": {
-    "header": "Фото",
-    "form": {
-      "header": "Фото",
-      "labels": {
-        "title": "Название*"
-      },
-      "rules": {
-        "title": {
-          "required": "Вы не указали название фотографии",
-          "length": "Название не может превышать более {length} символов"
-        }
-      }
-    },
-    "btn": {
-      "add":    "Добавить",
-      "save":   "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "edit":   "Изменить",
-      "back":   "Назад"
-    }
-  },
+
+
   "users": {
+    "users": "Пользователи",
+    "no_users": "Пользователи отсутствуют в системе",
+    "edit_user": "Редактирование пользователя",
+
     "table": {
-      "header": " Пользователи"
+      "headers": {
+        "full_name": "Фамилия и Имя",
+        "email": "Email",
+        "birthday": "Дата рождения",
+        "registration_date": "Зарегистрирован",
+        "updated_at": "Последнее действие"
+      }
     },
+
     "form": {
       "header": "Пользователь",
       "labels": {
@@ -241,16 +306,28 @@
           "not_equals": "Пароли не совпадают"
         }
       }
-    },
-    "btn": {
-      "add":    "Добавить",
-      "save":   "Сохранить",
-      "cancel": "Отмена",
-      "delete": "Удалить",
-      "edit":   "Изменить",
-      "back":   "Назад"
     }
   },
+
+
+  "videos": {
+    "videos": "Видео",
+    "no_videos": "Видеоролики отсутствуют в видеогалерее",
+
+    "form": {
+      "header": "Видео",
+      "labels": {
+        "title": "Название*"
+      },
+      "rules": {
+        "title": {
+          "required": "Вы не указали название",
+          "length": "Название не может превышать более {length} символов"
+        }
+      }
+    }
+  },
+
   "nav": {
     "subtitle": "Панель администрирования",
     "links": {
@@ -261,38 +338,12 @@
       "photos":     "Фотогалерея",
       "videos":     "Видеогалерея",
       "roles":      "Роли",
-      "users":      "Пользователи"
+      "users":      "Пользователи",
+      "resumes":    "Сводки",
+      "production": "Продукция"
     }
   },
-  "btn": {
-    "add":    "Добавить",
-    "save":   "Сохранить",
-    "cancel": "Отмена",
-    "delete": "Удалить",
-    "edit":   "Изменить",
-    "back":   "Назад"
-  },
-  "v-data-table": {
-    "no-data-text":     "Данные отсутствуют",
-    "no-results-text":  "Не найдено ни одной записи",
-    "loading-text":     "Подождите...",
-    "per-page":         "Записей на странице:"
-  },
-  "dropzone": {
-    "dictDefaultMessage": {
-      "images": "Переместите изображение в область загрузки",
-      "videos": "Переместите видео в область загрузки"
-    },
-    "dictFallbackMessage":          "Ваш браузер не поддерживает данный компонент! Пожалуйста, обновите браузер на актуальный.",
-    "dictResponseError":            "Ошибка!",
-    "dictInvalidFileType":          "Неверный формат",
-    "dictFileTooBig":               "Файл слишком большого размера",
-    "dictCancelUpload":             "Отмена",
-    "dictUploadCanceled":           "Отменить загрузку",
-    "dictCancelUploadConfirmation": "Вы действительно хотите отменить загрузки?",
-    "dictRemoveFile":               "Удалить файл",
-    "dictRemoveFileConfirmation":   "Вы действительно хотите удалить файл?"
-  },
+
   "swal": {
     "title": {
       "success":  "Успешно!",

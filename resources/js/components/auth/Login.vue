@@ -2,16 +2,19 @@
     <v-dialog width="500" @click:outside="resetForm">
         <template v-slot:activator="{ on }">
             <v-btn outlined text color="white" v-on="on">
-                Войти
+                {{ $t('buttons.sign_in') }}
             </v-btn>
         </template>
 
         <v-card class="d-sm-inline-block">
             <v-form>
-                <v-card-title>Авторизация</v-card-title>
+                <v-card-title>
+                    {{ $t('auth.authorization') }}
+                </v-card-title>
                 <v-card-text>
                     <v-container>
-                        <errors></errors>
+                        <errors />
+
                         <v-row>
                             <v-col>
                                 <v-text-field v-model="login.email"
@@ -37,7 +40,9 @@
                     </v-container>
                 </v-card-text>
                 <v-card-actions>
-                    <v-btn outlined @click="signIn(login)" color="primary">Войти</v-btn>
+                    <v-btn outlined @click="signIn(login)" color="primary">
+                        {{ $t('buttons.sign_in') }}
+                    </v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>

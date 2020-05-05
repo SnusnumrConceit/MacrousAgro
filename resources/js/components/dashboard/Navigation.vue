@@ -96,24 +96,24 @@
       return {
         nav_categories: [
           {
-            title: 'Продукция',
+            title: this.$t('nav.links.production'),
             slug: 'Products',
             icon: 'mdi-dolly'
           },
           {
-            title: 'Сводки',
+            title: this.$t('nav.links.resumes'),
             slug: 'Articles',
             icon: 'mdi-newspaper-variant-outline',
             path: '/articles'
           },
           {
-            title: 'Фотогалерея',
+            title: this.$t('nav.links.photos'),
             slug: 'Photos',
             icon: 'mdi-image-outline',
             path: '/photos'
           },
           {
-            title: 'Видеогалерея',
+            title: this.$t('nav.links.videos'),
             slug: 'Videos',
             icon: 'mdi-video-outline',
             path: '/videos'

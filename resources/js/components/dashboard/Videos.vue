@@ -1,7 +1,7 @@
 <template>
     <v-card height="100%" class="flex-card-full-size">
         <v-card-title>
-            Видеогалерея
+            {{ $t('nav.links.videos') }}
         </v-card-title>
         <v-card-text>
             <v-row>

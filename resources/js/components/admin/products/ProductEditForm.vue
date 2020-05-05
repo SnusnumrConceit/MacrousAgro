@@ -9,7 +9,7 @@
                 <errors></errors>
                 <v-row>
                     <v-col>
-                        <preview-upload @uploaded="onUploadImage" ref="previewUpload" v-if="! loading" :src="product.src"></preview-upload>
+                        <preview-upload @uploaded="onUploadImage" ref="previewUpload" v-if="! loading" :src="product.src" />
                     </v-col>
                     <v-col>
                         <v-text-field v-model="product.title"
@@ -51,23 +51,23 @@
                                :disabled="! form.valid"
                                outlined
                                @click="save">
-                            Изменить
+                            {{ $t('buttons.edit') }}
                         </v-btn>
                     </v-col>
                 </v-row>
             </v-card-text>
             <v-card-actions>
                 <v-btn color="error" outlined @click="remove">
-                    {{ $t('products.btn.delete')}}
+                    {{ $t('buttons.delete')}}
                 </v-btn>
                 <v-btn color="default" outlined @click="goBack">
-                    {{ $t('products.btn.back')}}
+                    {{ $t('buttons.back')}}
                 </v-btn>
             </v-card-actions>
             </v-form>
         </v-card>
 
-        <v-skeleton-loader type="card" v-show="loading"></v-skeleton-loader>
+        <v-skeleton-loader type="card" v-show="loading" />
     </div>
 </template>
 

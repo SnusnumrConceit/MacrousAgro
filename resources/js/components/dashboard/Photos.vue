@@ -1,7 +1,7 @@
 <template>
     <v-card>
         <v-card-title>
-            Фотогалерея
+            {{ $t('nav.links.photos') }}
         </v-card-title>
         <v-card-text>
             <v-row>

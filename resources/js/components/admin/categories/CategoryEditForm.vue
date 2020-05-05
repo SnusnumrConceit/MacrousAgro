@@ -5,7 +5,7 @@
                 <v-card-text>
                     <errors></errors>
                     <v-text-field v-model="category.name"
-                                  label="Название*"
+                                  :label="$t('categories.form.labels.title')"
                                   required
                                   clearable
                                   counter
@@ -14,16 +14,16 @@
                     </v-card-text>
                 <v-card-actions>
                     <v-btn color="success" outlined @click="save" :disabled="! form.valid">
-                        {{ $t('categories.btn.edit')}}
+                        {{ $t('buttons.edit')}}
                     </v-btn>
                     <v-btn @click="goBack" color="default" outlined>
-                        {{ $t('categories.btn.back')}}
+                        {{ $t('buttons.back')}}
                     </v-btn>
                 </v-card-actions>
             </v-form>
         </v-card>
 
-        <v-skeleton-loader type="table-row-divider@2" v-show="loading"></v-skeleton-loader>
+        <v-skeleton-loader type="table-row-divider@2" v-show="loading" />
     </div>
 </template>
 
@@ -44,8 +44,8 @@
 
           name: {
             rules: [
-              v => v !== '' || 'Поле обязательное к заполнению',
-              v => (v !== undefined && v !== null && v.length <= 25) || 'Длина не может превышать 25 символов'
+              v => (v !== undefined && v.length <= 25) || this.$t('categories.rules.title.max_length', {max_length: 25}),
+              v => v !== '' || this.$t('categories.rules.title.required')
             ]
           }
         },

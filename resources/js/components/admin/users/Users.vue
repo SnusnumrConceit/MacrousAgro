@@ -4,7 +4,7 @@
             <!-- TODO вынести в компонент users-search -->
             <v-toolbar color="white">
                 <v-toolbar-title>
-                    Пользователи
+                    {{ $t('users.users') }}
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
@@ -14,7 +14,7 @@
                 <v-text-field v-model="search.keyword"
                               @keyup.enter="onSearch"
                               append-icon="search"
-                              label="Поиск"
+                              :label="$t('placeholders.search')"
                               single-line></v-text-field>
 
                 <v-spacer></v-spacer>
@@ -30,8 +30,8 @@
                         <v-text-field
                                 v-on="on"
                                 v-model="search.display_updated_at"
-                                label="Последнее действие"
-                                hint="Последнее действие"
+                                :label="$t('placeholders.last_activity')"
+                                :hint="$t('placeholders.last_activity')"
                                 persistent-hint
                                 dense
                                 readonly
@@ -51,7 +51,7 @@
                                    v-model="search.updated_at">
                         <v-spacer></v-spacer>
                         <v-btn color="blue darken-1" @click="calendar = false" text>
-                            {{ $t('users.btn.cancel') }}
+                            {{ $t('buttons.cancel') }}
                         </v-btn>
                         <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
                     </v-date-picker>
@@ -63,19 +63,20 @@
                 <v-dialog v-model="modal" max-width="700px" max-height="1000px">
                     <template v-slot:activator="{on}">
                         <v-btn outlined color="success" class="" dark v-on="on">
-                            <i class="pe-7s-plus"></i> {{ $t('users.btn.add')}}
+                            <i class="pe-7s-plus"></i> {{ $t('buttons.add')}}
                         </v-btn>
                     </template>
 
                     <v-card>
                         <v-form v-model="form.valid" ref="user_form">
                             <v-card-title class="headline">
-                                Пользователь
+                                {{ $t('users.form.header') }}
                             </v-card-title>
 
                             <v-card-text>
                                 <v-container>
-                                    <errors></errors>
+                                    <errors />
+
                                     <v-row>
                                         <v-col cols="12" sm="12" md="12" lg="12">
                                             <v-text-field v-model="user.email"
@@ -137,7 +138,7 @@
                                                     <v-spacer></v-spacer>
 
                                                     <v-btn color="blue darken-1" @click="form_calendar = false" text>
-                                                        {{ $t('users.btn.cancel') }}
+                                                        {{ $t('buttons.cancel') }}
                                                     </v-btn>
                                                     <v-btn color="primary" outlined @click="form_calendar = false">OK
                                                     </v-btn>
@@ -181,8 +182,12 @@
                             <v-card-actions>
                                 <v-spacer></v-spacer>
 
-                                <v-btn color="success" @click="save()" :disabled="! form.valid">Сохранить</v-btn>
-                                <v-btn color="blue darken-1" text @click="close()">Отмена</v-btn>
+                                <v-btn color="success" @click="save()" :disabled="! form.valid">
+                                    {{ $t('buttons.save') }}
+                                </v-btn>
+                                <v-btn color="blue darken-1" text @click="close()">
+                                    {{ $t('buttons.cancel') }}
+                                </v-btn>
 
                             </v-card-actions>
                         </v-form>
@@ -197,7 +202,9 @@
             <v-card-text>
                 <!-- TODO вынести в компонент users-list -->
 
-                <v-btn color="success" outlined @click="exportData" class="float-right">Экспорт</v-btn>
+                <v-btn color="success" outlined @click="exportData" class="float-right">
+                    {{ $t('buttons.export') }}
+                </v-btn>
 
                 <v-simple-table :fixed-header="! calendar" :height="750" v-show="! loading && users.length">
                     <template v-slot:default>
@@ -234,7 +241,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                        Править
+                                        {{ $t('tooltips.edit') }}
                                     </span>
                                 </v-tooltip>
 
@@ -249,7 +256,7 @@
                                         </v-icon>
                                     </template>
                                     <span>
-                                        Удалить
+                                        {{ $t('tooltips.delete') }}
                                     </span>
                                 </v-tooltip>
                             </td>
@@ -258,20 +265,18 @@
                     </template>
                 </v-simple-table>
                 <span v-show="! loading" class="d-flex flex-row-reverse">
-                    Всего: {{ pagination.total }}
+                    {{ $t('total', {total: pagination.total})}}
                 </span>
 
-                <v-skeleton-loader type="table-row-divider@6" v-show="loading">
-
-                </v-skeleton-loader>
+                <v-skeleton-loader type="table-row-divider@6" v-show="loading" />
 
                 <v-alert color="info" outlined v-if="! loading && ! users.length">
                     <div class="">
                         <span v-show="! searching">
-                            Пользователи отсутствуют в системе
+                            {{ $t('users.no_users') }}
                         </span>
                         <span v-show="searching">
-                            По Вашему запросу ничего не найдено
+                            {{ $t('no_results') }}
                         </span>
                     </div>
                 </v-alert>
@@ -384,11 +389,11 @@
 
         table: {
           headers: [
-            'Фамилия и Имя',
-            'Email',
-            'Дата рождения',
-            'Зарегистрирован',
-            'Последние действия',
+            this.$t('users.table.headers.full_name'),
+            this.$t('users.table.headers.email'),
+            this.$t('users.table.headers.birthday'),
+            this.$t('users.table.headers.registration_date'),
+            this.$t('users.table.headers.updated_at'),
             ''
           ]
         },

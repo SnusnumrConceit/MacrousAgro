@@ -2,23 +2,23 @@
 
 return [
     'greetings' => [
-        'welcome' => 'Добро пожаловать в ' . config('app.name')
+        'welcome' => 'Welcome to ' . config('app.name')
     ],
 
     'subjects' => [
-        'welcome' => 'Вы успешно зарегистрированы',
-        'new_user' => 'Регистрация нового пользователя'
+        'welcome' => 'You have been successfully registered',
+        'new_user' => 'New user has been registered'
     ],
 
     'body' => [
-        'welcome' => ':name, наша агробиржа :app_name к Вашим услугам!',
-        'new_user' => 'Зарегистрирован новый пользователь :full_name :email'
+        'welcome' => ':name, our agribusiness :app_name at Your service!',
+        'new_user' => 'New user has been registered :full_name :email'
     ],
 
     'buttons' => [
-        'landing' => 'На главную',
-        'details' => 'Подробнее'
+        'landing' => 'Homepage',
+        'details' => 'Details'
     ],
 
-    'footer' => 'С уважением,'
+    'footer' => 'Best regards,'
 ];
