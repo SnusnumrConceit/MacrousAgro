@@ -15,10 +15,29 @@
 
 <script>
   import Navigation from "./Navigation";
+  import { mapActions } from 'vuex';
 
   export default {
     name: "admin",
-    components: {Navigation}
+
+    components: {Navigation},
+
+    methods: {
+      ...mapActions('errors', [
+        'resetErrors'
+      ]),
+
+      ...mapActions('notifications', [
+          'hideNotification'
+      ])
+    },
+
+    mounted() {
+      window.addEventListener('beforeunload', (e) => {
+        this.resetErrors();
+        this.hideNotification();
+      });
+    }
   }
 </script>
 

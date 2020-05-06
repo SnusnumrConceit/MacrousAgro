@@ -214,18 +214,17 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Обработчик события в форме добавления - отслеживает загрузку фотографии
@@ -343,7 +342,7 @@
 
           this.resetForm();
         } catch (e) {
-          this.setErrors(e.response.data.error);
+          this.setErrors(e.response.data.errors);
         }
       },
 
@@ -422,10 +421,6 @@
 
     mounted() {
       document.addEventListener('scroll', this.onScroll);
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
   }
 </script>

@@ -33,6 +33,7 @@ const logout = async ({commit}) => {
     commit('LOGOUT');
 
     commit('cart/SET_CART_ORDER', {positions: [], price: 0}, {root: true});
+    sessionStorage.clear();
 
     document.location.href = '/';
   } catch (e) {

@@ -1,354 +1,310 @@
 {
-    "app_name": "MocrousAgro",
-    "app_subtitle": "Agrobusiness #1",
-
-    "buttons": {
-        "export": "Export",
-        "search": "Search",
-        "save":   "Save",
-        "cancel": "Cancel",
-        "add":    "Add",
-        "delete": "Delete",
-        "back":   "Back",
-        "edit":   "Edit",
-        "details": "Details",
-        "close":  "Close",
-        "pay":    "Pay",
-        "to_cart": "Add to cart",
-        "read": "Read",
-
-        "sign_in": "Sign in",
-        "logout": "Logout",
-        "sign_up": "Sign up"
-    },
-
-    "placeholders": {
-        "search": "Search",
-        "publication_date": "Publication date",
-        "created_at": "Created date",
-        "uploaded_at": "Uploaded date",
-        "last_activity": "Last activity"
-    },
-
-    "tooltips": {
-        "edit":   "Edit",
-        "delete": "Delete"
-    },
-
-    "total": "Total: {total}",
-    "no_results": "No results for Your query",
-
-
-    "auth": {
-        "authorization": "Authorization",
-        "registration": "Registration"
-    },
-
-
-    "cart": {
-        "table": {
-            "headers": {
-                "title": "Title",
-                "price": "Price"
-            }
-        }
-    },
-
-
-    "articles": {
-        "articles": "Articles",
-        "no_articles": "No articles in system",
-
-        "table": {
-            "headers": {
-                "title": "Header",
-                "is_publicated": "Publication",
-                "updated_at": "Last editing"
-            }
-        },
-
-        "form": {
-            "header": "Article",
-            "labels": {
-                "title": "Header*",
-                "description": "Description*",
-                "publication_date": "Publication Date*",
-                "is_publicated": "Publicated"
-            },
-            "rules": {
-                "title": {
-                    "required": "Header is required",
-                    "length": "Header is less than {length} symbols"
-                },
-                "description": {
-                    "required": "Description is required",
-                    "length": "Description is less than {length} symbols"
-                },
-                "publication_date": {
-                    "required": "Publication Date is required",
-                    "length": "Publication date is more than yesterday date"
-                }
-            }
-        },
-
-        "checkboxes": {
-            "publication": "Publication"
-        }
-    },
-
-
-    "categories": {
-        "categories": "Categories",
-        "no_categories": "No categories in the system",
-
-        "table": {
-            "headers": {
-                "title": "Title"
-            }
-        },
-
-        "form": {
-            "header": "Category",
-            "labels": {
-                "title": "Title*"
-            }
-        },
-        "rules": {
-            "title": {
-                "required": "Title is required",
-                "max_length": "Title's length is less than {max_length} symbols"
-            }
-        }
-    },
-
-
-    "photos": {
-        "photos": "Photos",
-        "no_photos": "No photos in photo gallery",
-
-        "form": {
-            "header": "Photo",
-            "labels": {
-                "title": "Title*"
-            },
-            "rules": {
-                "title": {
-                    "required": "Title is required",
-                    "length": "Title's length is less than {length} symbols"
-                }
-            }
-        }
-    },
-
-
-    "products": {
-        "products": "Products",
-        "no_products": "No products",
-
-        "table": {
-            "headers": {
-                "title": "Title",
-                "price": "Price",
-                "created_at": "Created Date",
-                "updated_at": "Last Change"
-            }
-        },
-
-        "form": {
-            "header": "Product",
-            "labels": {
-                "title": "Title*",
-                "url": "Picture*",
-                "price": "Price",
-                "description": "Description",
-                "category": "Category*",
-                "created_at": "Created Date"
-            },
-            "rules": {
-                "title": {
-                    "required": "Title is required",
-                    "min_length": "Title is more than {length} symbols",
-                    "max_length": "Title is more less {length} symbols"
-                },
-                "url": {
-                    "required": "Picture is required"
-                },
-                "price": {
-                    "required": "Price is required",
-                    "min_length": "Price is more than {length} symbols",
-                    "max_length": "Price is more less {length} symbols",
-                    "not_numeric": "Price should be includes numbers"
-                },
-                "description": {
-                    "required": "Description is required",
-                    "min_length": "Description is more than {length} symbols",
-                    "max_length": "Title is more less {length} symbols"
-                },
-                "category": {
-                    "required": "Category is required",
-                    "min_length": "Category is more than {length} symbols",
-                    "max_length": "Category is more less {length} symbols"
-                }
-            }
-        },
-
-        "placeholders": {
-            "category": "Category"
-        }
-    },
-
-
-    "orders": {
-        "orders": "Orders",
-        "no_orders": "No orders",
-        "no_products": "No products in order",
-
-        "amount_price": "Amount Payment: {price} ₽",
-        "number": "Order #{id}",
-
-        "added": "Product has been successfully added",
-        "removed": "Product has been successfully deleted",
-
-        "table": {
-            "labels": {
-                "id": "Order ID",
-                "customer": "Customer",
-                "price": "Price",
-                "status": "Status",
-                "created_at": "Order Date",
-                "product_name": "Product Name"
-            }
-        },
-
-        "form": {
-            "header": "Order creating",
-            "labels": {
-                "products":    "Products",
-                "customer":    "Customer",
-                "status_code": "Status",
-                "product":     "Product"
-            }
-        },
-
-        "statuses": {
-            "created":   "Created",
-            "canceled":  "Canceled",
-            "payed":     "Payed",
-            "delivery":  "Delivery",
-            "completed": "Completed"
-        },
-
-        "tabs": {
-            "pre_order": "Pre-Ordered",
-            "active":    "Active",
-            "completed": "Completed"
-        },
-
-        "placeholders": {
-            "status": "Status"
-        }
-    },
-
-
-    "users": {
-        "users": "Users",
-        "no_users": "Users is not in system",
-        "edit_user": "Edit user",
-
-        "table": {
-            "headers": {
-                "full_name": "Surname and Name",
-                "email": "Email",
-                "birthday": "Birth Date",
-                "registration_date": "Registered",
-                "updated_at": "Last Activity"
-            }
-        },
-
-        "form": {
-            "header": "User",
-            "labels": {
-                "email":      "Email*",
-                "birthday":   "Birth date*",
-                "last_name":  "Surname",
-                "first_name": "Name",
-                "password":   "Password",
-                "password_confirmation": "Confirm password"
-            },
-            "rules": {
-                "email": {
-                    "required":   "Email is required",
-                    "min_length": "Email should be more than {length} symbols",
-                    "max_length": "Email should be less than {length} symbols",
-                    "invalid_format": "Invalid Email format"
-                },
-                "birthday": {
-                    "required":   "Birth Date is required",
-                    "max_length": "Birth Date is required should be less than today"
-                },
-                "last_name": {
-                    "required":   "Surname is required",
-                    "min_length": "Surname is more than {length} symbols",
-                    "max_length": "Surname is less than {length} symbols"
-                },
-                "first_name": {
-                    "required":   "Name is required",
-                    "min_length": "Name is more than {length} symbols",
-                    "max_length": "Name is less than {length} symbols"
-                },
-                "password": {
-                    "required":   "Password is required",
-                    "min_length": "Password is more than {length} symbols",
-                    "max_length": "Password is less than {length} symbols",
-                    "not_equals": "Passwords are not equals"
-                },
-                "password_confirmation": {
-                    "required":   "Confirm password",
-                    "not_equals": "Passwords are not equals"
-                }
-            }
-        }
-    },
-
-
-    "videos": {
-        "videos": "Videos",
-        "no_videos": "Videos is not in video gallery",
-
-        "form": {
-            "header": "Video",
-            "labels": {
-                "title": "Title*"
-            },
-            "rules": {
-                "title": {
-                    "required": "Title is required",
-                    "length": "Title is less than {length} symbols"
-                }
-            }
-        }
-    },
-
-    "nav": {
-        "subtitle": "Administration Panel",
-        "links": {
-            "products":   "Products",
-            "orders":     "Orders",
-            "categories": "Categories",
-            "articles":   "Articles",
-            "photos":     "Photos",
-            "videos":     "Videos",
-            "roles":      "Roles",
-            "users":      "Users",
-            "resumes":    "Resumes",
-            "production": "Production"
-        }
-    },
-
-    "swal": {
-        "title": {
-            "success":  "Success!",
-            "error":    "Error!"
-        }
+  "app_name": "MocrousAgro",
+  "app_subtitle": "Agrobusiness #1",
+  "buttons": {
+    "export": "Export",
+    "search": "Search",
+    "save": "Save",
+    "cancel": "Cancel",
+    "add": "Add",
+    "delete": "Delete",
+    "back": "Back",
+    "edit": "Edit",
+    "details": "Details",
+    "close": "Close",
+    "pay": "Pay",
+    "to_cart": "Add to cart",
+    "read": "Read",
+    "sign_in": "Sign in",
+    "logout": "Logout",
+    "sign_up": "Sign up"
+  },
+  "placeholders": {
+    "search": "Search",
+    "publication_date": "Publication date",
+    "created_at": "Created date",
+    "uploaded_at": "Uploaded date",
+    "last_activity": "Last activity"
+  },
+  "tooltips": {
+    "edit": "Edit",
+    "delete": "Delete"
+  },
+  "total": "Total: {total}",
+  "no_results": "No results for Your query",
+  "auth": {
+    "authorization": "Authorization",
+    "registration": "Registration"
+  },
+  "cart": {
+    "table": {
+      "headers": {
+        "title": "Title",
+        "price": "Price"
+      }
     }
+  },
+  "articles": {
+    "articles": "Articles",
+    "no_articles": "No articles in system",
+    "table": {
+      "headers": {
+        "title": "Header",
+        "is_publicated": "Publication",
+        "updated_at": "Last editing"
+      }
+    },
+    "form": {
+      "header": "Article",
+      "labels": {
+        "title": "Header*",
+        "description": "Description*",
+        "publication_date": "Publication Date*",
+        "is_publicated": "Publicated"
+      },
+      "rules": {
+        "title": {
+          "required": "Header is required",
+          "length": "Header is less than {length} symbols"
+        },
+        "description": {
+          "required": "Description is required",
+          "length": "Description is less than {length} symbols"
+        },
+        "publication_date": {
+          "required": "Publication Date is required",
+          "length": "Publication date is more than yesterday date"
+        }
+      }
+    },
+    "checkboxes": {
+      "publication": "Publication"
+    }
+  },
+  "categories": {
+    "categories": "Categories",
+    "no_categories": "No categories in the system",
+    "table": {
+      "headers": {
+        "title": "Title"
+      }
+    },
+    "form": {
+      "header": "Category",
+      "labels": {
+        "title": "Title*"
+      }
+    },
+    "rules": {
+      "title": {
+        "required": "Title is required",
+        "max_length": "Title's length is less than {max_length} symbols"
+      }
+    }
+  },
+  "photos": {
+    "photos": "Photos",
+    "no_photos": "No photos in photo gallery",
+    "form": {
+      "header": "Photo",
+      "labels": {
+        "title": "Title*"
+      },
+      "rules": {
+        "title": {
+          "required": "Title is required",
+          "length": "Title's length is less than {length} symbols"
+        }
+      }
+    }
+  },
+  "products": {
+    "products": "Products",
+    "no_products": "No products",
+    "table": {
+      "headers": {
+        "title": "Title",
+        "price": "Price",
+        "created_at": "Created Date",
+        "updated_at": "Last Change"
+      }
+    },
+    "form": {
+      "header": "Product",
+      "labels": {
+        "title": "Title*",
+        "url": "Picture*",
+        "price": "Price",
+        "description": "Description",
+        "category": "Category*",
+        "created_at": "Created Date"
+      },
+      "rules": {
+        "title": {
+          "required": "Title is required",
+          "min_length": "Title is more than {length} symbols",
+          "max_length": "Title is more less {length} symbols"
+        },
+        "url": {
+          "required": "Picture is required"
+        },
+        "price": {
+          "required": "Price is required",
+          "min_length": "Price is more than {length} symbols",
+          "max_length": "Price is more less {length} symbols",
+          "not_numeric": "Price should be includes numbers"
+        },
+        "description": {
+          "required": "Description is required",
+          "min_length": "Description is more than {length} symbols",
+          "max_length": "Title is more less {length} symbols"
+        },
+        "category": {
+          "required": "Category is required",
+          "min_length": "Category is more than {length} symbols",
+          "max_length": "Category is more less {length} symbols"
+        }
+      }
+    },
+    "placeholders": {
+      "category": "Category"
+    }
+  },
+  "orders": {
+    "orders": "Orders",
+    "no_orders": "No orders",
+    "no_products": "No products in order",
+    "amount_price": "Amount Payment: {price} ₽",
+    "number": "Order #{id}",
+    "added": "Product has been successfully added",
+    "removed": "Product has been successfully deleted",
+    "table": {
+      "labels": {
+        "id": "Order ID",
+        "customer": "Customer",
+        "price": "Price",
+        "status": "Status",
+        "created_at": "Order Date",
+        "product_name": "Product Name"
+      }
+    },
+    "form": {
+      "header": "Order creating",
+      "labels": {
+        "products": "Products",
+        "customer": "Customer",
+        "status_code": "Status",
+        "product": "Product"
+      }
+    },
+    "statuses": {
+      "created": "Created",
+      "canceled": "Canceled",
+      "payed": "Payed",
+      "delivery": "Delivery",
+      "completed": "Completed"
+    },
+    "tabs": {
+      "pre_order": "Pre-Ordered",
+      "active": "Active",
+      "completed": "Completed"
+    },
+    "placeholders": {
+      "status": "Status"
+    }
+  },
+  "users": {
+    "users": "Users",
+    "no_users": "Users is not in system",
+    "edit_user": "Edit user",
+    "table": {
+      "headers": {
+        "full_name": "Surname and Name",
+        "email": "Email",
+        "birthday": "Birth Date",
+        "registration_date": "Registered",
+        "updated_at": "Last Activity"
+      }
+    },
+    "form": {
+      "header": "User",
+      "labels": {
+        "email": "Email*",
+        "birthday": "Birth date*",
+        "last_name": "Surname",
+        "first_name": "Name",
+        "password": "Password",
+        "password_confirmation": "Confirm password"
+      },
+      "rules": {
+        "email": {
+          "required": "Email is required",
+          "min_length": "Email should be more than {length} symbols",
+          "max_length": "Email should be less than {length} symbols",
+          "invalid_format": "Invalid Email format"
+        },
+        "birthday": {
+          "required": "Birth Date is required",
+          "max_length": "Birth Date is required should be less than today"
+        },
+        "last_name": {
+          "required": "Surname is required",
+          "min_length": "Surname is more than {length} symbols",
+          "max_length": "Surname is less than {length} symbols"
+        },
+        "first_name": {
+          "required": "Name is required",
+          "min_length": "Name is more than {length} symbols",
+          "max_length": "Name is less than {length} symbols"
+        },
+        "password": {
+          "required": "Password is required",
+          "min_length": "Password is more than {length} symbols",
+          "max_length": "Password is less than {length} symbols",
+          "not_equals": "Passwords are not equals"
+        },
+        "password_confirmation": {
+          "required": "Confirm password",
+          "not_equals": "Passwords are not equals"
+        }
+      }
+    }
+  },
+  "videos": {
+    "videos": "Videos",
+    "no_videos": "Videos is not in video gallery",
+    "form": {
+      "header": "Video",
+      "labels": {
+        "title": "Title*"
+      },
+      "rules": {
+        "title": {
+          "required": "Title is required",
+          "length": "Title is less than {length} symbols"
+        }
+      }
+    }
+  },
+  "nav": {
+    "subtitle": "Administration Panel",
+    "links": {
+      "products": "Products",
+      "orders": "Orders",
+      "categories": "Categories",
+      "articles": "Articles",
+      "photos": "Photos",
+      "videos": "Videos",
+      "roles": "Roles",
+      "users": "Users",
+      "resumes": "Resumes",
+      "production": "Production"
+    }
+  },
+  "swal": {
+    "title": {
+      "success": "Success!",
+      "error": "Error!"
+    }
+  }
 }

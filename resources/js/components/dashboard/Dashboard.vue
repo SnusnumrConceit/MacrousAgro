@@ -98,11 +98,18 @@
 
       ...mapActions('errors', {
         'resetErrors': 'setErrors'
-      })
+      }),
+
+      ...mapActions('notifications', [
+          'hideNotification'
+      ]),
     },
 
-    created() {
-      this.resetErrors();
+    mounted() {
+      window.addEventListener('beforeunload', (e) => {
+        this.resetErrors();
+        this.hideNotification();
+      });
     }
   }
 </script>

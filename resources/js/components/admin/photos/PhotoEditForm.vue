@@ -78,18 +78,17 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Загрузка фотографии
@@ -117,7 +116,7 @@
           this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.setErrors( e.response.data.error);
+          this.setErrors( e.response.data.errors);
         }
       },
 
@@ -132,7 +131,7 @@
           this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.setErrors(e.response.data.error);
+          this.setErrors(e.response.data.errors);
         }
       },
 
@@ -160,10 +159,6 @@
       if (this.id) {
         this.initData();
       }
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
   }
 </script>

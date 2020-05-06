@@ -64,17 +64,16 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Загрузить категорию для редактирования
@@ -131,10 +130,6 @@
       if (this.id) {
         this.initData();
       }
-    },
-
-    destroyed() {
-      this.hideNotification();
     }
   }
 </script>

@@ -427,18 +427,17 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Загрузка списка пользователей
@@ -638,10 +637,6 @@
 
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
   }
 </script>

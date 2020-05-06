@@ -140,18 +140,17 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Обработчик загрузки изображения товара
@@ -181,7 +180,7 @@
        *
        * @returns {Promise<void>}
        */
-      async loadCategories() {
+      async getCategories() {
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/categories`);
 
@@ -235,7 +234,7 @@
           this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.setErrors(e.response.data.error);
+          this.setErrors(e.response.data.errors);
         }
       },
 
@@ -254,7 +253,7 @@
       async initData() {
         this.loading = true;
 
-        await this.loadCategories();
+        await this.getCategories();
 
         await this.getProduct();
 
@@ -264,12 +263,7 @@
 
     created() {
       this.initData();
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
-
   }
 </script>
 

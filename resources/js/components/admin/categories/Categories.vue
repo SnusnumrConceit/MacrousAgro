@@ -3,7 +3,7 @@
         <v-card>
             <v-toolbar>
                 <v-toolbar-title>
-                    {{ $t('categories.table.header')}}
+                    {{ $t('categories.categories')}}
                 </v-toolbar-title>
 
                 <v-divider class="mx-4" vertical inset></v-divider>
@@ -217,18 +217,17 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Загрузка списка категорий
@@ -349,10 +348,6 @@
 
     created() {
       this.getCategories();
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
   }
 </script>

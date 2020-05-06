@@ -126,7 +126,7 @@
                                     </v-icon>
                                 </template>
                                 <span>
-                                    {{ $t('tooltip.edit') }}
+                                    {{ $t('tooltips.edit') }}
                                 </span>
                             </v-tooltip>
                         </td>
@@ -339,18 +339,17 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       async save() {
         try {
@@ -360,7 +359,7 @@
 
           this.showNotification({ type: 'success', message: response.data.message});
         } catch (e) {
-          this.setErrors(e.response.data.error);
+          this.setErrors(e.response.data.errors);
         }
       },
 
@@ -529,8 +528,8 @@
        * Смена статуса как заказа целиком, так и конкретной позиции
        *
        * @param String  status
-       * @param Boolean isItem
        * @param Number  itemId
+       *
        * @returns {Promise<void>}
        */
       async changeStatus(status, itemId = null) {
@@ -593,10 +592,6 @@
       this.$on('fetch-order-detail', this.getOrderDetail);
 
       this.$on('clear-modal', this.clearOrderDetail);
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
   }
 </script>
