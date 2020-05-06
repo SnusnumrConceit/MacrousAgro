@@ -33,6 +33,11 @@
                         </v-list-item>
                         </v-list>
                     </template>
+                    <template v-slot:selection="{item}">
+                        <span>
+                            {{ $t(`orders.statuses.${item}`) }}
+                        </span>
+                    </template>
                 </v-select>
 
                 <v-spacer></v-spacer>

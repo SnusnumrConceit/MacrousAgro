@@ -112,7 +112,7 @@ class Order extends Model
      */
     public static function getStatuses()
     {
-        return self::getConstants('STATUS_');
+        return array_values(self::getConstants('STATUS_'));
     }
 
     /**
@@ -167,7 +167,7 @@ class Order extends Model
     public static function apiRoutes()
     {
         Route::get('order_status_codes', function () {
-            return array_values(self::getStatuses());
+            return self::getStatuses();
         });
     }
 }
