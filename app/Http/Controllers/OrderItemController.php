@@ -16,5 +16,9 @@ class OrderItemController extends Controller
         $orderItem = OrderItem::findOrFail($item_id);
 
         $orderItem->update($request->validated());
+
+        return response()->json([
+            'message' => __('orders.response.messages.updated')
+        ], 200);
     }
 }

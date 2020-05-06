@@ -539,11 +539,30 @@
             [`order_${itemId ? 'item_' : ''}status_code` ]: status
           });
 
-          this.$swal('Успешно!', 'Статус успешно изменён!', 'success');
+          this.showNotification({ type: 'success', message: response.data.message });
+
+          if (! itemId) {
+            this.$emit('order-updated', { status: status, id: this.modal.order.id });
+          }
+
           this.displayModal(false);
         } catch (e) {
-          this.errors = e.response.data.errors;
+          this.setErrors(e.response.data.errors);
         }
+      },
+
+      /**
+       * Изменение статуса в списке заказов
+       *
+       * @param status
+       * @param id
+       */
+      refreshStatus({status, id}) {
+        this.orders.forEach(order => {
+          if (order.id === id) {
+            order.order_status_code = status;
+          }
+        })
       }
 
     },
@@ -592,6 +611,8 @@
       this.$on('fetch-order-detail', this.getOrderDetail);
 
       this.$on('clear-modal', this.clearOrderDetail);
+
+      this.$on('order-updated', this.refreshStatus);
     }
   }
 </script>
