@@ -73,6 +73,10 @@ Route::group([
     Route::post('media/{media}/destroy', 'MediaController@destroy');
     Route::resource('media', 'MediaController')->only('store');
 
+    Route::resource('roles', 'RoleController');
+
+    Route::resource('permissions', 'PermissionController')->only(['index']);
+
 //    Route::patch('/orders/{order_id}/items/{item_id}', 'OrderItemController@update')->name('orders.items.update');
     Route::patch('/order_items/{item_id}', 'OrderItemController@update')->name('orders.items.update');
     Route::post('/orders/export', 'OrderController@export')->name('orders.export');

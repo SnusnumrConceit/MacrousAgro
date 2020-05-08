@@ -22,6 +22,9 @@ import ProductEditForm  from '../components/admin/products/ProductEditForm';
 import Orders           from '../components/admin/orders/Orders';
 import OrderEditForm    from '../components/admin/orders/OrderEditForm';
 
+import Roles           from '../components/admin/roles/Roles';
+import RoleForm        from '../components/admin/roles/RoleForm';
+
 // import admin from '../middleware/admin';
 // import manager from '../middleware/manager';
 // import middlewarePipeline from '../middleware/middlewarePipeline';
@@ -144,6 +147,28 @@ const routes = [
       middleware: [
         'administrator',
         'manager'
+      ]
+    }
+  },
+
+  /** Roles routes **/
+  {
+    path: '/admin/roles',
+    name: 'Roles',
+    component: Roles,
+    meta: {
+      middleware: [
+        'administrator'
+      ]
+    }
+  },
+  {
+    path: '/admin/roles/:id',
+    name: 'RoleForm',
+    component: RoleForm,
+    meta: {
+      middleware: [
+        'administrator'
       ]
     }
   },

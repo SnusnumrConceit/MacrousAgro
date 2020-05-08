@@ -213,6 +213,43 @@
       "status": "Status"
     }
   },
+  "roles": {
+    "roles": "Roles",
+    "no_roles": "No roles",
+    "edit_role": "Edit role",
+    "table": {
+      "headers": {
+        "name": "Name",
+        "description": "Description",
+        "created_at": "Creation date",
+        "updated_at": "Last activity"
+      }
+    },
+
+    "form": {
+      "header": "Role",
+      "labels": {
+        "name": "Name",
+        "slug": "Slug",
+        "description": "Description",
+        "permissions": "Permissions"
+      },
+      "rules": {
+        "name": {
+          "required": "Name is required",
+          "length": "Name should be less than {length} symbols"
+        },
+        "slug": {
+          "required": "Slug is required",
+          "length": "Slug should be less than {length} symbols"
+        },
+        "description": {
+          "required": "Description is required",
+          "length": "Description should be less than {length} symbols"
+        }
+      }
+    }
+  },
   "users": {
     "users": "Users",
     "no_users": "Users is not in system",

@@ -11,10 +11,12 @@ use App\Observers\ArticleObserver;
 use App\Observers\OrderObserver;
 use App\Observers\PhotoObserver;
 use App\Observers\ProductObserver;
+use App\Observers\RoleObserver;
 use App\Observers\UserObserver;
 use App\Observers\VideoObserver;
 use App\User;
 use Illuminate\Support\ServiceProvider;
+use Kodeine\Acl\Models\Eloquent\Role;
 use Laravel\Cashier\Cashier;
 use Illuminate\Database\Schema\Builder;
 
@@ -43,6 +45,7 @@ class AppServiceProvider extends ServiceProvider
         Product::observe(ProductObserver::class);
         Video::observe(VideoObserver::class);
         User::observe(UserObserver::class);
+        Role::observe(RoleObserver::class);
         Builder::defaultStringLength(191); // Update defaultStringLength
     }
 }
