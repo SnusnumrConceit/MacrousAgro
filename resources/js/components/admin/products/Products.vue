@@ -220,10 +220,10 @@
                     <v-alert color="info" outlined v-if="! loading && ! products.length">
                         <div class="">
                             <span v-show="! searching">
-                                {{ $('products.no_products') }}
+                                {{ $t('products.no_products') }}
                             </span>
                                 <span v-show="searching">
-                                {{ $('no_results') }}
+                                {{ $t('no_results') }}
                             </span>
                         </div>
                     </v-alert>
@@ -405,7 +405,7 @@
        * Поиск по товарам
        */
       searchData: debounce(vm => {
-        axios.get('/api/products/search', {
+        axios.get(`${vm.$attrs.apiRoute}/products`, {
           params: {
             page: vm.page,
             keyword: vm.search.keyword,
