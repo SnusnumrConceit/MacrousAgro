@@ -618,6 +618,10 @@
       this.$on('clear-modal', this.clearOrderDetail);
 
       this.$on('order-updated', this.refreshStatus);
+    },
+
+    destroyed() {
+      $('.v-data-table__wrapper')[0].removeEventListener('scroll', this.onScroll);
     }
   }
 </script>

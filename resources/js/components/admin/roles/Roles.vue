@@ -145,13 +145,17 @@
     },
 
     mounted() {
-      document.addEventListener('scroll', this.onSearch);
+      document.addEventListener('scroll', this.onScroll);
 
       this.$root.$on('role-created', this.initData);
 
       this.$root.$on('role-searching', this.onSearch);
 
       this.$root.$on('role-search-reset', this.onSearch);
+    },
+
+    destroyed() {
+      document.removeEventListener('scroll', this.onScroll);
     }
   }
 </script>

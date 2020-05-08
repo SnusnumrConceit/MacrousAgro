@@ -432,7 +432,7 @@
       searchData: debounce(vm => {
         axios.get(`${vm.$attrs.apiRoute}/articles`, {
           params: {
-            page: vm.page,
+            page: vm.pagination.page,
             ...vm.search
           }
         }).then(response => {
@@ -570,6 +570,10 @@
 
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
+    },
+
+    destroyed() {
+      $('.v-data-table__wrapper')[0].removeEventListener('scroll', this.onScroll);
     }
   }
 </script>

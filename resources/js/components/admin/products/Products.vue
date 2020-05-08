@@ -555,6 +555,10 @@
 
     mounted() {
       $('.v-data-table__wrapper')[0].addEventListener('scroll', this.onScroll);
+    },
+
+    destroyed() {
+      $('.v-data-table__wrapper')[0].removeEventListener('scroll', this.onScroll);
     }
   }
 </script>

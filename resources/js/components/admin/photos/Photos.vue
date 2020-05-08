@@ -421,6 +421,10 @@
 
     mounted() {
       document.addEventListener('scroll', this.onScroll);
+    },
+
+    destroyed() {
+      document.removeEventListener('scroll', this.onScroll);
     }
   }
 </script>
