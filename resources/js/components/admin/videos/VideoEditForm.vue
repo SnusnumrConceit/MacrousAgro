@@ -81,25 +81,24 @@
       /**
        * Показ ошибок в форме
        */
-      ...mapActions('errors', {
-        'resetErrors': 'resetErrors',
-        'setErrors': 'setErrors'
-      }),
+      ...mapActions('errors', [
+        'resetErrors',
+        'setErrors'
+      ]),
 
       /**
        * Показ / обнуление уведомлений
        */
-      ...mapActions('notifications', {
-        'showNotification': 'showNotification',
-        'hideNotification': 'hideNotification'
-      }),
+      ...mapActions('notifications', [
+        'showNotification'
+      ]),
 
       /**
        * Получение видео
        *
        * @returns {Promise<void>}
        */
-      async loadData() {
+      async getVideo() {
         try {
           const response = await axios.get(`${this.$attrs.apiRoute}/videos/${this.id}/edit`);
 
@@ -121,7 +120,7 @@
           this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.setErrors(e.response.data.error);
+          this.setErrors(e.response.data.errors);
         }
       },
 
@@ -137,7 +136,7 @@
           this.showNotification({ type: 'success', message: response.data.message});
           this.goBack();
         } catch (e) {
-          this.setErrors(e.response.data.error);
+          this.setErrors(e.response.data.errors);
         }
       },
 
@@ -157,7 +156,7 @@
       async initData() {
         this.loading = true;
 
-        await this.loadData();
+        await this.getVideo();
 
         this.loading = false;
       }
@@ -167,10 +166,6 @@
       if (this.id !== undefined) {
         this.initData();
       }
-    },
-
-    beforeDestroy() {
-      this.hideNotification();
     }
   }
 </script>
