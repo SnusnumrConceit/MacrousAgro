@@ -14,7 +14,7 @@ import Videos           from '../components/admin/videos/Videos';
 import VideoForm        from '../components/admin/videos/VideoForm';
 
 import Users            from '../components/admin/users/Users';
-import UserEditForm     from '../components/admin/users/UserEditForm';
+import UserForm         from '../components/admin/users/UserForm';
 
 import Products         from '../components/admin/products/Products';
 import ProductEditForm  from '../components/admin/products/ProductEditForm';
@@ -210,8 +210,8 @@ const routes = [
   },
   {
     path: '/admin/users/:id',
-    name: 'UserEditForm',
-    component: UserEditForm,
+    name: 'UserForm',
+    component: UserForm,
     meta: {
       middleware: [
         'administrator'
