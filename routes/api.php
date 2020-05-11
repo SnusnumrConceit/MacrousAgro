@@ -24,8 +24,6 @@ Route::group(['namespace' => 'Guest'], function () {
 
     Route::resource('articles', 'ArticleController')->only(['index', 'show']);
 
-    \App\Models\Order::apiRoutes();
-
     Route::get('products/search', 'ProductController@index');
     Route::get('products/random', 'ProductController@random');
     Route::resource('products', 'ProductController')->only(['show']);
@@ -46,6 +44,8 @@ Route::group([
     Route::get('/', function () {
         return view('layouts.admin');
     });
+
+    \App\Models\Order::apiRoutes();
 
     Route::get('/categories/search', 'CategoryController@index');
     Route::post('/categories/store', 'CategoryController@store');

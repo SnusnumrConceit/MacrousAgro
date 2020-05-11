@@ -20,7 +20,6 @@ import Products         from '../components/admin/products/Products';
 import ProductEditForm  from '../components/admin/products/ProductEditForm';
 
 import Orders           from '../components/admin/orders/Orders';
-import OrderEditForm    from '../components/admin/orders/OrderEditForm';
 
 import Roles           from '../components/admin/roles/Roles';
 import RoleForm        from '../components/admin/roles/RoleForm';
@@ -84,17 +83,6 @@ const routes = [
     path: '/admin/orders',
     name: 'Orders',
     component: Orders,
-    meta: {
-      middleware: [
-        'administrator',
-        'manager'
-      ]
-    }
-  },
-  {
-    path: '/admin/orders/:id',
-    name: 'OrderEditForm',
-    component: OrderEditForm,
     meta: {
       middleware: [
         'administrator',
