@@ -64,8 +64,14 @@ Vue.use(VueRouter, router);
 
 /** Настройка HTTP **/
 import axios from 'axios';
+
 axios.defaults.withCredentials = true;
-axios.defaults.headers.common = {'Authorization': `Bearer ${store.state.auth.token}`}
+axios.defaults.headers.common = {
+  'Authorization': `Bearer ${store.state.auth.token}`,
+  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+  'X-Requested-With': 'XMLHttpRequest',
+};
+
 import VueAxios from 'vue-axios';
 Vue.use(VueAxios, axios);
 

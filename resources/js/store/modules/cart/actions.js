@@ -15,7 +15,7 @@ const getOrders = async ({state, commit, dispatch}) => {
 
     dispatch('auth/getCSRFCookies', null, {root: true});
 
-    const response = await axios.get(`/cart/orders`, {
+    const response = await axios.get(`/api/cart/orders`, {
       page: state.pagination.page
     });
 
@@ -103,7 +103,7 @@ const createOrder = async ({state, commit, dispatch}) => {
     console.log(state.order.positions);
     let products = state.order.positions.map(position => position.product.id);
     console.log(products, 'products');
-    const response = await axios.post('/orders', {products: products});
+    const response = await axios.post('/api/cart/orders', {products: products});
 
     commit('notifications/SHOW_NOTIFICATION', {type: 'success', message: response.data.message}, {root: true})
     dispatch('removeOrder');

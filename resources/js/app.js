@@ -54,7 +54,12 @@ import axios from 'axios';
 import VueAxios from 'vue-axios';
 
 axios.defaults.withCredentials = true;
-axios.defaults.headers.common = {'Authorization': `Bearer ${store.state.auth.token}`}
+axios.defaults.headers.common = {
+  'Authorization': `Bearer ${store.state.auth.token}`,
+  'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
+  'X-Requested-With': 'XMLHttpRequest',
+};
+
 Vue.use(VueAxios, axios);
 
 let vuetify = new Vuetify({

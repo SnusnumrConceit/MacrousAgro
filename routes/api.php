@@ -13,17 +13,7 @@ use Illuminate\Http\Request;
 |
 */
 
-//Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-//return $request->user();
-//});
-
-//Route::post('/login', 'Api\AuthController@login');
-//Route::post('/register', 'Api\AuthController@register');
-//Route::post('logout', 'Api\AuthController@logout');
-
 Route::group(['namespace' => 'Guest'], function () {
-    Route::get('category/{category}/products', 'CategoryController@products');
-
     Route::resource('categories', 'CategoryController')->only(['index']);
 
     Route::get('photos/random', 'PhotoController@random');
@@ -39,12 +29,14 @@ Route::group(['namespace' => 'Guest'], function () {
     Route::get('products/search', 'ProductController@index');
     Route::get('products/random', 'ProductController@random');
     Route::resource('products', 'ProductController')->only(['show']);
-});
 
-//Route::group(['is' => 'customer', 'namespace' => 'Guest', 'prefix' => 'cart'], function () {
-////    Route::get('/cart/orders', 'OrderController@index');
-//    Route::resource('orders', 'OrderController')->only(['index', 'store']);
-//});
+    Route::group([
+        'is' => 'customer',
+        'middleware' => 'auth:sanctum',
+        'prefix' => 'cart'], function () {
+        Route::resource('orders', 'OrderController')->only(['index', 'store']);
+    });
+});
 
 Route::group([
     'middleware' => 'auth:sanctum',
