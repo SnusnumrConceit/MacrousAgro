@@ -3,5 +3,8 @@
   "form_request_validation_failed_error": "Вы не заполнили необходимые поля",
 
   "file_storage_move_error": "Файл не может быть перенесён",
-  "file_storage_delete_error": "Удаляемый файл не найден"
+  "file_storage_delete_error": "Удаляемый файл не найден",
+
+  "invalid_data": "Неверные данные",
+  "registered": "Пользователь успешно зарегистрирован"
 }

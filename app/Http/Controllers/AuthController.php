@@ -27,7 +27,7 @@ class AuthController extends Controller
         return response()->json([
             'user' => $user,
             'token' => $user->createToken(md5(now()))->plainTextToken,
-            'message' => 'Пользователь успешно зарегистрирован'
+            'message' => __('registered')
         ], 200);
     }
 
@@ -43,7 +43,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (! auth()->attempt($credentials)) {
-            return response()->json(['message' => 'Неверные данные'], 500);
+            return response()->json(['message' => __('invalid_data')], 500);
         }
 
         return response()->json([

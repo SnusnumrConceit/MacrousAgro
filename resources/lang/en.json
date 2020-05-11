@@ -1,27 +1,10 @@
 {
-  "category_msg_success_create": "The category is successfully created!",
-  "category_msg_success_update": "The category is successfully updated!",
-  "category_msg_success_delete": "The category is successfully deleted!",
-
-  "article_msg_success_create": "The article is successfully created!",
-  "article_msg_success_delete": "The article is successfully deleted!",
-  "article_msg_success_update": "The article is successfully updated!",
-
-  "video_msg_success_create": "The video is successfully created!",
-  "video_msg_success_delete": "The video is successfully deleted!",
-  "video_msg_success_update": "The video is successfully updated!",
-
-  "photo_msg_success_create": "The photo is successfully created!",
-  "photo_msg_success_delete": "The photo is successfully deleted!",
-  "photo_msg_success_update": "The photo is successfully updated!",
-
-  "user_msg_success_create": "The user is successfully created!",
-  "user_msg_success_update": "The user is successfully updated!",
-  "user_msg_success_delete": "The user is successfully deleted!",
-
   "form_request_authorization_error": "You do not authorized",
   "form_request_validation_failed_error": "Required fields doesn't filled",
 
   "file_storage_move_error": "The file not replaced",
-  "file_storage_delete_error": "The deleting file not found"
+  "file_storage_delete_error": "The deleting file not found",
+
+  "invalid_data": "Invalid data",
+  "registered": "User successfully registered"
 }
