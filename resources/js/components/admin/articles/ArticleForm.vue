@@ -1,17 +1,15 @@
 <template>
     <div>
         <v-card v-show="! loading">
-            <v-form ref="form" v-model="form.valid">
+            <v-form v-model="form.valid" ref="form">
                 <v-card-title>
-                    {{ article.title}}
+                    {{ $t('articles.form.header')}}
                 </v-card-title>
+
                 <v-card-text>
                     <errors />
                     <v-row>
-                        <v-col>
-                            <preview-upload @uploaded="onUploadImage" :src="article.src" ref="previewUpload" v-if="! loading" />
-                        </v-col>
-                        <v-col>
+                        <v-col cols="6">
                             <v-text-field v-model="article.title"
                                           :label="$t('articles.form.labels.title')"
                                           required
@@ -20,16 +18,15 @@
                                           maxlength="255"
                                           :rules="form.title.rules">
                             </v-text-field>
-
-                            <!--:return-value.sync="article.publication_date"-->
-                            <v-menu   ref="calendar-menu"
-                                      v-model="menu"
-                                      :close-on-content-click="false"
-                                      transition="scale-transition"
-                                      offset-y
-                                      max-width="290px"
-                                      min-width="290px">
-
+                        </v-col>
+                        <v-col>
+                            <v-menu ref="form-calendar-menu"
+                                    v-model="calendar"
+                                    :close-on-content-click="false"
+                                    transition="scale-transition"
+                                    offset-y
+                                    max-width="290px"
+                                    min-width="290px">
                                 <template v-slot:activator="{ on }">
                                     <v-text-field
                                             v-on="on"
@@ -42,46 +39,64 @@
 
                                 <v-date-picker v-model="article.publication_date"
                                                :min="new Date().toISOString().substr(0,10)"
+                                               @input="calendar = false"
                                                no-title
                                                first-day-of-week="1"
-                                               @input="menu = false"
+                                               scrollable
                                                :locale="$i18n.locale">
-                                    <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" @click="menu = false" text>
-                                        {{ $t('articles.btn.cancel') }}
+
+                                    <v-spacer />
+
+                                    <v-btn color="blue darken-1" text @click="calendar = false">
+                                        {{ $t('buttons.cancel') }}
                                     </v-btn>
-                                    <v-btn color="primary" outlined @click="menu = false">OK</v-btn>
+
+                                    <v-btn color="primary" outlined @click="calendar = false">OK</v-btn>
+
                                 </v-date-picker>
                             </v-menu>
+                        </v-col>
+                    </v-row>
 
+                    <v-row>
+                        <v-col>
                             <v-textarea v-model="article.description"
                                         :label="$t('articles.form.labels.description')"
                                         required
                                         counter
                                         maxlength="2000"
                                         :rules="form.description.rules">
-
                             </v-textarea>
 
                             <v-checkbox v-model="article.is_publicated"
                                         :label="$t('articles.form.labels.is_publicated')">
                             </v-checkbox>
-
-                            <v-btn color="success"
-                                   :disabled="! form.valid"
-                                   outlined
-                                   @click="save">
-                                {{ $t('buttons.edit') }}
-                            </v-btn>
                         </v-col>
                     </v-row>
+
+                    <v-row>
+                        <v-col>
+                            <preview-upload @uploaded="onUploadImage" :reset="resetPreview" />
+                        </v-col>
+                    </v-row>
+
+
                 </v-card-text>
+
                 <v-card-actions>
-                    <v-btn color="error" outlined @click="remove">
-                        {{ $t('buttons.delete')}}
+                    <v-spacer v-if="! id"/>
+
+                    <v-btn color="success"
+                           :disabled="isValid"
+                           outlined
+                           @click="id ? update() : create()">
+                        {{ $t(btnSave) }}
                     </v-btn>
-                    <v-btn color="default" outlined @click="goBack">
-                        {{ $t('buttons.back')}}
+
+                    <v-btn color="blue darken-1"
+                           text
+                           @click="id ? $router.back() : hide()">
+                        {{ $t(btnCancel) }}
                     </v-btn>
                 </v-card-actions>
             </v-form>
@@ -92,14 +107,32 @@
 </template>
 
 <script>
+  import {mapActions} from 'vuex';
   import previewUpload from '../../../custom_components/previewUploader';
-  import { mapActions } from 'vuex';
 
   export default {
-    name: "form",
+    name: "ArticleForm",
 
     components: {
       previewUpload
+    },
+
+    computed: {
+      id() {
+        return this.$route.params.id;
+      },
+
+      btnCancel() {
+        return this.id ? 'buttons.back' : 'buttons.cancel';
+      },
+
+      btnSave() {
+        return this.id ? 'buttons.edit' : 'buttons.save';
+      },
+
+      isValid() {
+        return ! this.form.valid || (this.id ? false : ! this.article.image);
+      }
     },
 
     data() {
@@ -107,10 +140,9 @@
         article: {
           title: '',
           description: '',
-          image: null,
-          publication_date: '',
-          is_published: true,
-          src: ''
+          publication_date: new Date().toISOString().substr(0,10),
+          is_publicated: false,
+          image: null
         },
 
         form: {
@@ -139,13 +171,8 @@
         },
 
         loading: false,
-        menu: false
-      }
-    },
-
-    computed: {
-      id() {
-        return this.$route.params.id;
+        calendar: false,
+        resetPreview: false
       }
     },
 
@@ -166,65 +193,13 @@
       ]),
 
       /**
-       * Обработчик события загрузки картинки статьи
-       */
-      onUploadImage(image) {
-        this.article.image = image;
-      },
-
-      /**
-       * Сохранение изменений статьи
-       *
-       * @returns {Promise<void>}
-       */
-      async save() {
-        const formData = new FormData();
-
-        for (const prop in this.article) {
-            formData.append(prop, (typeof this.article[prop] === 'boolean') ? Number(this.article[prop]) : this.article[prop]);
-        }
-
-        formData.append('_method', 'PATCH');
-
-        try {
-          const response = await axios.post(
-              `${this.$attrs.apiRoute}/articles/${this.id}`,
-              formData, {
-                headers: {
-                  'Content-Type': 'multipart/form-data'
-                }
-              });
-          this.showNotification({ type: 'success', message: response.data.message});
-          this.$router.push({name: 'Articles'});
-        } catch (e) {
-          this.setErrors(e.response.data.errors);
-        }
-      },
-
-      /**
-       * Удаление статьи
-       *
-       * @returns {Promise<void>}
-       */
-      async remove() {
-        try {
-          const response = await axios.delete(`${this.$attrs.apiRoute}/articles/${this.id}`);
-
-          this.showNotification({ type: 'success', message: response.data.message});
-          this.goBack();
-        } catch (e) {
-          this.showNotification({ type: 'error', message: e.response.data.message});
-        }
-      },
-
-      /**
        * Загрузка статьи для редактирования
        *
        * @returns {Promise<void>}
        */
       async getArticle() {
         try {
-          const response = await axios.get(`${this.$attrs.apiRoute}/articles/${this.id}/edit`);
+          const response = await axios.get(`/articles/${this.id}/edit`);
           this.article = response.data.article;
         } catch (e) {
           this.showNotification({ type: 'error', message: e.response.data.message});
@@ -232,10 +207,92 @@
       },
 
       /**
-       * Назад
+       * Обработчик события загрузки картинки статьи
        */
-      goBack() {
-        this.$router.go(-1);
+      onUploadImage(image) {
+        this.article.image = image;
+      },
+
+      /**
+       * Создание статьи
+       *
+       * @returns {Promise<void>}
+       */
+      async create() {
+        let formData = new FormData();
+
+        for (const prop in this.article) {
+          formData.append(prop, (typeof this.article[prop] == 'boolean') ? Number(this.article[prop]) : this.article[prop]);
+        }
+
+        try {
+          const response = await axios.post(
+              `/articles`,
+              formData,
+              {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              }
+          );
+
+          this.showNotification({ type: 'success', message: response.data.message});
+
+          this.$root.$emit('article-created');
+          this.hide();
+        } catch (e) {
+          this.setErrors(e.response.data.errors);
+        }
+      },
+
+      /**
+       * Обновление изменений статьи
+       *
+       * @returns {Promise<void>}
+       */
+      async update() {
+        const formData = new FormData();
+
+        for (const prop in this.article) {
+          formData.append(prop, (typeof this.article[prop] === 'boolean') ? Number(this.article[prop]) : this.article[prop]);
+        }
+
+        formData.append('_method', 'PATCH');
+
+        try {
+          const response = await axios.post(
+              `/articles/${this.id}`,
+              formData, {
+                headers: {
+                  'Content-Type': 'multipart/form-data'
+                }
+              });
+          this.showNotification({ type: 'success', message: response.data.message});
+          this.$router.back();
+        } catch (e) {
+          this.setErrors(e.response.data.errors);
+        }
+      },
+
+      /**
+       * Сброс формы
+       *
+       */
+      async resetForm() {
+        this.modal = false;
+        this.article.image = null;
+        this.resetPreview = true;
+        this.$refs.form.reset();
+        this.resetErrors();
+      },
+
+      /**
+       * Закрытие модального окна
+       *
+       */
+      hide() {
+        this.resetForm();
+        this.$emit('hide-modal');
       },
 
       /**
@@ -253,17 +310,18 @@
     },
 
     watch: {
+      /**
+       * отслеживание форматирования даты публикации в модальном окне
+       */
       'article.publication_date': function (after, before) {
         this.article.display_publication_date = after.split('-').reverse().join('.');
       }
     },
 
     created() {
-      this.initData();
+      if (this.id) {
+        this.initData();
+      }
     }
   }
 </script>
-
-<style scoped>
-
-</style>
