@@ -16,7 +16,7 @@ class VideoController extends Controller
 {
     public function __construct()
     {
-//        $this->authorizeResource(Video::class, 'video');
+        $this->authorizeResource(Video::class, 'video');
     }
 
     /**

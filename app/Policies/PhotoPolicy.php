@@ -18,7 +18,7 @@ class PhotoPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('view_photos');
+        return $user->hasPermission('photos_view');
     }
 
     /**
@@ -30,7 +30,7 @@ class PhotoPolicy
      */
     public function view(User $user, Photo $photo)
     {
-        return $user->hasPermission('view_photos');
+        return $user->hasPermission('photos_view');
     }
 
     /**
@@ -41,7 +41,7 @@ class PhotoPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('create_photos');
+        return $user->hasPermission('photos_create');
     }
 
     /**
@@ -53,7 +53,7 @@ class PhotoPolicy
      */
     public function update(User $user, Photo $photo)
     {
-        return $user->hasPermission('update_photos');
+        return $user->hasPermission('photos_update');
     }
 
     /**
@@ -65,30 +65,6 @@ class PhotoPolicy
      */
     public function delete(User $user, Photo $photo)
     {
-        return $user->hasPermission('delete_photos');
-    }
-
-    /**
-     * Determine whether the user can restore the photo.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Photo  $photo
-     * @return mixed
-     */
-    public function restore(User $user, Photo $photo)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the photo.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Photo  $photo
-     * @return mixed
-     */
-    public function forceDelete(User $user, Photo $photo)
-    {
-        //
+        return $user->hasPermission('photos_delete');
     }
 }

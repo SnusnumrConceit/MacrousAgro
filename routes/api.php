@@ -29,8 +29,9 @@ Route::resource('videos', 'VideoController')->only(['index']);
 
 Route::resource('articles', 'ArticleController')->only(['index', 'show']);
 
-
-Route::post('logout', 'Api\AuthController@logout');
+//Route::post('/login', 'Api\AuthController@login');
+//Route::post('/register', 'Api\AuthController@register');
+//Route::post('logout', 'Api\AuthController@logout');
 
 \App\Models\Order::apiRoutes();
 
@@ -39,6 +40,7 @@ Route::get('products/random', 'ProductController@random');
 Route::resource('products', 'ProductController')->only(['show']);
 
 Route::group([
+    'middleware' => 'auth:sanctum',
     'prefix' => 'admin',
     'is' => 'administrator|manager'
 ], function () {

@@ -5,13 +5,13 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use Kodeine\Acl\Models\Eloquent\Permission;
 use App\Http\Resources\Permission\PermissionCollection;
+use Kodeine\Acl\Models\Eloquent\Role;
 
 class PermissionController extends Controller
 {
     public function __construct()
     {
-        // TODO внедрить политики
-//        $this->authorizeResource(Permission::class);
+        $this->authorizeResource(Role::class);
     }
 
     /**

@@ -14,14 +14,10 @@ use App\Http\Requests\Article\ArticleUpdateRequest;
 
 class ArticleController extends Controller
 {
-    // TODO добавить политики
-//    private $articleService;
-
-//    public function __construct(ArticleService $articleService)
-//    {
-//        $this->authorizeResource(Article::class, 'article');
-//        $this->articleService = $articleService;
-//    }
+    public function __construct()
+    {
+        $this->authorizeResource(Article::class, 'article');
+    }
 
     /**
      * Список статей
@@ -34,8 +30,6 @@ class ArticleController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-//        $this->authorize('index', Article::class);
-
         $articles = Article::query();
 
         $articles->when($request->keyword, function ($q, $keyword) {
@@ -68,8 +62,6 @@ class ArticleController extends Controller
      */
     public function store(ArticleStoreRequest $request) : JsonResponse
     {
-//        $this->authorize('create', Article::class);
-
         $article = Article::create($request->validated());
 
         return response()->json([
@@ -88,8 +80,6 @@ class ArticleController extends Controller
      */
     public function show(Article $article) : JsonResponse
     {
-//        $this->authorize('view', Article::class);
-
         return response()->json([
             'article' => $article
         ], 200);
@@ -105,8 +95,6 @@ class ArticleController extends Controller
      */
     public function edit(Article $article) : JsonResponse
     {
-//        $this->authorize('update', Article::class);
-
         return response()->json([
             'article' => $article
         ], 200);
@@ -123,8 +111,6 @@ class ArticleController extends Controller
      */
     public function update(ArticleUpdateRequest $request, Article $article) : JsonResponse
     {
-//        $this->authorize('update', Article::class);
-
         $article->update($request->validated());
 
         if (! empty($request->hasFile('image'))) {
@@ -154,8 +140,6 @@ class ArticleController extends Controller
      */
     public function destroy(Article $article) : JsonResponse
     {
-//        $this->authorize('delete', Article::class);
-
         $article->delete();
 
         return response()->json([

@@ -18,7 +18,7 @@ class ArticlePolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('view_articles');
+        return $user->hasPermission('articles_view');
     }
 
     /**
@@ -30,7 +30,7 @@ class ArticlePolicy
      */
     public function view(User $user, Article $article)
     {
-        return $user->hasPermission('view_articles');
+        return $user->hasPermission('articles_view');
     }
 
     /**
@@ -41,7 +41,7 @@ class ArticlePolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('create_articles');
+        return $user->hasPermission('articles_create');
     }
 
     /**
@@ -53,7 +53,7 @@ class ArticlePolicy
      */
     public function update(User $user, Article $article)
     {
-        return $user->hasPermission('update_articles');
+        return $user->hasPermission('articles_update');
     }
 
     /**
@@ -65,30 +65,6 @@ class ArticlePolicy
      */
     public function delete(User $user, Article $article)
     {
-        return $user->hasPermission('delete_articles');
-    }
-
-    /**
-     * Determine whether the user can restore the article.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Article  $article
-     * @return mixed
-     */
-    public function restore(User $user, Article $article)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the article.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Article  $article
-     * @return mixed
-     */
-    public function forceDelete(User $user, Article $article)
-    {
-        //
+        return $user->hasPermission('articles_delete');
     }
 }

@@ -14,7 +14,7 @@ class PhotoController extends Controller
 {
     public function __construct()
     {
-//        $this->authorizeResource(Photo::class, 'photo');
+        $this->authorizeResource(Photo::class, 'photo');
     }
 
     /**

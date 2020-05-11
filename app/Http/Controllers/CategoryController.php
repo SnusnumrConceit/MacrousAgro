@@ -11,10 +11,9 @@ use App\Http\Resources\Category\CategoryCollection;
 
 class CategoryController extends Controller
 {
-    // TODO добавить политики
     public function __construct()
     {
-//        $this->authorizeResource(Category::class, 'category');
+        $this->authorizeResource(Category::class, 'category');
     }
 
     /**

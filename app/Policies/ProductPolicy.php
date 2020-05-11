@@ -18,7 +18,7 @@ class ProductPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('view_products');
+        return $user->hasPermission('products_view');
     }
 
     /**
@@ -30,7 +30,7 @@ class ProductPolicy
      */
     public function view(User $user, Product $product)
     {
-        return $user->hasPermission('view_products');
+        return $user->hasPermission('products_view');
     }
 
     /**
@@ -41,7 +41,7 @@ class ProductPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('create_products');
+        return $user->hasPermission('products_create');
     }
 
     /**
@@ -53,7 +53,7 @@ class ProductPolicy
      */
     public function update(User $user, Product $product)
     {
-        return $user->hasPermission('update_products');
+        return $user->hasPermission('products_update');
     }
 
     /**
@@ -65,30 +65,6 @@ class ProductPolicy
      */
     public function delete(User $user, Product $product)
     {
-        return $user->hasPermission('delete_products');
-    }
-
-    /**
-     * Determine whether the user can restore the product.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Product  $product
-     * @return mixed
-     */
-    public function restore(User $user, Product $product)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the product.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Product  $product
-     * @return mixed
-     */
-    public function forceDelete(User $user, Product $product)
-    {
-        //
+        return $user->hasPermission('products_delete');
     }
 }

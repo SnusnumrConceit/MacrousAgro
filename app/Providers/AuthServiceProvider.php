@@ -16,6 +16,7 @@ class AuthServiceProvider extends ServiceProvider
         // 'App\Model' => 'App\Policies\ModelPolicy',
         'App\Models\Article'  => 'App\Policies\ArticlePolicy',
         'App\Models\Category' => 'App\Policies\CategoryPolicy',
+        'Kodeine\Acl\Models\Eloquent\Role' => 'App\Policies\RolePolicy',
         'App\Models\Order'    => 'App\Policies\OrderPolicy',
         'App\Models\Product'  => 'App\Policies\ProductPolicy',
         'App\Models\Photo'    => 'App\Policies\PhotoPolicy',

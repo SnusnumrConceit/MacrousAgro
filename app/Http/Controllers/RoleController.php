@@ -14,8 +14,7 @@ class RoleController extends Controller
 {
     public function __construct()
     {
-        // TODO добавить политики
-//        $this->authorizeResource(Role::class);
+        $this->authorizeResource(Role::class);
     }
 
     /**
@@ -85,7 +84,7 @@ class RoleController extends Controller
     {
         $role->update($request->only(['name', 'description', 'slug']));
 
-        $role->permissions()->sync(request('permissions'));
+        $role->syncPermissions(request('permissions'));
 
         return response()->json([
             'message' => __('roles.response.messages.updated')

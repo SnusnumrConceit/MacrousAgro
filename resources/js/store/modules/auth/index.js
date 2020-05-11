@@ -5,6 +5,7 @@ import actions   from './actions';
 const state = {
   user: null,
   isAuthorized: localStorage.getItem('mocrous_session') || false,
+  token: null,
   role: null
 };
 

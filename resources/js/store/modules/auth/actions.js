@@ -1,12 +1,17 @@
-const login = async ({commit}, login) => {
-  getCSRFCookies();
+import axios from "axios";
 
+const login = async ({state, commit}, login) => {
   try {
+    await getCSRFCookies();
     const response = await axios.post('/login', {...login});
+
+    await commit('SET_TOKEN', response.data.token);
+
+    Vue.axios.defaults.headers.common = {'Authorization': `Bearer ${response.data.token}`}
 
     const user = await getUser();
 
-    commit('LOGIN', user);
+    await commit('LOGIN', user);
   } catch (e) {
     commit('errors/SET_ERRORS', e.response.data.errors || e.response.data.message, {root: true});
   }
@@ -14,13 +19,17 @@ const login = async ({commit}, login) => {
 
 const register = async ({commit}, data) => {
   try {
+    await getCSRFCookies();
+
     const response = await axios.post('/register', {...data});
 
-    await getCSRFCookies();
+    await commit('SET_TOKEN', response.data.token);
+
+    Vue.axios.defaults.headers.common = {'Authorization': `Bearer ${response.data.token}`}
 
     const user = await getUser();
 
-    commit('REGISTER', user);
+    await commit('REGISTER', user);
   } catch (e) {
     commit('errors/SET_ERRORS', e.response.data.errors || e.response.data.message, {root: true});
   }
@@ -54,6 +63,7 @@ const getUser = async () => {
     const response = await axios.get('/user');
 
     return response.data.user;
+
   } catch (e) {
     console.error(e.response.data);
   }

@@ -14,7 +14,7 @@ class RoleObserver
      */
     public function created(Role $role)
     {
-        $role->permissions()->sync(request('permissions'));
+        $role->syncPermissions(request('permissions'));
     }
 
     /**
@@ -36,6 +36,6 @@ class RoleObserver
      */
     public function deleting(Role $role)
     {
-        $role->permissions()->detach();
+        $role->revokeAllPermissions();
     }
 }

@@ -18,7 +18,7 @@ class OrderPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('view_orders');
+        return $user->hasPermission('orders_view');
     }
 
     /**
@@ -30,7 +30,7 @@ class OrderPolicy
      */
     public function view(User $user, Order $order)
     {
-        return $user->hasPermission('view_orders');
+        return $user->hasPermission('orders_view');
     }
 
     /**
@@ -41,7 +41,7 @@ class OrderPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('create_orders');
+        return $user->hasPermission('orders_create');
     }
 
     /**
@@ -53,7 +53,7 @@ class OrderPolicy
      */
     public function update(User $user, Order $order)
     {
-        return $user->hasPermission('update_orders');
+        return $user->hasPermission('orders_update');
     }
 
     /**
@@ -65,30 +65,30 @@ class OrderPolicy
      */
     public function delete(User $user, Order $order)
     {
-        return $user->hasPermission('delete_orders');
+        return $user->hasPermission('orders_delete');
     }
 
-    /**
-     * Determine whether the user can restore the order.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Order  $order
-     * @return mixed
-     */
-    public function restore(User $user, Order $order)
-    {
-        //
-    }
+//    /**
+//     * Determine whether the user can restore the order.
+//     *
+//     * @param  \App\User  $user
+//     * @param  \App\Models\Order  $order
+//     * @return mixed
+//     */
+//    public function restore(User $user, Order $order)
+//    {
+//        //
+//    }
 
-    /**
-     * Determine whether the user can permanently delete the order.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Order  $order
-     * @return mixed
-     */
-    public function forceDelete(User $user, Order $order)
-    {
-        //
-    }
+//    /**
+//     * Determine whether the user can permanently delete the order.
+//     *
+//     * @param  \App\User  $user
+//     * @param  \App\Models\Order  $order
+//     * @return mixed
+//     */
+//    public function forceDelete(User $user, Order $order)
+//    {
+//        //
+//    }
 }

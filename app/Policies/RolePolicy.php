@@ -3,9 +3,10 @@
 namespace App\Policies;
 
 use App\User;
+use Kodeine\Acl\Models\Eloquent\Role;
 use Illuminate\Auth\Access\HandlesAuthorization;
 
-class UserPolicy
+class RolePolicy
 {
     use HandlesAuthorization;
 
@@ -17,18 +18,19 @@ class UserPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('users_view');
+        return $user->hasPermission('roles_view');
     }
 
     /**
      * Determine whether the user can view the model.
      *
      * @param  \App\User  $user
+     * @param  Role  $role
      * @return mixed
      */
-    public function view(User $user)
+    public function view(User $user, Role $role)
     {
-        return $user->hasPermission('users_view');
+        return $user->hasPermission('roles_view');
     }
 
     /**
@@ -39,28 +41,30 @@ class UserPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('users_create');
+        return $user->hasPermission('roles_create');
     }
 
     /**
      * Determine whether the user can update the model.
      *
      * @param  \App\User  $user
+     * @param  Role  $role
      * @return mixed
      */
-    public function update(User $user)
+    public function update(User $user, Role $role)
     {
-        return $user->hasPermission('users_update');
+        return $user->hasPermission('roles_update');
     }
 
     /**
      * Determine whether the user can delete the model.
      *
      * @param  \App\User  $user
+     * @param  Role  $role
      * @return mixed
      */
-    public function delete(User $user)
+    public function delete(User $user, Role $role)
     {
-        return $user->hasPermission('users_delete');
+        return $user->hasPermission('roles_delete');
     }
 }

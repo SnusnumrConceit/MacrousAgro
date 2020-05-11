@@ -52,6 +52,9 @@ Vue.use(VueRouter);
 /** Настройка HTTP **/
 import axios from 'axios';
 import VueAxios from 'vue-axios';
+
+axios.defaults.withCredentials = true;
+axios.defaults.headers.common = {'Authorization': `Bearer ${store.state.auth.token}`}
 Vue.use(VueAxios, axios);
 
 let vuetify = new Vuetify({

@@ -18,7 +18,7 @@ class VideoPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('view_videos');
+        return $user->hasPermission('videos_view');
     }
 
     /**
@@ -30,7 +30,7 @@ class VideoPolicy
      */
     public function view(User $user, Video $video)
     {
-        return $user->hasPermission('view_videos');
+        return $user->hasPermission('videos_view');
     }
 
     /**
@@ -41,7 +41,7 @@ class VideoPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('create_videos');
+        return $user->hasPermission('videos_create');
     }
 
     /**
@@ -53,7 +53,7 @@ class VideoPolicy
      */
     public function update(User $user, Video $video)
     {
-        return $user->hasPermission('update_videos');
+        return $user->hasPermission('videos_update');
     }
 
     /**
@@ -65,30 +65,6 @@ class VideoPolicy
      */
     public function delete(User $user, Video $video)
     {
-        return $user->hasPermission('delete_videos');
-    }
-
-    /**
-     * Determine whether the user can restore the video.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Video  $video
-     * @return mixed
-     */
-    public function restore(User $user, Video $video)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the video.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Video  $video
-     * @return mixed
-     */
-    public function forceDelete(User $user, Video $video)
-    {
-        //
+        return $user->hasPermission('videos_delete');
     }
 }

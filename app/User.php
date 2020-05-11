@@ -184,4 +184,23 @@ class User extends Authenticatable
             });
         });
     }
+
+    /**
+     * Проверка наличия права
+     *
+     * Validate user permission
+     *
+     * @param string $permission
+     * @return bool
+     */
+    public function hasPermission(string $permission)
+    {
+        foreach ($this->getPermissions() as $permissions) {
+            foreach ($permissions as $key => $perm) {
+                if ($key === $permission && $permissions[$permission]) {
+                 return true;
+                }
+            }
+        }
+    }
 }

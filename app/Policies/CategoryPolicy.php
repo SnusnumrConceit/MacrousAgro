@@ -18,7 +18,7 @@ class CategoryPolicy
      */
     public function viewAny(User $user)
     {
-        return $user->hasPermission('view_categories');
+        return $user->hasPermission('categories_view');
     }
 
     /**
@@ -30,7 +30,7 @@ class CategoryPolicy
      */
     public function view(User $user, Category $category)
     {
-        return $user->hasPermission('view_categories');
+        return $user->hasPermission('categories_view');
     }
 
     /**
@@ -41,7 +41,7 @@ class CategoryPolicy
      */
     public function create(User $user)
     {
-        return $user->hasPermission('create_categories');
+        return $user->hasPermission('categories_create');
     }
 
     /**
@@ -53,7 +53,7 @@ class CategoryPolicy
      */
     public function update(User $user, Category $category)
     {
-        return $user->hasPermission('update_categories');
+        return $user->hasPermission('categories_update');
     }
 
     /**
@@ -65,30 +65,6 @@ class CategoryPolicy
      */
     public function delete(User $user, Category $category)
     {
-        return $user->hasPermission('delete_categories');
-    }
-
-    /**
-     * Determine whether the user can restore the category.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Category  $category
-     * @return mixed
-     */
-    public function restore(User $user, Category $category)
-    {
-        //
-    }
-
-    /**
-     * Determine whether the user can permanently delete the category.
-     *
-     * @param  \App\User  $user
-     * @param  \App\Models\Category  $category
-     * @return mixed
-     */
-    public function forceDelete(User $user, Category $category)
-    {
-        //
+        return $user->hasPermission('categories_delete');
     }
 }

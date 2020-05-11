@@ -27,6 +27,7 @@ class AuthController extends Controller
 
         return response()->json([
             'user' => $user,
+            'token' => $user->createToken(md5(now()))->plainTextToken,
             'message' => 'Пользователь успешно зарегистрирован'
         ], 200);
     }
@@ -46,10 +47,8 @@ class AuthController extends Controller
             throw new \Exception('Неверные данные', 500);
         }
 
-        auth()->user()->createToken(md5(now()));
-
         return response()->json([
-            'message' => 'success'
+            'token' => auth()->user()->createToken(md5(now()))->plainTextToken
         ], 200);
     }
 
@@ -80,6 +79,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'user' => auth()->user(),
+            'tokens' => auth()->user()->tokens,
             'message' => 'success'
         ]);
     }
