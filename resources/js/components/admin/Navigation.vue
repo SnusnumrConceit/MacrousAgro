@@ -106,6 +106,12 @@
             guard: 'isAdmin'
           },
           {
+            title: this.$t('nav.links.roles'),
+            href: '/admin/roles',
+            icon: 'pe-7s-id',
+            guard: 'isAdmin'
+          },
+          {
             title: this.$t('nav.links.photos'),
             href: '/admin/photos',
             icon: 'pe-7s-photo-gallery',

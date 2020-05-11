@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Order;
 use App\Models\OrderItem;
 use App\Http\Requests\Order\Item\OrderItemUpdateRequest;
 
@@ -14,6 +15,8 @@ class OrderItemController extends Controller
     public function update(OrderItemUpdateRequest $request, int $item_id)
     {
         $orderItem = OrderItem::findOrFail($item_id);
+
+        $this->authorize('update', $orderItem->order);
 
         $orderItem->update($request->validated());
 
