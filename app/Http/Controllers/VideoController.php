@@ -143,21 +143,4 @@ class VideoController extends Controller
             'message' => __('videos.response.messages.deleted')
         ], 200);
     }
-
-    /**
-     * Получение случайного списка видеороликов для лэндинга
-     *
-     * Display a random listing of the videos for landing page.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function random(Request $request)
-    {
-        $videos = Video::inRandomOrder()->paginate();
-
-        return response()->json([
-            'videos' => new VideoCollection($videos)
-        ], 200);
-    }
 }

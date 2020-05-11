@@ -148,21 +148,4 @@ class ProductController extends Controller
             'message' => __('products.response.messages.deleted')
         ], 200);
     }
-
-    /**
-     * Получение списка случайных товаров для лэндинга
-     *
-     * Display a random listing of the products for landing page.
-     *
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function random(Request $request)
-    {
-        $products = Product::inRandomOrder()->paginate();
-
-        return response()->json([
-            'products' => new ProductCollection($products)
-        ], 200);
-    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+//use App\Exceptions\ApiErrorMessageException;
 use App\User;
 use App\Events\User\Registered;
 use App\Http\Controllers\Controller;
@@ -44,7 +45,7 @@ class AuthController extends Controller
         $credentials = $request->only('email', 'password');
 
         if (! auth()->attempt($credentials)) {
-            throw new \Exception('Неверные данные', 500);
+            return response()->json(['message' => 'Неверные данные'], 500);
         }
 
         return response()->json([

@@ -15,9 +15,9 @@ Route::get('/', function () {
     return view('welcome');
 });
 
-Route::group(['is' => 'customer'], function () {
-    Route::get('/cart/orders', 'OrderController@getUserOrders');
-    Route::resource('orders', 'OrderController')->only('store');
+Route::group(['is' => 'customer', 'namespace' => 'Guest', 'prefix' => 'cart'], function () {
+//    Route::get('/cart/orders', 'OrderController@index');
+    Route::resource('orders', 'OrderController')->only(['index', 'store']);
 });
 
 Route::group(['namespace' => 'Api'], function () {

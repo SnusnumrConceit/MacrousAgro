@@ -36,8 +36,7 @@ class CategoryController extends Controller
         $categories = $categories->orderBy('name')->paginate();
 
         return response()->json([
-            'categories' => new CategoryCollection($categories),
-            'status' => 'success'
+            'categories' => new CategoryCollection($categories)
         ], 200);
     }
 
@@ -127,22 +126,5 @@ class CategoryController extends Controller
             'status' => 'success',
             'message' => __('categories.response.messages.deleted')
         ], 200);
-    }
-
-    /**
-     * Получить товары категорий
-     *
-     * Get products of category
-     *
-     * @param Category $category
-     * @param Request $request
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function products(Category $category, Request $request) : JsonResponse
-    {
-        return response()->json([
-            'products'      => $category->products()->paginate(),
-            'category_name' => $category->name
-        ],200);
     }
 }

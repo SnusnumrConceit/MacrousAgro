@@ -153,22 +153,4 @@ class OrderController extends Controller
     {
         return $this->orderService->export();
     }
-
-    /**
-     * Заказы пользователя
-     *
-     * Get user orders
-     *
-     * @return \Illuminate\Http\JsonResponse
-     */
-    public function getUserOrders()
-    {
-        $active = auth()->user()->orders()->active()->paginate();
-        $completed = auth()->user()->orders()->completed()->paginate();
-
-        return response()->json([
-            'active' => new OrderCollection($active),
-            'completed'  => new OrderCollection($completed)
-        ], 200);
-    }
 }

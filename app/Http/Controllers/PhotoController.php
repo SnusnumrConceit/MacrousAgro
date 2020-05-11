@@ -127,21 +127,4 @@ class PhotoController extends Controller
             'message' => __('photos.response.messages.deleted')
         ], 200);
     }
-
-    /**
-     * Получение случайных фотографий для лэндинга
-     *
-     * Display a random listing of the photos for landing page.
-     *
-     * @param Request $request
-     * @return JsonResponse
-     */
-    public function random(Request $request)
-    {
-        $photos = Photo::inRandomOrder()->paginate();
-
-        return response()->json([
-            'photos' => new PhotoCollection($photos)
-        ], 200);
-    }
 }
