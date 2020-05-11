@@ -2,7 +2,7 @@ import VueRouter from 'vue-router';
 import { store } from '../store/store';
 
 import Categories       from '../components/admin/categories/Categories';
-import CategoryEditForm from '../components/admin/categories/CategoryEditForm';
+import CategoryForm from '../components/admin/categories/CategoryForm';
 
 import Articles         from '../components/admin/articles/Articles';
 import ArticleEditForm  from '../components/admin/articles/ArticleEditForm';
@@ -69,8 +69,8 @@ const routes = [
   },
   {
     path: '/admin/categories/:id',
-    name: 'CategoryEditForm',
-    component: CategoryEditForm,
+    name: 'CategoryForm',
+    component: CategoryForm,
     meta: {
       middleware: [
         'administrator',
