@@ -8,7 +8,7 @@ import Articles         from '../components/admin/articles/Articles';
 import ArticleEditForm  from '../components/admin/articles/ArticleEditForm';
 
 import Photos           from '../components/admin/photos/Photos';
-import PhotoEditForm    from '../components/admin/photos/PhotoEditForm';
+import PhotoForm        from '../components/admin/photos/PhotoForm';
 
 import Videos           from '../components/admin/videos/Videos';
 import VideoEditForm    from '../components/admin/videos/VideoEditForm';
@@ -117,8 +117,8 @@ const routes = [
   },
   {
     path: '/admin/photos/:id',
-    name: 'PhotoEditForm',
-    component: PhotoEditForm,
+    name: 'PhotoForm',
+    component: PhotoForm,
     meta: {
       middleware: [
         'administrator',

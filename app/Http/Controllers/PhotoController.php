@@ -28,8 +28,8 @@ class PhotoController extends Controller
     public function index(Request $request)
     {
         $photos = Photo::query();
-
-        $photos->when(isset($request->keyword), function ($q, $keyword) {
+        
+        $photos->when($request->keyword, function ($q, $keyword) {
             return $q->where('title', 'LIKE', '%' . $keyword . '%');
         });
 
