@@ -65,6 +65,7 @@ Vue.use(VueRouter, router);
 /** Настройка HTTP **/
 import axios from 'axios';
 
+axios.defaults.baseURL = '/api/admin';
 axios.defaults.withCredentials = true;
 axios.defaults.headers.common = {
   'Authorization': `Bearer ${store.state.auth.token}`,
