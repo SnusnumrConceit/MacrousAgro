@@ -17,7 +17,7 @@ import Users            from '../components/admin/users/Users';
 import UserForm         from '../components/admin/users/UserForm';
 
 import Products         from '../components/admin/products/Products';
-import ProductEditForm  from '../components/admin/products/ProductEditForm';
+import ProductForm      from '../components/admin/products/ProductForm';
 
 import Orders           from '../components/admin/orders/Orders';
 
@@ -129,8 +129,8 @@ const routes = [
   },
   {
     path: '/admin/products/:id',
-    name: 'ProductEditForm',
-    component: ProductEditForm,
+    name: 'ProductForm',
+    component: ProductForm,
     meta: {
       middleware: [
         'administrator',
