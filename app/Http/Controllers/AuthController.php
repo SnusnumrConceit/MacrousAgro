@@ -62,7 +62,7 @@ class AuthController extends Controller
             auth()->user()->tokens()->delete();
         }
 
-        auth()->logout();
+        auth()->guard('web')->logout();
 
         return response()->json([
             'message' => 'success'

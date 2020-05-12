@@ -45,6 +45,8 @@ Route::group([
         return view('layouts.admin');
     });
 
+    Route::post('/logout', 'AuthController@logout');
+
     \App\Models\Order::apiRoutes();
 
     Route::get('/categories/search', 'CategoryController@index');
