@@ -6,7 +6,7 @@
             </v-btn>
         </template>
 
-        <role-form @hide-modal="hide"></role-form>
+        <role-form @hide-modal="hide" />
     </v-dialog>
 </template>
 
@@ -33,7 +33,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

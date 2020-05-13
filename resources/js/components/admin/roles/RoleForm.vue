@@ -6,7 +6,7 @@
             </v-card-title>
 
             <v-card-text>
-                <errors></errors>
+                <errors />
 
                 <v-text-field v-model="role.name"
                               :label="$t('roles.form.labels.name')"
@@ -54,7 +54,7 @@
             </v-card-text>
 
             <v-card-actions>
-                <v-spacer></v-spacer>
+                <v-spacer />
 
                 <v-btn color="success"
                        :disabled="! form.valid || ! role.permissions.length"
@@ -68,7 +68,8 @@
                 </v-btn>
             </v-card-actions>
         </v-form>
-        <v-skeleton-loader v-show="loading" type="card"></v-skeleton-loader>
+
+        <v-skeleton-loader v-show="loading" type="card" />
     </v-card>
 </template>
 
@@ -141,7 +142,7 @@
 
       async getRole() {
         try {
-          const response = await axios.get(`/api/admin/roles/${this.id}`);
+          const response = await axios.get(`/roles/${this.id}`);
 
           this.role = response.data.role;
         } catch (e) {
@@ -158,7 +159,7 @@
        */
       async getPermissions() {
         try {
-          const response = await axios.get(`/api/admin/permissions`);
+          const response = await axios.get(`/permissions`);
 
           this.permissions = response.data.permissions;
           this.headers = response.data.headers;
@@ -176,7 +177,7 @@
        */
       async create() {
         try {
-          const response = await axios.post(`/api/admin/roles`, this.role);
+          const response = await axios.post(`/roles`, this.role);
 
           this.showNotification({ type: 'success', message:  response.data.message});
 
@@ -203,7 +204,7 @@
        */
       async update() {
         try {
-          const response = await axios.patch(`/api/admin/roles/${this.id}`, this.role);
+          const response = await axios.patch(`/roles/${this.id}`, this.role);
 
           this.showNotification({ type: 'success', message:  response.data.message});
 
@@ -254,7 +255,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

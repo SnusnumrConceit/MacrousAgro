@@ -29,7 +29,7 @@ class RoleController extends Controller
         $roles = Role::query();
 
         $roles->when($request->keyword, function ($q, $keyword) {
-            return $q->whereName($keyword);
+            return $q->where('name', 'LIKE', '%' . $keyword . '%');
         });
 
         $roles = $roles->paginate(10);
