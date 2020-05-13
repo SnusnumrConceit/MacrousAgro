@@ -76,7 +76,7 @@
 
                     <v-row>
                         <v-col>
-                            <preview-upload @uploaded="onUploadImage" :reset="resetPreview" />
+                            <preview-upload @uploaded="onUploadImage" :reset="resetPreview" :src="article.src" v-if="! loading"/>
                         </v-col>
                     </v-row>
 
