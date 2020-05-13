@@ -9,8 +9,8 @@
             <v-card-subtitle class="d-flex justify-end" color="white">
                 {{ article.display_publication_date }}
             </v-card-subtitle>
-            <v-card-text class="text-justify body-1">
-                {{ article.description }}
+            <v-card-text class="text-justify body-1" v-html="article.description">
+                <!--{{ article.description }}-->
             </v-card-text>
         </v-card>
         <v-skeleton-loader type="card" v-show="loading" />

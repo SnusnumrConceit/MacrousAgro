@@ -16,6 +16,8 @@ mix.js('resources/js/app.js', 'public/js')
 
 mix.js('resources/js/admin.js', 'public/js');
 
+mix.copyDirectory('resources/images/icons/tiptap', 'public/icons');
+
 if (mix.inProduction()) {
   mix.version();
 }

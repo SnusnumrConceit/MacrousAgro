@@ -60,13 +60,18 @@
 
                     <v-row>
                         <v-col>
-                            <v-textarea v-model="article.description"
-                                        :label="$t('articles.form.labels.description')"
-                                        required
-                                        counter
-                                        maxlength="2000"
-                                        :rules="form.description.rules">
-                            </v-textarea>
+                            <label class="d-flex pl-1 v-label v-label--active theme--light tiptap__form-label">
+                                {{ $t('articles.form.labels.description') }}
+                            </label>
+
+                            <tiptap :content="article.description" v-if="! loading" @description-changed="syncDescription"/>
+                            <!--<v-textarea v-model="article.description"-->
+                                        <!--:label="$t('articles.form.labels.description')"-->
+                                        <!--required-->
+                                        <!--counter-->
+                                        <!--maxlength="2000"-->
+                                        <!--:rules="form.description.rules">-->
+                            <!--</v-textarea>-->
 
                             <v-checkbox v-model="article.is_publicated"
                                         :label="$t('articles.form.labels.is_publicated')">
@@ -108,13 +113,15 @@
 
 <script>
   import {mapActions} from 'vuex';
+  import Tiptap from '../../../custom_components/tiptap';
   import previewUpload from '../../../custom_components/previewUploader';
 
   export default {
     name: "ArticleForm",
 
     components: {
-      previewUpload
+      previewUpload,
+      Tiptap
     },
 
     computed: {
@@ -306,6 +313,11 @@
         await this.getArticle();
 
         this.loading = false;
+      },
+
+      syncDescription(data) {
+        console.log(data);
+        this.article.description = data;
       }
     },
 
