@@ -2,15 +2,15 @@
 
 namespace App;
 
-use App\Models\Order;
-use Illuminate\Contracts\Auth\MustVerifyEmail;
-use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Kodeine\Acl\Models\Eloquent\Role;
-use Kodeine\Acl\Traits\HasRole;
-// use Laravel\Cashier\Billable;
-use Laravel\Sanctum\HasApiTokens;
 use Route;
+use App\Models\Order;
+use Kodeine\Acl\Traits\HasRole;
+use Laravel\Sanctum\HasApiTokens;
+use Kodeine\Acl\Models\Eloquent\Role;
+use Illuminate\Notifications\Notifiable;
+use Illuminate\Foundation\Auth\User as Authenticatable;
+// use Laravel\Cashier\Billable;
+//use Illuminate\Contracts\Auth\MustVerifyEmail;
 
 class User extends Authenticatable
 {

@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Guest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Video\VideoCollection;
 use App\Models\Video;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Video\VideoCollection;
 
 class VideoController extends Controller
 {

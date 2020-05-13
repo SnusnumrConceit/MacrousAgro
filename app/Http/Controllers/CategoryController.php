@@ -4,10 +4,12 @@ declare(strict_types=1);
 namespace App\Http\Controllers;
 
 use App\Models\Category;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Category\CategoryStoreRequest;
 use App\Http\Resources\Category\CategoryCollection;
+
+use Illuminate\Http\Request;
+use App\Http\Requests\Category\CategoryStoreRequest;
+
 
 class CategoryController extends Controller
 {

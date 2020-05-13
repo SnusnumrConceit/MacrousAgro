@@ -1,5 +1,6 @@
 <?php
 
+use App\User;
 use Illuminate\Database\Seeder;
 
 class UserTableSeeder extends Seeder
@@ -15,7 +16,7 @@ class UserTableSeeder extends Seeder
 //            $user->assignRole('customer');
 //        });
 
-        $administrator = App\User::updateOrCreate(
+        $administrator = User::updateOrCreate(
             [
                 'email' => 'mocrous@admin.ru',
             ],
@@ -28,7 +29,7 @@ class UserTableSeeder extends Seeder
             ]
         )->assignRole('admin');
 
-        $manager = App\User::updateOrCreate(
+        $manager = User::updateOrCreate(
             [
                 'email' => 'mocrous@manage.ru',
             ],
@@ -41,7 +42,7 @@ class UserTableSeeder extends Seeder
             ]
         )->assignRole('manager');
 
-        $customer = App\User::updateOrCreate(
+        $customer = User::updateOrCreate(
             [
                 'email' => 'mocrous@mail.ru',
             ],

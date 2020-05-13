@@ -3,9 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Kodeine\Acl\Models\Eloquent\Role;
 use Kodeine\Acl\Models\Eloquent\Permission;
 use App\Http\Resources\Permission\PermissionCollection;
-use Kodeine\Acl\Models\Eloquent\Role;
 
 class PermissionController extends Controller
 {

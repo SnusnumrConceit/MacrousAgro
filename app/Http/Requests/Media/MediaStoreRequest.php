@@ -2,12 +2,11 @@
 
 namespace App\Http\Requests\Media;
 
-use Illuminate\Foundation\Http\FormRequest;
 use App\Traits\Mediable;
-use Illuminate\Auth\Access\AuthorizationException;
+use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
-use Illuminate\Validation\Rule;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class MediaStoreRequest extends FormRequest
 {

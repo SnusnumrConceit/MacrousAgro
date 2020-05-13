@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Database\Seeder;
+use \Kodeine\Acl\Models\Eloquent\Role;
+use \Kodeine\Acl\Models\Eloquent\Permission;
 
 class BaseRolePermissions extends Seeder
 {
@@ -11,7 +13,7 @@ class BaseRolePermissions extends Seeder
      */
     public function run()
     {
-        $permissions = \Kodeine\Acl\Models\Eloquent\Permission::all();
+        $permissions = Permission::all();
         $permissionsAdmin = $permissions->whereNotNull('inherit_id')->pluck('id')->all();
         $permissionsManager = $permissions->whereNotNull('inherit_id')
             ->whereNotIn('inherit_id', [22, 26]) // идентификаторы Roles и Users
@@ -30,13 +32,13 @@ class BaseRolePermissions extends Seeder
             ])->pluck('id')
             ->all();
 
-        $admin = \Kodeine\Acl\Models\Eloquent\Role::whereName('administrator')->first();
+        $admin = Role::whereName('administrator')->first();
         $admin->permissions()->sync($permissionsAdmin);
 
-        $manager = \Kodeine\Acl\Models\Eloquent\Role::whereName('manager')->first();
+        $manager = Role::whereName('manager')->first();
         $manager->permissions()->sync($permissionsManager);
 
-        $customer = \Kodeine\Acl\Models\Eloquent\Role::whereName('customer')->first();
+        $customer = Role::whereName('customer')->first();
         $customer->permissions()->sync($permissionsCustomer);
     }
 }

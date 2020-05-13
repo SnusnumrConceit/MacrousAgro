@@ -2,13 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use Kodeine\Acl\Models\Eloquent\Role;
+use App\Http\Resources\Role\RoleCollection;
+use App\Http\Resources\Role\Role as RoleResource;
+
+use Illuminate\Http\Request;
 use App\Http\Requests\Role\RoleStoreRequest;
 use App\Http\Requests\Role\RoleUpdateRequest;
 
-use App\Http\Resources\Role\Role as RoleResource;
-use App\Http\Resources\Role\RoleCollection;
 
 class RoleController extends Controller
 {

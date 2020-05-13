@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Video;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class Video extends JsonResource
 {

@@ -2,13 +2,13 @@
 
 namespace App\Listeners\Order;
 
+use App\User;
 use App\Events\Order\Created;
 use App\Notifications\Order\NewOrder;
 use App\Notifications\Order\OrderCreated;
-use App\User;
+use Illuminate\Support\Facades\Notification;
 //use Illuminate\Contracts\Queue\ShouldQueue;
 //use Illuminate\Queue\InteractsWithQueue;
-use Illuminate\Support\Facades\Notification;
 
 class CreatedListener
 {

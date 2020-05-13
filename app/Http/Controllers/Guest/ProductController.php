@@ -2,11 +2,11 @@
 
 namespace App\Http\Controllers\Guest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Product\ProductCollection;
-use App\Http\Resources\Product\ProductDetail;
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Product\ProductDetail;
+use App\Http\Resources\Product\ProductCollection;
 
 class ProductController extends Controller
 {

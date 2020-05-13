@@ -2,7 +2,6 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Order;
 use App\Models\OrderItem;
 use App\Http\Requests\Order\Item\OrderItemUpdateRequest;
 

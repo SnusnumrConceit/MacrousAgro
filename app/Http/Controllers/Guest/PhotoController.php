@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Guest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Photo\PhotoCollection;
 use App\Models\Photo;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Photo\PhotoCollection;
 
 class PhotoController extends Controller
 {

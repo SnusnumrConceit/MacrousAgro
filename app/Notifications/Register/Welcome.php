@@ -4,9 +4,9 @@ namespace App\Notifications\Register;
 
 use App\User;
 use Illuminate\Bus\Queueable;
-//use Illuminate\Contracts\Queue\ShouldQueue;
-use Illuminate\Notifications\Messages\MailMessage;
 use Illuminate\Notifications\Notification;
+use Illuminate\Notifications\Messages\MailMessage;
+//use Illuminate\Contracts\Queue\ShouldQueue;
 
 class Welcome extends Notification
 {

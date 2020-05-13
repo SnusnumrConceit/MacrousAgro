@@ -3,10 +3,10 @@
 namespace App\Http\Requests\Photo;
 
 use App\Models\Photo;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Contracts\Validation\Validator;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class PhotoStoreRequest extends FormRequest
 {

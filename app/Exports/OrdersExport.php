@@ -3,13 +3,13 @@
 namespace App\Exports;
 
 use App\Models\Order;
-use Illuminate\Contracts\Support\Responsable;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Concerns\Exportable;
+use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\WithHeadings;
+use Illuminate\Contracts\Support\Responsable;
 use Maatwebsite\Excel\Concerns\FromCollection;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
-use Maatwebsite\Excel\Concerns\WithHeadings;
-use Maatwebsite\Excel\Concerns\WithMapping;
 
 class OrdersExport implements FromCollection, Responsable, WithMapping, WithHeadings, ShouldAutoSize
 {

@@ -3,10 +3,10 @@
 namespace App\Http\Requests\Article;
 
 use App\Models\Article;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class ArticleStoreRequest extends FormRequest
 {

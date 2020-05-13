@@ -5,11 +5,13 @@ namespace App\Http\Controllers;
 use App\Models\Product;
 use App\Models\Category;
 use App\Traits\Mediable;
-use Illuminate\Http\Request;
 use App\Http\Resources\Product\ProductDetail;
 use App\Http\Resources\Product\ProductCollection;
+
+use Illuminate\Http\Request;
 use App\Http\Requests\Product\ProductStoreRequest;
 use App\Http\Requests\Product\ProductUpdateRequest;
+
 
 class ProductController extends Controller
 {

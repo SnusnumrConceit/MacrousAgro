@@ -2,9 +2,8 @@
 
 namespace App\Traits;
 
-use App\Models\Media;
 use Carbon\Carbon;
-use Illuminate\Http\JsonResponse;
+use App\Models\Media;
 use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
 

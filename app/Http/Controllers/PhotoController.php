@@ -3,12 +3,14 @@
 namespace App\Http\Controllers;
 
 use App\Models\Photo;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
-use App\Http\Requests\Photo\PhotoStoreRequest;
-use App\Http\Requests\Photo\PhotoUpdateRequest;
 use App\Http\Resources\Photo\PhotoCollection;
 use App\Http\Resources\Photo\Photo as PhotoResource;
+
+use Illuminate\Http\Request;
+use App\Http\Requests\Photo\PhotoStoreRequest;
+use App\Http\Requests\Photo\PhotoUpdateRequest;
+
 
 class PhotoController extends Controller
 {

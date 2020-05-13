@@ -3,10 +3,10 @@
 namespace App\Http\Requests\Video;
 
 use App\Models\Video;
-use Illuminate\Auth\Access\AuthorizationException;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Auth\Access\AuthorizationException;
 
 class VideoStoreRequest extends FormRequest
 {

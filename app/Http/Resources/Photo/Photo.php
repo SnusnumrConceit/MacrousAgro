@@ -3,7 +3,6 @@
 namespace App\Http\Resources\Photo;
 
 use Illuminate\Http\Resources\Json\JsonResource;
-use Illuminate\Support\Facades\Storage;
 
 class Photo extends JsonResource
 {

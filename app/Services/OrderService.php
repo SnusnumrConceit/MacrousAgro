@@ -4,8 +4,8 @@ namespace App\Services;
 
 
 use App\Models\Order;
-use App\Exports\OrdersExport;
 use App\Models\Product;
+use App\Exports\OrdersExport;
 
 class OrderService
 {

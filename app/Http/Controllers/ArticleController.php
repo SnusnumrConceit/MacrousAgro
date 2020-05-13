@@ -6,11 +6,13 @@ namespace App\Http\Controllers;
 use App\Models\Article;
 //use App\Services\ArticleService;
 use App\Traits\Mediable;
-use Illuminate\Http\Request;
 use Illuminate\Http\JsonResponse;
 use App\Http\Resources\Article\ArticleCollection;
+
+use Illuminate\Http\Request;
 use App\Http\Requests\Article\ArticleStoreRequest;
 use App\Http\Requests\Article\ArticleUpdateRequest;
+
 
 class ArticleController extends Controller
 {

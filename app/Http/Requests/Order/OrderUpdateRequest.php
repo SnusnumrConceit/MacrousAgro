@@ -3,8 +3,8 @@
 namespace App\Http\Requests\Order;
 
 use App\Models\Order;
-use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Contracts\Validation\Validator;
 
 class OrderUpdateRequest extends FormRequest
 {

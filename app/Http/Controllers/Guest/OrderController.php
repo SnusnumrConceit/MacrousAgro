@@ -5,8 +5,8 @@ namespace App\Http\Controllers\Guest;
 use App\Models\Order;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
-use App\Http\Requests\Order\OrderStoreRequest;
 use App\Http\Resources\Order\OrderCollection;
+use App\Http\Requests\Order\OrderStoreRequest;
 
 class OrderController extends Controller
 {

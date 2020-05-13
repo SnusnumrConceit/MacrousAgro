@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Category;
 use Illuminate\Database\Seeder;
 
 class CategoryTableSeeder extends Seeder
@@ -12,7 +13,7 @@ class CategoryTableSeeder extends Seeder
     public function run()
     {
         /** Создание категории Комбикорма **/
-        $combi_category = \App\Models\Category::firstOrCreate([
+        $combi_category = Category::firstOrCreate([
             'name' => 'Комбикорм'
         ]);
     }

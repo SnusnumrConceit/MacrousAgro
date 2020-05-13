@@ -3,7 +3,6 @@
 namespace App\Http\Requests\Order\Item;
 
 use App\Http\Requests\Order\OrderUpdateRequest;
-use Illuminate\Foundation\Http\FormRequest;
 
 class OrderItemUpdateRequest extends OrderUpdateRequest
 {

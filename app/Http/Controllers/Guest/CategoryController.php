@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers\Guest;
 
-use App\Http\Controllers\Controller;
-use App\Http\Resources\Category\CategoryCollection;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use App\Http\Controllers\Controller;
+use App\Http\Resources\Category\CategoryCollection;
 
 class CategoryController extends Controller
 {
