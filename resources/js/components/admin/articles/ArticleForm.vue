@@ -115,6 +115,7 @@
   import {mapActions} from 'vuex';
   import Tiptap from '../../../custom_components/tiptap';
   import previewUpload from '../../../custom_components/previewUploader';
+  import transformFormDataArgs from '../../../mixins/transformFormDataArgs';
 
   export default {
     name: "ArticleForm",
@@ -123,6 +124,10 @@
       previewUpload,
       Tiptap
     },
+
+    mixins: [
+      transformFormDataArgs
+    ],
 
     computed: {
       id() {
@@ -229,7 +234,7 @@
         let formData = new FormData();
 
         for (const prop in this.article) {
-          formData.append(prop, (typeof this.article[prop] == 'boolean') ? Number(this.article[prop]) : this.article[prop]);
+          formData.append(prop, this.formatFormDataArg(this.article[prop]));
         }
 
         try {
@@ -261,7 +266,7 @@
         const formData = new FormData();
 
         for (const prop in this.article) {
-          formData.append(prop, (typeof this.article[prop] === 'boolean') ? Number(this.article[prop]) : this.article[prop]);
+          formData.append(prop, this.formatFormDataArg(this.article[prop]));
         }
 
         formData.append('_method', 'PATCH');
