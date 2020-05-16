@@ -49,6 +49,12 @@ Vue.router = router;
 import VueRouter from "vue-router";
 Vue.use(VueRouter);
 
+/** Импорт хранилища данных Vuex **/
+import { store } from './store/store';
+
+/** Смена языка **/
+i18n.locale = store.state.locale.locale;
+
 /** Настройка HTTP **/
 import axios from 'axios';
 import VueAxios from 'vue-axios';
@@ -58,6 +64,7 @@ axios.defaults.headers.common = {
   'Authorization': `Bearer ${store.state.auth.token}`,
   'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content'),
   'X-Requested-With': 'XMLHttpRequest',
+  'X-LOCALE': i18n.locale
 };
 
 Vue.use(VueAxios, axios);
@@ -69,13 +76,6 @@ let vuetify = new Vuetify({
        }
    }
 });
-
-import { store } from './store/store';
-/**
- * Next, we will create a fresh Vue application instance and attach it to
- * the page. Then, you may begin adding components to this application
- * or customize the JavaScript scaffolding to fit your unique needs.
- */
 
 const app = new Vue({
   el: '#app',

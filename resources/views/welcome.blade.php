@@ -67,6 +67,9 @@
                 margin-bottom: 30px;
             }
         </style>
+        <script>
+            window.locale = '{{ app()->getLocale() }}';
+        </script>
     </head>
     <body>
 {{--        <div class="flex-center position-ref full-height">--}}

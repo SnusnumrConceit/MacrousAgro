@@ -24,6 +24,14 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 
 /** Admin Routes */
 
+Route::get('/lang/{locale}', function (string $locale) {
+    if ($result = in_array($locale, config()->get('app.locales'))) {
+        session(['locale' => $locale]);
+    }
+
+    return $result;
+});
+
 Route::group(['is' => 'admin|manager'], function () {
     Route::get('admin/{any}', function () {
         return view('layouts.admin');

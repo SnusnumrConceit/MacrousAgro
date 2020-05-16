@@ -12,7 +12,9 @@
                     </v-icon>
                 </v-btn>
 
-                <v-spacer></v-spacer>
+                <locale-switcher />
+
+                <v-spacer />
 
                 <v-toolbar-title @click="$router.push('/')" style="cursor: pointer">
                     <h2 class="display-1">
@@ -23,7 +25,7 @@
                     </h6>
                 </v-toolbar-title>
 
-                <v-spacer></v-spacer>
+                <v-spacer />
 
                 <div v-if="! user">
                     <login />
@@ -40,7 +42,7 @@
                         <span>{{ fullName }}</span>
                     </div>
 
-                    <v-spacer></v-spacer>
+                    <v-spacer />
 
                     <logout :text="true" :outlined="true" :block="false" />
                 </div>
@@ -55,6 +57,7 @@
   import Login from '.././auth/Login';
   import Logout from '.././auth/Logout';
   import Registration from '.././auth/Registration';
+  import LocaleSwitcher from './toolbar/LocaleSwitcher';
   import { mapActions, mapGetters } from 'vuex';
 
   export default {
@@ -64,7 +67,8 @@
       Navigation,
       Login,
       Registration,
-      Logout
+      Logout,
+      LocaleSwitcher
     },
 
     data() {
@@ -102,7 +106,7 @@
 
       ...mapActions('notifications', [
           'hideNotification'
-      ]),
+      ])
     },
 
     mounted() {

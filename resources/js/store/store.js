@@ -14,6 +14,7 @@ import auth          from './modules/auth/index';
 import cart          from './modules/cart/index';
 import category      from './modules/categories/index';
 import errors        from './modules/errors/index';
+import locale        from './modules/locale/index';
 import notifications from './modules/notifications/index';
 
 export const store = new Vuex.Store({
@@ -22,6 +23,7 @@ export const store = new Vuex.Store({
     cart,
     category,
     errors,
+    locale,
     notifications
   },
 
