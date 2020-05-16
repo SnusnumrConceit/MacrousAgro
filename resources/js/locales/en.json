@@ -323,6 +323,14 @@
       }
     }
   },
+
+  "landing": {
+    "production": "Our production",
+    "articles": "Fresh news!",
+    "photo_gallery": "Photo Gallery",
+    "video_gallery": "Video Gallery"
+  },
+
   "nav": {
     "subtitle": "Administration Panel",
     "links": {

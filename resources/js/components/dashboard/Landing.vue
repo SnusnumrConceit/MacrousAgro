@@ -4,7 +4,7 @@
             <v-card v-if="products.length" style="background: none;" class="text--white">
                 <v-card-title>
                     <h2 class="font-weight-black display-3" style="color: #2fff82; text-shadow: 5px 5px #558ABB">
-                        Наша продукция
+                        {{ $t('landing.production')}}
                     </h2>
                 </v-card-title>
                 <v-card-text>
@@ -34,7 +34,7 @@
         <v-card v-if="articles.length">
             <v-card-title>
                 <h2 class="font-weight-black display-3">
-                    Вести с полей!
+                    {{ $t('landing.articles') }}
                 </h2>
             </v-card-title>
             <v-card-text>
@@ -66,7 +66,7 @@
         <v-card v-if="photos.length">
             <v-card-title>
                 <h2 class="font-weight-black display-3">
-                    Фотогалерея
+                    {{ $t('landing.photo_gallery')}}
                 </h2>
             </v-card-title>
             <v-card-text>
@@ -94,7 +94,7 @@
         <v-card v-if="videos.length">
             <v-card-title>
                 <h2 class="font-weight-black display-3">
-                    Видеогалерея
+                    {{ $t('landing.video_gallery')}}
                 </h2>
             </v-card-title>
             <v-card-text>

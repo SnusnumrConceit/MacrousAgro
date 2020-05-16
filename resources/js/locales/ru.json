@@ -366,6 +366,13 @@
     }
   },
 
+  "landing": {
+    "production": "Наша продукция",
+    "articles": "Вести с полей!",
+    "photo_gallery": "Фотогалерея",
+    "video_gallery": "Видеогалерея"
+  },
+
   "nav": {
     "subtitle": "Панель администрирования",
     "links": {

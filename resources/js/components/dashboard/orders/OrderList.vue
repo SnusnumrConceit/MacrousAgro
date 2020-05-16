@@ -29,7 +29,7 @@
         </v-card>
     </div>
     <v-banner single-line v-else>
-        Заказы отсутствуют
+        {{ $t('orders.no_orders')}}
     </v-banner>
 </template>
 

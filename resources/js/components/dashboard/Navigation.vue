@@ -26,7 +26,7 @@
                     </v-list-item-content>
                 </v-list-item>
 
-                <v-list-item v-for="category in nav_categories" :key="category.slug" link
+                <v-list-item v-for="category in navCategories" :key="category.slug" link
                              @click="toggleChildCategories(category)" dense>
                     <v-list-item-icon>
                         <v-icon>{{ category.icon }}</v-icon>
@@ -94,32 +94,6 @@
 
     data() {
       return {
-        nav_categories: [
-          {
-            title: this.$t('nav.links.production'),
-            slug: 'Products',
-            icon: 'mdi-dolly'
-          },
-          {
-            title: this.$t('nav.links.resumes'),
-            slug: 'Articles',
-            icon: 'mdi-newspaper-variant-outline',
-            path: '/articles'
-          },
-          {
-            title: this.$t('nav.links.photos'),
-            slug: 'Photos',
-            icon: 'mdi-image-outline',
-            path: '/photos'
-          },
-          {
-            title: this.$t('nav.links.videos'),
-            slug: 'Videos',
-            icon: 'mdi-video-outline',
-            path: '/videos'
-          },
-        ],
-
         product_categories: [],
 
         panel: {
@@ -147,7 +121,35 @@
 
       initials() {
         return `${this.user.first_name[0]}${this.user.last_name[0]}`
-      }
+      },
+
+      navCategories() {
+        return [
+          {
+            title: this.$t('nav.links.production'),
+            slug: 'Products',
+            icon: 'mdi-dolly'
+          },
+          {
+            title: this.$t('nav.links.resumes'),
+            slug: 'Articles',
+            icon: 'mdi-newspaper-variant-outline',
+            path: '/articles'
+          },
+          {
+            title: this.$t('nav.links.photos'),
+            slug: 'Photos',
+            icon: 'mdi-image-outline',
+            path: '/photos'
+          },
+          {
+            title: this.$t('nav.links.videos'),
+            slug: 'Videos',
+            icon: 'mdi-video-outline',
+            path: '/videos'
+          },
+        ];
+      },
     },
 
     methods: {
