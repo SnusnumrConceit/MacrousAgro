@@ -1,126 +1,32 @@
 <template>
     <v-card>
         <v-parallax src="http://www.unitek.ua/media/post/image/5/5/55766_dsc_7255-98353408.jpg" height="1000">
-            <v-card v-if="products.length" style="background: none;" class="text--white">
-                <v-card-title>
-                    <h2 class="font-weight-black display-3" style="color: #2fff82; text-shadow: 5px 5px #558ABB">
-                        {{ $t('landing.production')}}
-                    </h2>
-                </v-card-title>
-                <v-card-text>
-                    <v-slide-group>
-                        <v-slide-item v-for="product in products" :key="product.id">
-                            <v-card
-                                    class="mx-3"
-                                    max-width="400"
-                                    style="cursor: pointer"
-                                    @click="$router.push(`/products/${product.id}`)"
-                            >
-                                <v-img :src="product.src || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'"
-                                       class="white--text align-end"
-                                       height="200px"
-                                >
-                                    <v-card-title>
-                                        {{ product.title }}
-                                    </v-card-title>
-                                </v-img>
-                            </v-card>
-                        </v-slide-item>
-                    </v-slide-group>
-                </v-card-text>
-            </v-card>
+            <products :products="products"/>
         </v-parallax>
 
-        <v-card v-if="articles.length">
-            <v-card-title>
-                <h2 class="font-weight-black display-3">
-                    {{ $t('landing.articles') }}
-                </h2>
-            </v-card-title>
-            <v-card-text>
-                <v-slide-group >
-                    <v-slide-item v-for="article in articles" :key="article.id">
-                        <v-card
-                                class="mx-3"
-                                max-width="400"
-                                style="cursor: pointer"
-                                @click="$router.push(`/articles/${article.id}`)"
-                        >
-                            <v-img :src="article.src || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'"
-                                   class="white--text align-end"
-                                   height="200px"
-                            >
-                                <v-card-title>
-                                    {{ article.title }}
-                                </v-card-title>
-                            </v-img>
-                            <v-card-text class="text--primary">
-                                {{ article.description.substring(0, 60) }}
-                            </v-card-text>
-                        </v-card>
-                    </v-slide-item>
-                </v-slide-group>
-            </v-card-text>
-        </v-card>
+        <articles :articles="articles"/>
 
-        <v-card v-if="photos.length">
-            <v-card-title>
-                <h2 class="font-weight-black display-3">
-                    {{ $t('landing.photo_gallery')}}
-                </h2>
-            </v-card-title>
-            <v-card-text>
-                <v-slide-group >
-                    <v-slide-item v-for="photo in photos" :key="photo.id">
-                        <v-card
-                                class="mx-3"
-                                max-width="600"
-                        >
-                            <v-img :src="photo.path || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'"
-                                   alt=""
-                                   width="680px"
-                                   height="480px"
-                                   class="white--text align-end">
-                                <v-card-title class="text-center">
-                                    {{ photo.title }}
-                                </v-card-title>
-                            </v-img>
-                        </v-card>
-                    </v-slide-item>
-                </v-slide-group>
-            </v-card-text>
-        </v-card>
+        <photos :photos="photos" />
 
-        <v-card v-if="videos.length">
-            <v-card-title>
-                <h2 class="font-weight-black display-3">
-                    {{ $t('landing.video_gallery')}}
-                </h2>
-            </v-card-title>
-            <v-card-text>
-                <v-slide-group >
-                    <v-slide-item v-for="video in videos" :key="video.id">
-                        <v-card
-                                class="mx-3"
-                                max-width="400"
-                        >
-                            <v-card-text>
-                                <video :src="video.src" controls height="240" width="320"></video>
-                            </v-card-text>
-                            <v-card-title class="text-center">
-                                {{ video.title }}
-                            </v-card-title>
-                        </v-card>
-                    </v-slide-item>
-                </v-slide-group>
-            </v-card-text>
-        </v-card>
+        <videos :videos="videos" />
     </v-card>
 </template>
 
 <script>
+  import Articles from './landing/articles/Articles';
+  import Products from './landing/products/Products';
+  import Photos   from './landing/photos/Photos';
+  import Videos   from './landing/videos/Videos';
+
   export default {
     name: "Landing",
+
+    components: {
+      Articles,
+      Products,
+      Photos,
+      Videos
+    },
 
     data() {
       return {
