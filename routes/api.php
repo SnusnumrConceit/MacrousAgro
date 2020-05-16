@@ -14,6 +14,7 @@ use Illuminate\Http\Request;
 */
 
 Route::group(['namespace' => 'Guest'], function () {
+    Route::get('/categories/{category}/products', 'CategoryController@products');
     Route::resource('categories', 'CategoryController')->only(['index']);
 
     Route::get('photos/random', 'PhotoController@random');
