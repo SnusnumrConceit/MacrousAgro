@@ -66,8 +66,10 @@
                                     </template>
 
                                     <v-date-picker v-model="user.birthday"
+                                                   ref="birthday-date-picker"
                                                    @input="birthdayCalendar = false"
                                                    :max="new Date().toISOString().substr(0,10)"
+                                                   min="1950-01-01"
                                                    no-title
                                                    scrollable
                                                    v-if="birthdayCalendar"
@@ -244,6 +246,11 @@
           this.user.display_birthday = after.split('-').reverse().join('.');
         }
       },
+
+      /** изменение формата выбора даты рождения **/
+      'birthdayCalendar': function (after) {
+        after && setTimeout(() => this.$refs['birthday-date-picker'].activePicker = 'YEAR');
+      }
     }
   }
 </script>
