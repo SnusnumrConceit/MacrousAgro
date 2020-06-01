@@ -3,7 +3,7 @@
         <v-card v-show="! loading">
             <v-row>
                 <v-col cols="9">
-                    <v-parallax :src="product.url || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'">
+                    <v-parallax :src="product.src || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'">
                         <v-card-title>
                             {{ product.title }}
                         </v-card-title>
@@ -90,7 +90,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>
