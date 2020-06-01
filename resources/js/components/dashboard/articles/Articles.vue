@@ -19,8 +19,7 @@
                 <v-card-subtitle>
                     {{ article.display_publication_date }}
                 </v-card-subtitle>
-                <v-card-text class="text--primary">
-                    {{ article.description.substring(0, 60) }}
+                <v-card-text class="text--primary" v-html="article.description.substring(0, 60)">
                 </v-card-text>
                 <v-card-actions>
                     <v-btn outlined
@@ -101,7 +100,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>
