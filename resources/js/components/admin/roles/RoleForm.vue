@@ -38,7 +38,7 @@
                     <v-col cols="4" v-for="(parent, key, index) in permissions" :key="index" class="d-flex flex-sm-column" v-if="key">
                         <v-card>
                             <v-card-text v-if="parent">
-                                <v-card-title>
+                                <v-card-title class="text-capitalize">
                                     {{ headers[index] }}
                                 </v-card-title>
                                 <v-checkbox v-model="role.permissions"
