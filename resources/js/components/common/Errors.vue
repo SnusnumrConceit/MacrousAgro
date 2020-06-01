@@ -5,7 +5,7 @@
                 <v-list-item v-for="error in fields" :key="error">
                     <v-list-item-content>
                         <v-list-item-title class="text-sm-left">
-                            <span class="red--text">{{ error }}</span>
+                            <span class="red--text text-break">{{ error }}</span>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -16,7 +16,7 @@
                 <v-list-item>
                     <v-list-item-content>
                         <v-list-item-title class="text-sm-left">
-                            <span class="red--text">{{ errors }}</span>
+                            <span class="red--text text-break">{{ errors }}</span>
                         </v-list-item-title>
                     </v-list-item-content>
                 </v-list-item>
@@ -46,5 +46,8 @@
 </script>
 
 <style scoped>
-
+    .text-break {
+        white-space: pre-line;
+        word-break: break-word;
+    }
 </style>
