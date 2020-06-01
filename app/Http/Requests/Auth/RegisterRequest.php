@@ -27,7 +27,7 @@ class RegisterRequest extends FormRequest
             'last_name'  => 'required|between:2,100',
             'first_name' => 'required|between:2,60',
             'password'   => 'required|between:8,60|confirmed',
-            'email'      => 'required|email|between:10,100',
+            'email'      => 'required|email|between:10,100|unique:users,email',
             'birthday'   => 'required|date',
         ];
     }
