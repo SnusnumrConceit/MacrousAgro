@@ -89,12 +89,10 @@
 
     watch: {
       'reset': function (after, before) {
-        if (this.reset) {
-          this.dataSrc = '';
-          $('#imageUpload').val('');
-        }
+        this.dataSrc = '';
+        $('#imageUpload').val('');
       }
-    },
+    }
   }
 </script>
 

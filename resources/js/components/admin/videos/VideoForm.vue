@@ -215,7 +215,7 @@
        */
       async resetForm() {
         this.modal = false;
-        this.resetPreview = true;
+        this.resetPreview = ! this.resetPreview;
         this.video.video = null;
         this.$refs.form.reset();
       },

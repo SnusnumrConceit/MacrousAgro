@@ -64,7 +64,7 @@
                                 {{ $t('articles.form.labels.description') }}
                             </label>
 
-                            <tiptap :content="article.description" v-if="! loading" @description-changed="syncDescription"/>
+                            <tiptap :content="article.description" v-if="! loading" @description-changed="syncDescription" :reset-tiptap="resetTiptap"/>
                             <!--<v-textarea v-model="article.description"-->
                                         <!--:label="$t('articles.form.labels.description')"-->
                                         <!--required-->
@@ -184,7 +184,8 @@
 
         loading: false,
         calendar: false,
-        resetPreview: false
+        resetPreview: false,
+        resetTiptap: false
       }
     },
 
@@ -293,7 +294,9 @@
       async resetForm() {
         this.modal = false;
         this.article.image = null;
-        this.resetPreview = true;
+        this.article.description = '';
+        this.resetPreview = ! this.resetPreview;
+        this.resetTiptap = ! this.resetTiptap;
         this.$refs.form.reset();
         this.resetErrors();
       },
@@ -321,7 +324,6 @@
       },
 
       syncDescription(data) {
-        console.log(data);
         this.article.description = data;
       }
     },

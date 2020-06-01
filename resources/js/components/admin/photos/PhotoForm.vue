@@ -229,7 +229,7 @@
       async resetForm() {
         this.$refs.form.reset();
         this.photo.image = null;
-        this.resetPreview = true;
+        this.resetPreview = ! this.resetPreview;
       },
 
       /**

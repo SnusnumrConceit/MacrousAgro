@@ -167,7 +167,8 @@
     },
 
     props: {
-      'content': String
+      'content': String,
+      'resetTiptap': Boolean
     },
 
     data() {
@@ -209,6 +210,12 @@
             this.$emit('description-changed', getHTML());
           }
         }),
+      }
+    },
+
+    watch: {
+      'resetTiptap': function (after, before) {
+        this.editor.clearContent();
       }
     },
 

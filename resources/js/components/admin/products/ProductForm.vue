@@ -328,7 +328,7 @@
       async resetForm() {
         this.modal = false;
         this.product.image = null;
-        this.resetPreview = true;
+        this.resetPreview = ! this.resetPreview;
         this.$refs.form.reset();
       },
 
