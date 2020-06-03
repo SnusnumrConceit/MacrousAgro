@@ -29,4 +29,9 @@ class UserObserver
             $user->password = bcrypt(request()->input('password'));
         }
     }
+
+    public function deleting(User $user)
+    {
+        $user->orders()->delete();
+    }
 }
