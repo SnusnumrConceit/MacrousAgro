@@ -5,7 +5,7 @@
         </v-card-title>
         <v-card-text class="row">
             <v-card v-for="product in products" :key="product.key" class="col-4 my-2">
-                <v-img :src="product.url || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'">
+                <v-img :src="product.src || 'https://cdn.vuetifyjs.com/images/cards/docks.jpg'">
                     <v-card-title class="text--white">
                         {{ product.title }}
                     </v-card-title>
