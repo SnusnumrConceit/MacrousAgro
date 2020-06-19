@@ -105,6 +105,18 @@
       }
     },
 
+    beforeRouteUpdate(to, from, next) {
+      this.$nextTick(async () => {
+        this.loading = true;
+
+        await this.getProducts();
+
+        this.loading = false;
+      });
+
+      next();
+    },
+
     created() {
       this.getProducts();
     },
@@ -114,7 +126,3 @@
     }
   }
 </script>
-
-<style scoped>
-
-</style>

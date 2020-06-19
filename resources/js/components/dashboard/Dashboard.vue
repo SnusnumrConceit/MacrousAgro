@@ -12,7 +12,7 @@
                     </v-icon>
                 </v-btn>
 
-                <locale-switcher />
+                <!--<locale-switcher />-->
 
                 <v-spacer />
 
@@ -22,7 +22,7 @@
 
                 <auth-toolbar />
             </v-toolbar>
-            <router-view apiRoute="/api" />
+            <router-view apiRoute="/api" :key="$router.path"/>
         </v-card>
     </v-app>
 </template>
