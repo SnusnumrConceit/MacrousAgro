@@ -130,7 +130,7 @@
 
             </div>
         </editor-menu-bar>
-        <editor-content :editor="editor" class="ml-2 pa-2 bdr bdr-rnd-5 w-100 h-30-rem" />
+        <editor-content :editor="editor" class="ml-2 pa-2 bdr bdr-rnd-5 w-100 h-30-rem editor__content" />
     </div>
 </template>
 

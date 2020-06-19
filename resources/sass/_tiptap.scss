@@ -86,3 +86,10 @@ $color-grey: #dddddd;
 .h-30-rem {
   height: 30rem;
 }
+
+.editor__content blockquote {
+  border-left: 3px solid rgba(0,0,0,.1);
+  color: rgba(0,0,0,.8);
+  padding-left: .8rem;
+  font-style: italic;
+}
