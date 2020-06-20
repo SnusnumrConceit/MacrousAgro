@@ -60,18 +60,19 @@
 
                     <v-row>
                         <v-col>
-                            <label class="d-flex pl-1 v-label v-label--active theme--light tiptap__form-label">
-                                {{ $t('articles.form.labels.description') }}
-                            </label>
+                            <!--<label class="d-flex pl-1 v-label v-label&#45;&#45;active theme&#45;&#45;light tiptap__form-label">-->
+                                <!--{{ $t('articles.form.labels.description') }}-->
+                            <!--</label>-->
 
-                            <tiptap :content="article.description" v-if="! loading" @description-changed="syncDescription" :reset-tiptap="resetTiptap"/>
-                            <!--<v-textarea v-model="article.description"-->
-                                        <!--:label="$t('articles.form.labels.description')"-->
-                                        <!--required-->
-                                        <!--counter-->
-                                        <!--maxlength="2000"-->
-                                        <!--:rules="form.description.rules">-->
-                            <!--</v-textarea>-->
+                            <!--<tiptap :content="article.description" v-if="! loading" @description-changed="syncDescription" :reset-tiptap="resetTiptap"/>-->
+
+                            <v-textarea v-model="article.description"
+                                        :label="$t('articles.form.labels.description')"
+                                        required
+                                        counter
+                                        maxlength="2000"
+                                        :rules="form.description.rules">
+                            </v-textarea>
 
                             <v-checkbox v-model="article.is_publicated"
                                         :label="$t('articles.form.labels.is_publicated')">
