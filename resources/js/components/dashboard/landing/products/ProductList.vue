@@ -1,5 +1,5 @@
 <template>
-    <v-slide-group>
+    <v-slide-group class="pa-4">
         <v-slide-item v-for="product in products" :key="product.id">
             <v-card
                     class="mx-3"
